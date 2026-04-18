@@ -237,10 +237,14 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
       </div>
       <div class="auth-field">
         <label>Role</label>
-        <select id="signupRole" style="width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:10px;padding:12px 14px;font-family:'Outfit',sans-serif;font-size:15px;color:#fff;outline:none;">
+        <select id="signupRole" style="width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:10px;padding:12px 14px;font-family:'Outfit',sans-serif;font-size:15px;color:#fff;outline:none;" onchange="toggleAdminCode()">
           <option value="teacher">Teacher</option>
           <option value="admin">Admin</option>
         </select>
+      </div>
+      <div class="auth-field" id="adminCodeField" style="display:none;">
+        <label>Admin Access Code</label>
+        <input type="password" id="adminCode" placeholder="Enter admin code" autocomplete="off"/>
       </div>
       <button class="auth-btn" onclick="doSignup()" id="signupBtn">Create Account</button>
       <div class="auth-err" id="signupErr"></div>
@@ -434,6 +438,12 @@ async function doLogin(){
   if(error){showErr(err,error.message);}
 }
 
+const ADMIN_CODE="###MR. UTULU###";
+function toggleAdminCode(){
+  const role=document.getElementById("signupRole").value;
+  document.getElementById("adminCodeField").style.display=role==="admin"?"block":"none";
+  if(role!=="admin")document.getElementById("adminCode").value="";
+}
 async function doSignup(){
   const email=document.getElementById('signupEmail').value.trim();
   const pass=document.getElementById('signupPassword').value;
@@ -442,7 +452,11 @@ async function doSignup(){
   const err=document.getElementById('signupErr');
   const info=document.getElementById('signupInfo');
   if(!email||!pass){showErr(err,'Please fill in all fields.');return;}
-  if(pass.length<6){showErr(err,'Password must be at least 6 characters.');return;}
+  if(pass.length<6){showErr(err,"Password must be at least 6 characters.");return;}
+  if(role==="admin"){
+    const code=document.getElementById("adminCode").value;
+    if(code!==ADMIN_CODE){showErr(err,"Incorrect admin access code.");return;}
+  }
   btn.disabled=true; btn.textContent='Creating account...';
   const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{role}}});
   btn.disabled=false; btn.textContent='Create Account';
