@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Class Register"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#1F3864"/>
+<link id="pwa-manifest" rel="manifest" href=""/>
+<title>Class Register · Jewel</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+:root{
+  --ink:#0f1923;--paper:#f5f0e8;--cream:#ede8dc;
+  --navy:#1F3864;--blue:#2E75B6;--lblue:#BDD7EE;
+  --gold:#c9973a;--lgold:#fff2cc;
+  --green:#2d6a4f;--lgreen:#d8f3dc;
+  --red:#9b2226;--lred:#ffe5e5;
+  --late:#e07800;--llate:#fff3cd;
+  --radius:12px;--shadow:0 4px 24px rgba(15,25,35,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100dvh;padding-bottom:88px;}
+
+header{background:var(--navy);color:#fff;padding:14px 16px 10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+header h1{font-family:'DM Serif Display',serif;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+header p{font-size:11px;opacity:.7;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hrow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.date-chip{background:var(--gold);color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+
+.nav-bar{background:var(--cream);border-bottom:1px solid #ddd6c8;padding:8px 14px;display:flex;gap:7px;align-items:center;overflow-x:auto;scrollbar-width:none;position:sticky;top:64px;z-index:99;}
+.nav-bar::-webkit-scrollbar{display:none;}
+.nav-lbl{font-size:10px;font-weight:700;color:#999;white-space:nowrap;margin-right:3px;}
+.nav-btn{background:#fff;border:1.5px solid #ccc8be;border-radius:8px;padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap;transition:all .15s;}
+.nav-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:10px 14px;}
+.stat{background:#fff;border-radius:10px;padding:9px 6px;text-align:center;box-shadow:var(--shadow);}
+.stat .n{font-family:'DM Serif Display',serif;font-size:20px;line-height:1;}
+.stat .l{font-size:9px;color:#999;margin-top:2px;font-weight:700;text-transform:uppercase;}
+.stat.sp .n{color:var(--green)}.stat.sa .n{color:var(--red)}.stat.sl .n{color:var(--late)}.stat.pct .n{color:var(--navy);font-size:16px;}
+
+.quick{display:flex;gap:7px;padding:0 14px 10px;}
+.qbtn{flex:1;padding:9px 4px;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:transform .1s;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.qbtn:active{transform:scale(.95);}
+.qbtn .qi{font-size:16px;}
+.qbtn.qp{background:var(--lgreen);color:var(--green);}
+.qbtn.qa{background:var(--lred);color:var(--red);}
+.qbtn.qc{background:var(--lblue);color:var(--navy);}
+
+.sec{font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.7px;padding:0 14px 7px;}
+
+.scard{background:#fff;margin:0 10px 7px;border-radius:var(--radius);padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 5px rgba(0,0,0,.06);}
+.scard.girl{background:#fff5f5;}
+.snum{width:24px;height:24px;border-radius:50%;background:var(--cream);border:1.5px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#999;flex-shrink:0;}
+.sinfo{flex:1;min-width:0;}
+.sname{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sname.girl{color:var(--red);}
+.smeta{font-size:10px;color:#bbb;margin-top:1px;}
+.mbtns{display:flex;gap:4px;flex-shrink:0;}
+.mbtn{width:34px;height:34px;border-radius:8px;border:2px solid transparent;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;background:var(--cream);color:#ccc;}
+.mbtn:active{transform:scale(.88);}
+.mbtn.sel-P{background:var(--lgreen);color:var(--green);border-color:var(--green);}
+.mbtn.sel-A{background:var(--lred);color:var(--red);border-color:var(--red);}
+.mbtn.sel-L{background:var(--llate);color:var(--late);border-color:var(--late);}
+.mbtn.sel-E{background:var(--lblue);color:var(--navy);border-color:var(--navy);}
+
+.wkdate-strip{background:#fff;margin:0 10px 10px;border-radius:var(--radius);padding:10px 14px;box-shadow:var(--shadow);}
+.wkdate-strip label{font-size:11px;font-weight:700;color:var(--navy);display:block;margin-bottom:5px;}
+.wkdate-strip input{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--paper);}
+
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e0dbd0;display:flex;padding:6px 0 env(safe-area-inset-bottom,6px);z-index:200;}
+.bb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:3px 0;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;color:#bbb;cursor:pointer;transition:color .15s;}
+.bb .bi{font-size:18px;}
+.bb.active{color:var(--navy);}
+
+.view{display:none;}.view.on{display:block;}
+
+.sum-card{background:#fff;border-radius:var(--radius);margin:0 10px 10px;padding:14px;box-shadow:var(--shadow);}
+.sum-card h3{font-family:'DM Serif Display',serif;font-size:15px;color:var(--navy);margin-bottom:10px;}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--cream);}
+.sum-row:last-child{border-bottom:none;}
+.sum-name{font-size:12px;flex:1;}
+.sum-name.girl{color:var(--red);}
+.chips{display:flex;gap:4px;}
+.chip{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;min-width:26px;text-align:center;}
+.cp{background:var(--lgreen);color:var(--green);}
+.ca{background:var(--lred);color:var(--red);}
+.cl{background:var(--llate);color:var(--late);}
+.cpct{background:var(--lblue);color:var(--navy);}
+.bg-row{display:flex;gap:10px;padding:0 10px 10px;}
+.bg-card{flex:1;background:#fff;border-radius:10px;padding:12px;box-shadow:var(--shadow);text-align:center;}
+.bg-card .bgt{font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:4px;}
+.bg-card .bgn{font-family:'DM Serif Display',serif;font-size:26px;}
+.bg-card.boys .bgt{color:var(--navy)}.bg-card.boys .bgn{color:var(--navy)}
+.bg-card.girls .bgt{color:var(--red)}.bg-card.girls .bgn{color:var(--red)}
+.bg-card.open .bgt{color:var(--late)}.bg-card.open .bgn{color:var(--late);}
+
+.fm-card{background:#fff;border-radius:var(--radius);margin:0 10px 10px;padding:14px;box-shadow:var(--shadow);}
+.fm-card h3{font-family:'DM Serif Display',serif;font-size:15px;color:var(--navy);margin-bottom:10px;}
+.fm-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--cream);}
+.fm-row:last-child{border-bottom:none;}
+.fm-name{font-size:12px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fm-row input{border:1.5px solid #ddd;border-radius:7px;padding:5px 8px;font-size:11px;font-family:'DM Sans',sans-serif;}
+.fm-row input.fees{width:70px;text-align:center;}
+.fm-row input.mgr{width:110px;}
+
+.sd-card{background:#fff;border-radius:var(--radius);margin:0 10px 10px;padding:14px;box-shadow:var(--shadow);}
+.sd-card h3{font-family:'DM Serif Display',serif;font-size:15px;color:var(--navy);margin-bottom:4px;}
+.sd-card p{font-size:11px;color:#999;margin-bottom:12px;}
+.sd-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.sd-item label{font-size:10px;font-weight:700;color:#999;display:block;margin-bottom:3px;text-align:center;}
+.sd-item input{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:7px 4px;text-align:center;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:var(--navy);}
+
+/* SETTINGS */
+.settings-wrap{padding:10px 10px 20px;}
+.settings-section{background:#fff;border-radius:var(--radius);margin-bottom:14px;box-shadow:var(--shadow);overflow:hidden;}
+.settings-section-title{background:var(--navy);color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:10px 14px;}
+.settings-field{padding:11px 14px;border-bottom:1px solid var(--cream);display:flex;flex-direction:column;gap:4px;}
+.settings-field:last-child{border-bottom:none;}
+.settings-field label{font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.5px;}
+.settings-field input,.settings-field select{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);outline:none;}
+.settings-field input:focus,.settings-field select:focus{border-color:var(--navy);}
+
+.stu-item{padding:10px 14px;border-bottom:1px solid var(--cream);display:flex;gap:8px;align-items:center;}
+.stu-item:last-child{border-bottom:none;}
+.stu-idx{font-size:11px;font-weight:700;color:#bbb;width:20px;flex-shrink:0;}
+.stu-item input{flex:1;border:1.5px solid #ddd;border-radius:8px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--paper);}
+.stu-item select{width:54px;border:1.5px solid #ddd;border-radius:8px;padding:7px 6px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--paper);flex-shrink:0;}
+.stu-del{background:var(--lred);border:none;border-radius:7px;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.add-stu-btn{width:100%;padding:12px;background:var(--lgreen);border:none;border-radius:0 0 var(--radius) var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--green);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+.save-settings-btn{width:100%;padding:14px;background:var(--navy);border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;margin-top:4px;}
+.danger-zone{background:#fff;border-radius:var(--radius);margin-bottom:14px;box-shadow:var(--shadow);overflow:hidden;}
+.danger-zone .settings-section-title{background:var(--red);}
+.reset-btn{width:100%;padding:13px;background:var(--lred);border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+
+/* INSTALL BANNER */
+.install-banner{background:var(--gold);color:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:600;}
+.install-banner button{background:#fff;color:var(--gold);border:none;border-radius:8px;padding:6px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.install-banner .dismiss{background:transparent;color:rgba(255,255,255,.7);padding:4px;font-size:18px;}
+
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:9px 18px;border-radius:30px;font-size:12px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:300;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.onboard{position:fixed;inset:0;background:var(--navy);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 24px;text-align:center;}
+.onboard h2{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;margin-bottom:10px;}
+.onboard p{font-size:14px;color:rgba(255,255,255,.7);margin-bottom:30px;line-height:1.6;}
+.onboard-btn{background:var(--gold);color:#fff;border:none;border-radius:var(--radius);padding:14px 32px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;width:100%;}
+</style>
+</head>
+<body>
+
+<div class="onboard" id="onboard" style="display:none;">
+  <div style="font-size:48px;margin-bottom:16px;">📋</div>
+  <h2>Welcome to Class Register</h2>
+  <p>Set up your school details and student list before you start marking attendance.</p>
+  <button class="onboard-btn" onclick="dismissOnboard()">Set Up My Register →</button>
+</div>
+
+<!-- Install banner (shown when PWA prompt is available) -->
+<div class="install-banner" id="installBanner" style="display:none;">
+  <span>📲 Install this app on your home screen</span>
+  <button onclick="triggerInstall()">Install</button>
+  <button class="dismiss" onclick="document.getElementById('installBanner').style.display='none'">✕</button>
+</div>
+
+<header>
+  <div class="hrow">
+    <div>
+      <h1 id="hdrTitle">Class Register</h1>
+      <p id="hdrSub">Loading...</p>
+    </div>
+    <div class="date-chip" id="datechip"></div>
+  </div>
+</header>
+
+<div class="nav-bar" id="weekNav" style="display:none;"></div>
+
+<!-- ATTENDANCE -->
+<div class="view on" id="vAttend">
+  <div class="stats">
+    <div class="stat sp"><div class="n" id="sP">0</div><div class="l">Present</div></div>
+    <div class="stat sa"><div class="n" id="sA">0</div><div class="l">Absent</div></div>
+    <div class="stat sl"><div class="n" id="sL">0</div><div class="l">Late</div></div>
+    <div class="stat pct"><div class="n" id="sPct">—</div><div class="l">% Att.</div></div>
+  </div>
+  <div class="quick">
+    <button class="qbtn qp" onclick="markAll('P')"><span class="qi">✅</span>All Present</button>
+    <button class="qbtn qa" onclick="markAll('A')"><span class="qi">❌</span>All Absent</button>
+    <button class="qbtn qc" onclick="markAll('')"><span class="qi">🔄</span>Clear</button>
+  </div>
+  <div class="wkdate-strip">
+    <label>📅 Week <span id="wkLabel">1</span> ending date:</label>
+    <input type="date" id="wkEndDate" onchange="saveWkDate()"/>
+  </div>
+  <div class="sec">Tap to mark — P · A · L · E</div>
+  <div id="studentList"></div>
+</div>
+
+<!-- SUMMARY -->
+<div class="view" id="vSummary">
+  <div style="padding:10px 4px 6px;"><div class="sec">Term Overview</div></div>
+  <div class="bg-row">
+    <div class="bg-card boys"><div class="bgt">Boys Present</div><div class="bgn" id="boysTotal">—</div></div>
+    <div class="bg-card girls"><div class="bgt">Girls Present</div><div class="bgn" id="girlsTotal">—</div></div>
+    <div class="bg-card open"><div class="bgt">School Days</div><div class="bgn" id="openDays">—</div></div>
+  </div>
+  <div class="sum-card" id="sumCards"></div>
+</div>
+
+<!-- FEES -->
+<div class="view" id="vFees">
+  <div style="padding:10px 4px 6px;"><div class="sec">Fees Paid · Manager Check</div></div>
+  <div class="fm-card" id="fmCards"></div>
+</div>
+
+<!-- DAYS -->
+<div class="view" id="vDays">
+  <div style="padding:10px 4px 6px;"><div class="sec">Times School Was Open</div></div>
+  <div class="sd-card">
+    <h3>School Open Days Per Week</h3>
+    <p>Enter how many days school was open each week</p>
+    <div class="sd-grid" id="sdGrid"></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="view" id="vSettings">
+  <div class="settings-wrap">
+    <div class="settings-section">
+      <div class="settings-section-title">🏫 School Information</div>
+      <div class="settings-field"><label>School Name</label><input type="text" id="cfg_school" placeholder="e.g. Jewel Model Schools"/></div>
+      <div class="settings-field"><label>Class Name</label><input type="text" id="cfg_class" placeholder="e.g. Basic Three"/></div>
+      <div class="settings-field"><label>Teacher's Name</label><input type="text" id="cfg_teacher" placeholder="e.g. Emordi Emeka James"/></div>
+      <div class="settings-field">
+        <label>Term</label>
+        <select id="cfg_term">
+          <option value="1st Term">1st Term</option>
+          <option value="2nd Term">2nd Term</option>
+          <option value="3rd Term" selected>3rd Term</option>
+        </select>
+      </div>
+      <div class="settings-field"><label>Academic Session</label><input type="text" id="cfg_session" placeholder="e.g. 2025/2026"/></div>
+      <div class="settings-field"><label>Number of Weeks This Term</label><input type="number" id="cfg_weeks" min="1" max="20" value="13"/></div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">👨‍👩‍👧‍👦 Student List</div>
+      <div id="stuListSettings"></div>
+      <button class="add-stu-btn" onclick="addStudent()">➕ Add Student</button>
+    </div>
+    <button class="save-settings-btn" onclick="saveSettings()">💾 Save & Apply Settings</button>
+    <div style="height:14px;"></div>
+    <div class="danger-zone">
+      <div class="settings-section-title">⚠️ Danger Zone</div>
+      <button class="reset-btn" onclick="resetAllData()">🗑️ Clear All Attendance Data</button>
+    </div>
+  </div>
+</div>
+
+<div class="bnav">
+  <button class="bb active" id="bb0" onclick="switchView(0)"><span class="bi">📋</span>Mark</button>
+  <button class="bb" id="bb1" onclick="switchView(1)"><span class="bi">📊</span>Summary</button>
+  <button class="bb" id="bb2" onclick="switchView(2)"><span class="bi">💰</span>Fees</button>
+  <button class="bb" id="bb3" onclick="switchView(3)"><span class="bi">🏫</span>Days</button>
+  <button class="bb" id="bb4" onclick="switchView(4)"><span class="bi">⚙️</span>Settings</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── PWA: Inject manifest dynamically ─────────────────────────────────────
+const manifest = {
+  name: "Class Register",
+  short_name: "Register",
+  description: "School attendance register for Nigerian primary schools",
+  start_url: "./",
+  display: "standalone",
+  background_color: "#f5f0e8",
+  theme_color: "#1F3864",
+  orientation: "portrait",
+  icons: [
+    {
+      src: "data:image/svg+xml," + encodeURIComponent(`
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'>
+          <rect width='192' height='192' rx='32' fill='%231F3864'/>
+          <text x='96' y='130' font-size='100' text-anchor='middle' font-family='serif'>📋</text>
+        </svg>`),
+      sizes: "192x192",
+      type: "image/svg+xml",
+      purpose: "any maskable"
+    }
+  ]
+};
+const manifestBlob = new Blob([JSON.stringify(manifest)], {type:"application/json"});
+const manifestURL  = URL.createObjectURL(manifestBlob);
+document.getElementById("pwa-manifest").href = manifestURL;
+
+// ── PWA: Service Worker ───────────────────────────────────────────────────
+const SW_CODE = `
+const CACHE = 'class-register-v1';
+const URLS  = [self.location.pathname];
+self.addEventListener('install',  e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS))); self.skipWaiting(); });
+self.addEventListener('activate', e => { e.waitUntil(clients.claim()); });
+self.addEventListener('fetch',    e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });
+`;
+if('serviceWorker' in navigator){
+  const swBlob = new Blob([SW_CODE], {type:'application/javascript'});
+  const swURL  = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swURL, {scope:'./'})
+    .then(()=> console.log('SW registered'))
+    .catch(e => console.warn('SW failed:', e));
+}
+
+// ── PWA: Install prompt ───────────────────────────────────────────────────
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').style.display = 'flex';
+});
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBanner').style.display = 'none';
+  toast('App installed! ✓');
+});
+function triggerInstall(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; document.getElementById('installBanner').style.display='none'; });
+  }
+}
+
+// ── APP STATE ─────────────────────────────────────────────────────────────
+const DEFAULT_CONFIG = {
+  school:'Jewel Model Schools', class:'Basic Three',
+  teacher:'Emordi Emeka James', term:'3rd Term',
+  session:'2025/2026', weeks:13
+};
+const DEFAULT_STUDENTS = [
+  {name:"Aisha Nana Abubakar",sex:"F"},{name:"Adams Alhassan",sex:"M"},
+  {name:"Adewunyi Marvelous",sex:"M"},{name:"Alhassan Mohammed",sex:"M"},
+  {name:"Anyatonwu Emilia",sex:"F"},{name:"Aondoaseer Sonia",sex:"F"},
+  {name:"Bala Joshua",sex:"M"},{name:"Henry Janelle",sex:"F"},
+  {name:"Ifeanyi David",sex:"M"},{name:"Inegedu Roman",sex:"M"},
+  {name:"Kasarawa Safwan",sex:"M"},{name:"Odigie Salome",sex:"F"},
+  {name:"Orogun Flint Gerald",sex:"M"},{name:"Robodu Redeemer",sex:"M"},
+  {name:"Tonga Abubakar",sex:"M"}
+];
+
+let cfg={}, students=[];
+let att={}, wkDates={}, fees={}, managers={}, schoolDays={};
+let cWeek=1, cDay=0;
+const MARKS=["P","A","L","E"];
+const DAYS=["Mon","Tue","Wed","Thu","Fri"];
+
+function load(){
+  cfg      = JSON.parse(localStorage.getItem("jb3_cfg") ||"null")||{...DEFAULT_CONFIG};
+  students = JSON.parse(localStorage.getItem("jb3_stu") ||"null")||DEFAULT_STUDENTS.map((s,i)=>({id:i+1,...s}));
+  att      = JSON.parse(localStorage.getItem("jb3_att") ||"{}");
+  wkDates  = JSON.parse(localStorage.getItem("jb3_wkd") ||"{}");
+  fees     = JSON.parse(localStorage.getItem("jb3_fees")||"{}");
+  managers = JSON.parse(localStorage.getItem("jb3_mgr") ||"{}");
+  schoolDays=JSON.parse(localStorage.getItem("jb3_sd")  ||"{}");
+}
+function persist(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+function saveAtt(){ persist("jb3_att",att); toast("Saved ✓"); }
+function saveWkDate(){ wkDates[cWeek]=document.getElementById("wkEndDate").value; persist("jb3_wkd",wkDates); toast("Date saved"); }
+function saveFees(){ persist("jb3_fees",fees); persist("jb3_mgr",managers); }
+function saveDaysCfg(){ persist("jb3_sd",schoolDays); toast("Saved"); }
+
+function getAtt(w,d,sid){ return (att[w]&&att[w][d]&&att[w][d][sid])||""; }
+function setAtt(w,d,sid,v){
+  if(!att[w])att[w]={};
+  if(!att[w][d])att[w][d]={};
+  att[w][d][sid]=v;
+  saveAtt(); renderList();
+}
+
+function checkFirstRun(){
+  if(!localStorage.getItem("jb3_cfg"))
+    document.getElementById("onboard").style.display="flex";
+}
+function dismissOnboard(){
+  document.getElementById("onboard").style.display="none";
+  switchView(4);
+}
+
+function updateHeader(){
+  document.getElementById("hdrTitle").textContent=`${cfg.class} Register`;
+  document.getElementById("hdrSub").textContent=`${cfg.school} · ${cfg.teacher} · ${cfg.term} ${cfg.session}`;
+  document.title=`${cfg.class} · ${cfg.school}`;
+}
+
+function setDateChip(){
+  const d=new Date();
+  document.getElementById("datechip").textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+  const dow=d.getDay();
+  if(dow>=1&&dow<=5) cDay=dow-1;
+}
+
+function buildNav(){
+  const nav=document.getElementById("weekNav");
+  nav.style.display="flex"; nav.innerHTML="";
+  const wl=document.createElement("span"); wl.className="nav-lbl"; wl.textContent="WK:"; nav.appendChild(wl);
+  for(let w=1;w<=cfg.weeks;w++){
+    const b=document.createElement("button"); b.className="nav-btn"+(w===cWeek?" active":"");
+    b.textContent=w; b.onclick=()=>{cWeek=w;buildNav();renderList();loadWkDate();};
+    nav.appendChild(b);
+  }
+  const dl=document.createElement("span"); dl.className="nav-lbl"; dl.style.marginLeft="10px"; dl.textContent="DAY:"; nav.appendChild(dl);
+  DAYS.forEach((d,i)=>{
+    const b=document.createElement("button"); b.className="nav-btn"+(i===cDay?" active":"");
+    b.textContent=d; b.onclick=()=>{cDay=i;buildNav();renderList();};
+    nav.appendChild(b);
+  });
+  document.getElementById("wkLabel").textContent=cWeek;
+}
+function loadWkDate(){ document.getElementById("wkEndDate").value=wkDates[cWeek]||""; }
+
+function renderList(){
+  const list=document.getElementById("studentList"); list.innerHTML="";
+  students.forEach(s=>{
+    const cur=getAtt(cWeek,cDay,s.id);
+    const card=document.createElement("div");
+    card.className="scard"+(s.sex==="F"?" girl":"");
+    card.innerHTML=`
+      <div class="snum">${s.id}</div>
+      <div class="sinfo">
+        <div class="sname${s.sex==="F"?" girl":""}">${s.name}</div>
+        <div class="smeta">${s.sex==="F"?"Female":"Male"}</div>
+      </div>
+      <div class="mbtns">${MARKS.map(m=>`<button class="mbtn${cur===m?" sel-"+m:""}" onclick="setAtt(${cWeek},${cDay},${s.id},'${cur===m?"":m}')">${m}</button>`).join("")}</div>`;
+    list.appendChild(card);
+  });
+  updateStats();
+}
+
+function updateStats(){
+  let p=0,a=0,l=0;
+  students.forEach(s=>{const v=getAtt(cWeek,cDay,s.id);if(v==="P")p++;else if(v==="A")a++;else if(v==="L")l++;});
+  document.getElementById("sP").textContent=p;
+  document.getElementById("sA").textContent=a;
+  document.getElementById("sL").textContent=l;
+  document.getElementById("sPct").textContent=(p+a+l)>0?Math.round((p/students.length)*100)+"%":"—";
+}
+
+function markAll(v){
+  if(!att[cWeek])att[cWeek]={};
+  if(!att[cWeek][cDay])att[cWeek][cDay]={};
+  students.forEach(s=>att[cWeek][cDay][s.id]=v);
+  saveAtt(); renderList();
+}
+
+function renderSummary(){
+  let boysP=0,girlsP=0;
+  let openTotal=Object.values(schoolDays).reduce((s,v)=>s+(parseInt(v)||0),0);
+  students.forEach(s=>{
+    let p=0;
+    for(let w=1;w<=cfg.weeks;w++) for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==="P"||v==="L")p++;}
+    if(s.sex==="M")boysP+=p; else girlsP+=p;
+  });
+  document.getElementById("boysTotal").textContent=boysP;
+  document.getElementById("girlsTotal").textContent=girlsP;
+  document.getElementById("openDays").textContent=openTotal||"—";
+  const c=document.getElementById("sumCards"); c.innerHTML="<h3>All Students — Term Totals</h3>";
+  students.forEach(s=>{
+    let p=0,a=0,l=0;
+    for(let w=1;w<=cfg.weeks;w++) for(let d=0;d<5;d++){
+      const v=getAtt(w,d,s.id);
+      if(v==="P")p++;else if(v==="A")a++;else if(v==="L")l++;
+    }
+    const total=p+a+l;
+    const pct=total>0?Math.round(((p+l)/total)*100)+"%":"—";
+    const row=document.createElement("div"); row.className="sum-row";
+    row.innerHTML=`<span class="sum-name${s.sex==="F"?" girl":""}">${s.name}</span>
+      <div class="chips"><span class="chip cp">${p}P</span><span class="chip cl">${l}L</span><span class="chip ca">${a}A</span><span class="chip cpct">${pct}</span></div>`;
+    c.appendChild(row);
+  });
+}
+
+function renderFees(){
+  const c=document.getElementById("fmCards"); c.innerHTML="<h3>Fees Paid & Manager Check</h3>";
+  students.forEach(s=>{
+    const row=document.createElement("div"); row.className="fm-row";
+    row.innerHTML=`
+      <span class="fm-name${s.sex==="F"?" girl":""}">${s.id}. ${s.name}</span>
+      <input class="fees" type="text" placeholder="₦ Fees" value="${fees[s.id]||""}" onchange="fees[${s.id}]=this.value;saveFees();"/>
+      <input class="mgr" type="text" placeholder="Manager" value="${managers[s.id]||""}" onchange="managers[${s.id}]=this.value;saveFees();"/>`;
+    c.appendChild(row);
+  });
+}
+
+function renderDays(){
+  const g=document.getElementById("sdGrid"); g.innerHTML="";
+  for(let w=1;w<=cfg.weeks;w++){
+    const item=document.createElement("div"); item.className="sd-item";
+    item.innerHTML=`<label>Wk ${w}</label>
+      <input type="number" min="0" max="5" value="${schoolDays[w]!==undefined?schoolDays[w]:5}"
+        onchange="schoolDays[${w}]=parseInt(this.value)||0;saveDaysCfg();"/>`;
+    g.appendChild(item);
+  }
+}
+
+function renderSettingsForm(){
+  document.getElementById("cfg_school").value  = cfg.school;
+  document.getElementById("cfg_class").value   = cfg.class;
+  document.getElementById("cfg_teacher").value = cfg.teacher;
+  document.getElementById("cfg_term").value    = cfg.term;
+  document.getElementById("cfg_session").value = cfg.session;
+  document.getElementById("cfg_weeks").value   = cfg.weeks;
+  renderStudentSettings();
+}
+
+function renderStudentSettings(){
+  const c=document.getElementById("stuListSettings"); c.innerHTML="";
+  students.forEach((s,i)=>{
+    const row=document.createElement("div"); row.className="stu-item";
+    row.innerHTML=`
+      <span class="stu-idx">${i+1}</span>
+      <input type="text" value="${s.name}" placeholder="Student name" onchange="students[${i}].name=this.value;"/>
+      <select onchange="students[${i}].sex=this.value;">
+        <option value="M"${s.sex==="M"?" selected":""}>M</option>
+        <option value="F"${s.sex==="F"?" selected":""}>F</option>
+      </select>
+      <button class="stu-del" onclick="removeStudent(${i})">🗑</button>`;
+    c.appendChild(row);
+  });
+}
+
+function addStudent(){
+  const newId=students.length>0?Math.max(...students.map(s=>s.id))+1:1;
+  students.push({id:newId,name:"",sex:"M"});
+  renderStudentSettings();
+}
+
+function removeStudent(idx){
+  if(students.length<=1){toast("Need at least 1 student");return;}
+  if(confirm(`Remove ${students[idx].name}?`)){
+    students.splice(idx,1);
+    students.forEach((s,i)=>s.id=i+1);
+    renderStudentSettings();
+  }
+}
+
+function saveSettings(){
+  cfg.school  = document.getElementById("cfg_school").value.trim()||cfg.school;
+  cfg.class   = document.getElementById("cfg_class").value.trim()||cfg.class;
+  cfg.teacher = document.getElementById("cfg_teacher").value.trim()||cfg.teacher;
+  cfg.term    = document.getElementById("cfg_term").value;
+  cfg.session = document.getElementById("cfg_session").value.trim()||cfg.session;
+  cfg.weeks   = parseInt(document.getElementById("cfg_weeks").value)||13;
+  students    = students.filter(s=>s.name.trim()!=="");
+  students.forEach((s,i)=>s.id=i+1);
+  persist("jb3_cfg",cfg); persist("jb3_stu",students);
+  updateHeader(); buildNav(); renderList();
+  toast("Settings saved ✓");
+  setTimeout(()=>switchView(0),800);
+}
+
+function resetAllData(){
+  if(confirm("Delete ALL attendance data? This cannot be undone.")){
+    att={}; wkDates={}; fees={}; managers={}; schoolDays={};
+    ["jb3_att","jb3_wkd","jb3_fees","jb3_mgr","jb3_sd"].forEach(k=>localStorage.removeItem(k));
+    renderList(); toast("Data cleared");
+  }
+}
+
+const VIEWS=["vAttend","vSummary","vFees","vDays","vSettings"];
+function switchView(idx){
+  VIEWS.forEach((v,i)=>{
+    document.getElementById(v).classList.toggle("on",i===idx);
+    document.getElementById("bb"+i).classList.toggle("active",i===idx);
+  });
+  document.getElementById("weekNav").style.display=idx!==4?"flex":"none";
+  if(idx===1)renderSummary();
+  if(idx===2)renderFees();
+  if(idx===3)renderDays();
+  if(idx===4)renderSettingsForm();
+}
+
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1800);
+}
+
+load(); checkFirstRun(); setDateChip(); updateHeader(); buildNav(); renderList(); loadWkDate();
+</script>
+</body>
+</html>
