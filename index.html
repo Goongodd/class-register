@@ -20,16 +20,15 @@
   --green:#1e6b4a;--lgreen:#dcf0e6;
   --red:#b52b2b;--lred:#fde8e8;
   --late:#c47a1a;--llate:#fef3d6;
-  --muted:#8a9ab0;
-  --radius:14px;
-  --shadow:0 4px 32px rgba(13,27,42,.10);
-  --shadow-sm:0 2px 10px rgba(13,27,42,.07);
+  --purple:#6b3fa0;--lpurple:#f0e6f6;
+  --muted:#8a9ab0;--border:#e5e0d8;
+  --radius:14px;--shadow:0 4px 32px rgba(13,27,42,.10);--shadow-sm:0 2px 10px rgba(13,27,42,.07);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
 body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);min-height:100dvh;padding-bottom:80px;-webkit-font-smoothing:antialiased;}
 
-/* ── AUTH SCREEN ── */
+/* AUTH */
 .auth-screen{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;z-index:1000;transition:opacity .4s;}
 .auth-screen.hidden{opacity:0;pointer-events:none;}
 .auth-logo{font-size:52px;margin-bottom:16px;}
@@ -38,206 +37,250 @@ body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);mi
 .auth-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:24px;width:100%;max-width:360px;}
 .auth-field{margin-bottom:14px;}
 .auth-field label{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.7px;display:block;margin-bottom:6px;}
-.auth-field input{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:10px;padding:12px 14px;font-family:'Outfit',sans-serif;font-size:15px;color:#fff;outline:none;transition:border-color .2s;}
+.auth-field input,.auth-field select{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:10px;padding:12px 14px;font-family:'Outfit',sans-serif;font-size:15px;color:#fff;outline:none;transition:border-color .2s;}
 .auth-field input::placeholder{color:rgba(255,255,255,.25);}
 .auth-field input:focus{border-color:var(--gold);}
+.auth-field select option{background:var(--navy);color:#fff;}
 .auth-btn{width:100%;padding:14px;background:var(--gold);border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:6px;transition:opacity .2s;}
-.auth-btn:active{opacity:.85;}
-.auth-btn:disabled{opacity:.5;cursor:not-allowed;}
+.auth-btn:active{opacity:.85;}.auth-btn:disabled{opacity:.5;cursor:not-allowed;}
 .auth-err{background:rgba(181,43,43,.2);border:1px solid rgba(181,43,43,.4);border-radius:8px;padding:10px 12px;font-size:12px;color:#fdb5b5;margin-top:10px;display:none;}
 .auth-toggle{text-align:center;margin-top:16px;font-size:13px;color:rgba(255,255,255,.45);}
 .auth-toggle span{color:var(--gold);font-weight:600;cursor:pointer;}
 .auth-info{margin-top:10px;background:rgba(212,148,58,.15);border:1px solid rgba(212,148,58,.3);border-radius:8px;padding:10px 12px;font-size:11px;color:rgba(255,255,255,.6);line-height:1.5;display:none;}
 
-/* ── HEADER ── */
-header{background:var(--navy);color:#fff;padding:14px 16px 11px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.2);}
+/* HEADER */
+header{background:var(--navy);color:#fff;padding:12px 14px 10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.2);}
 .hrow{display:flex;justify-content:space-between;align-items:center;gap:8px;}
 .htitles{flex:1;min-width:0;}
-header h1{font-family:'Playfair Display',serif;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+header h1{font-family:'Playfair Display',serif;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.hright{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.date-chip{background:var(--gold);color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+.hright{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.date-chip{background:var(--gold);color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;}
 .role-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;}
 .role-badge.teacher{background:var(--lgreen);color:var(--green);}
 .role-badge.admin{background:var(--lgold);color:var(--gold);}
-.logout-btn{background:rgba(255,255,255,.1);border:none;border-radius:8px;padding:5px 10px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:rgba(255,255,255,.7);cursor:pointer;}
+.logout-btn{background:rgba(255,255,255,.1);border:none;border-radius:8px;padding:4px 8px;font-family:'Outfit',sans-serif;font-size:9px;font-weight:600;color:rgba(255,255,255,.7);cursor:pointer;}
 
-/* ── NAV BAR ── */
-.nav-bar{background:var(--cream);border-bottom:1px solid #ddd6c8;padding:8px 14px;display:flex;gap:7px;align-items:center;overflow-x:auto;scrollbar-width:none;position:sticky;top:63px;z-index:99;}
+/* NAV */
+.nav-bar{background:var(--cream);border-bottom:1px solid var(--border);padding:7px 12px;display:flex;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none;position:sticky;top:60px;z-index:99;}
 .nav-bar::-webkit-scrollbar{display:none;}
-.nav-lbl{font-size:10px;font-weight:700;color:var(--muted);white-space:nowrap;margin-right:3px;}
-.nav-btn{background:#fff;border:1.5px solid #ccc8be;border-radius:8px;padding:5px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap;transition:all .15s;}
+.nav-lbl{font-size:9px;font-weight:700;color:var(--muted);white-space:nowrap;margin-right:2px;}
+.nav-btn{background:#fff;border:1.5px solid #ccc8be;border-radius:7px;padding:4px 10px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap;transition:all .15s;}
 .nav-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
 
-/* ── STATS ── */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:12px 14px 8px;}
-.stat{background:#fff;border-radius:12px;padding:10px 6px;text-align:center;box-shadow:var(--shadow-sm);}
-.stat .n{font-family:'Playfair Display',serif;font-size:22px;line-height:1;}
-.stat .l{font-size:9px;color:var(--muted);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
-.stat.sp .n{color:var(--green)}.stat.sa .n{color:var(--red)}.stat.sl .n{color:var(--late)}.stat.pct .n{color:var(--navy);font-size:15px;}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 12px 6px;}
+.stat{background:#fff;border-radius:10px;padding:8px 4px;text-align:center;box-shadow:var(--shadow-sm);}
+.stat .n{font-family:'Playfair Display',serif;font-size:20px;line-height:1;}
+.stat .l{font-size:8px;color:var(--muted);margin-top:2px;font-weight:600;text-transform:uppercase;}
+.stat.sp .n{color:var(--green)}.stat.sa .n{color:var(--red)}.stat.sl .n{color:var(--late)}.stat.pct .n{color:var(--navy);font-size:14px;}
 
-/* ── QUICK BTNS ── */
-.quick{display:flex;gap:7px;padding:0 14px 10px;}
-.qbtn{flex:1;padding:10px 4px;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:transform .1s;display:flex;flex-direction:column;align-items:center;gap:3px;}
-.qbtn:active{transform:scale(.94);}
-.qbtn .qi{font-size:17px;}
+/* QUICK */
+.quick{display:flex;gap:6px;padding:0 12px 8px;}
+.qbtn{flex:1;padding:8px 4px;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;cursor:pointer;transition:transform .1s;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.qbtn:active{transform:scale(.94);}.qbtn .qi{font-size:16px;}.qbtn:disabled{opacity:.4;cursor:not-allowed;}
 .qbtn.qp{background:var(--lgreen);color:var(--green);}
 .qbtn.qa{background:var(--lred);color:var(--red);}
 .qbtn.qc{background:var(--lblue);color:var(--blue);}
-.qbtn:disabled{opacity:.4;cursor:not-allowed;}
 
-.sec{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:0 14px 8px;}
+.sec{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:0 12px 6px;}
 
-/* ── STUDENT CARD ── */
-.scard{background:#fff;margin:0 12px 8px;border-radius:var(--radius);padding:11px 13px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-sm);transition:box-shadow .15s;}
+/* WEEK DATE STRIP */
+.wkdate-strip{background:#fff;margin:0 10px 8px;border-radius:var(--radius);padding:10px 12px;box-shadow:var(--shadow-sm);}
+.wkdate-strip label{font-size:10px;font-weight:700;color:var(--navy);display:block;margin-bottom:4px;}
+.wkdate-strip input{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:7px 10px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);background:var(--paper);}
+.wkdate-strip input:disabled{opacity:.5;}
+
+/* STUDENT CARD */
+.scard{background:#fff;margin:0 10px 6px;border-radius:var(--radius);padding:10px 11px;box-shadow:var(--shadow-sm);}
 .scard.girl{background:#fff6f6;}
-.snum{width:26px;height:26px;border-radius:50%;background:var(--cream);border:1.5px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0;}
+.scard-top{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.snum{width:24px;height:24px;border-radius:50%;background:var(--cream);border:1.5px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0;}
 .sinfo{flex:1;min-width:0;}
 .sname{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sname.girl{color:var(--red);}
 .smeta{font-size:10px;color:var(--muted);margin-top:1px;}
-.mbtns{display:flex;gap:4px;flex-shrink:0;}
-.mbtn{width:35px;height:35px;border-radius:9px;border:2px solid transparent;font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;background:var(--cream);color:#ccc;}
-.mbtn:active{transform:scale(.86);}
+.mbtns{display:flex;gap:3px;flex-shrink:0;}
+.mbtn{width:33px;height:33px;border-radius:8px;border:2px solid transparent;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;background:var(--cream);color:#ccc;}
+.mbtn:active{transform:scale(.86);}.mbtn:disabled{opacity:.35;cursor:not-allowed;}
 .mbtn.sel-P{background:var(--lgreen);color:var(--green);border-color:var(--green);}
 .mbtn.sel-A{background:var(--lred);color:var(--red);border-color:var(--red);}
 .mbtn.sel-L{background:var(--llate);color:var(--late);border-color:var(--late);}
 .mbtn.sel-E{background:var(--lblue);color:var(--blue);border-color:var(--blue);}
-.mbtn:disabled{opacity:.35;cursor:not-allowed;}
 
-/* ── WEEK DATE ── */
-.wkdate-strip{background:#fff;margin:0 12px 10px;border-radius:var(--radius);padding:11px 14px;box-shadow:var(--shadow-sm);}
-.wkdate-strip label{font-size:11px;font-weight:700;color:var(--navy);display:block;margin-bottom:5px;}
-.wkdate-strip input{width:100%;border:1.5px solid #ddd;border-radius:9px;padding:8px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);background:var(--paper);}
-.wkdate-strip input:disabled{opacity:.5;}
+/* WEEKLY TOTALS ROW inside card */
+.week-totals{display:flex;gap:6px;padding-top:6px;border-top:1px solid var(--cream);}
+.wtag{flex:1;text-align:center;border-radius:7px;padding:4px 2px;}
+.wtag .wt-num{font-size:14px;font-weight:700;font-family:'Playfair Display',serif;}
+.wtag .wt-lbl{font-size:8px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-top:1px;}
+.wtag.present{background:var(--lgreen);}
+.wtag.present .wt-num{color:var(--green);}
+.wtag.absent{background:var(--lred);}
+.wtag.absent .wt-num{color:var(--red);}
+.wtag.late{background:var(--llate);}
+.wtag.late .wt-num{color:var(--late);}
 
-/* ── BOTTOM NAV ── */
-.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e5e0d8;display:flex;padding:6px 0 env(safe-area-inset-bottom,6px);z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,.06);}
-.bb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:3px 0;background:none;border:none;font-family:'Outfit',sans-serif;font-size:9px;font-weight:600;color:#bbb;cursor:pointer;transition:color .15s;}
-.bb .bi{font-size:19px;}
-.bb.active{color:var(--navy);}
+/* MANAGER FIELDS in card */
+.scard-extra{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding-top:6px;border-top:1px solid var(--cream);margin-top:2px;}
+.scard-extra input{border:1.5px solid #ddd;border-radius:7px;padding:5px 8px;font-family:'Outfit',sans-serif;font-size:11px;color:var(--ink);background:var(--paper);width:100%;}
+.scard-extra input:disabled{opacity:.5;}
+.scard-extra label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px;}
+.scard-extra .full-width{grid-column:1/-1;}
 
-/* ── VIEWS ── */
+/* CLASS TOTALS CARD */
+.class-totals-card{background:var(--navy);margin:0 10px 8px;border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);}
+.class-totals-card h4{font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;}
+.ct-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.ct-item{background:rgba(255,255,255,.08);border-radius:9px;padding:8px;text-align:center;}
+.ct-item .ct-n{font-family:'Playfair Display',serif;font-size:20px;color:#fff;}
+.ct-item .ct-l{font-size:8px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;margin-top:2px;}
+.ct-item.boys .ct-n{color:#7ec8f7;}
+.ct-item.girls .ct-n{color:#f7a0a0;}
+.ct-item.total .ct-n{color:var(--gold);}
+
+/* BF / CF CARD */
+.bfcf-card{background:#fff;margin:0 10px 8px;border-radius:var(--radius);padding:12px;box-shadow:var(--shadow-sm);}
+.bfcf-card h4{font-size:10px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;}
+.bfcf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.bfcf-item label{font-size:9px;font-weight:700;color:var(--muted);display:block;margin-bottom:3px;}
+.bfcf-item input{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:7px 10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--navy);background:var(--paper);text-align:center;}
+.bfcf-item input:disabled{opacity:.5;}
+
+/* LEGEND */
+.legend{background:#fff;margin:0 10px 8px;border-radius:var(--radius);padding:10px 12px;box-shadow:var(--shadow-sm);display:flex;gap:8px;flex-wrap:wrap;}
+.leg-item{font-size:10px;font-weight:600;display:flex;align-items:center;gap:4px;}
+.leg-dot{width:18px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;}
+.leg-dot.P{background:var(--lgreen);color:var(--green);}
+.leg-dot.A{background:var(--lred);color:var(--red);}
+.leg-dot.L{background:var(--llate);color:var(--late);}
+.leg-dot.E{background:var(--lblue);color:var(--blue);}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;padding:5px 0 env(safe-area-inset-bottom,5px);z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,.06);}
+.bb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:3px 0;background:none;border:none;font-family:'Outfit',sans-serif;font-size:8px;font-weight:600;color:#bbb;cursor:pointer;transition:color .15s;}
+.bb .bi{font-size:18px;}.bb.active{color:var(--navy);}
+
+/* VIEWS */
 .view{display:none;}.view.on{display:block;}
 
-/* ── SUMMARY ── */
-.sum-card{background:#fff;border-radius:var(--radius);margin:0 12px 10px;padding:14px;box-shadow:var(--shadow-sm);}
-.sum-card h3{font-family:'Playfair Display',serif;font-size:16px;color:var(--navy);margin-bottom:12px;}
-.sum-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--cream);}
+/* SUMMARY */
+.sum-card{background:#fff;border-radius:var(--radius);margin:0 10px 8px;padding:12px;box-shadow:var(--shadow-sm);}
+.sum-card h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--navy);margin-bottom:10px;}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--cream);}
 .sum-row:last-child{border-bottom:none;}
-.sum-name{font-size:12px;flex:1;}
-.sum-name.girl{color:var(--red);}
-.chips{display:flex;gap:4px;}
-.chip{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;min-width:26px;text-align:center;}
-.cp{background:var(--lgreen);color:var(--green);}
-.ca{background:var(--lred);color:var(--red);}
-.cl{background:var(--llate);color:var(--late);}
-.cpct{background:var(--lblue);color:var(--blue);}
-.bg-row{display:flex;gap:10px;padding:0 12px 10px;}
-.bg-card{flex:1;background:#fff;border-radius:12px;padding:12px;box-shadow:var(--shadow-sm);text-align:center;}
-.bg-card .bgt{font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:4px;}
-.bg-card .bgn{font-family:'Playfair Display',serif;font-size:26px;}
+.sum-name{font-size:12px;flex:1;}.sum-name.girl{color:var(--red);}
+.chips{display:flex;gap:3px;}
+.chip{font-size:8px;font-weight:700;padding:2px 6px;border-radius:20px;min-width:24px;text-align:center;}
+.cp{background:var(--lgreen);color:var(--green);}.ca{background:var(--lred);color:var(--red);}
+.cl{background:var(--llate);color:var(--late);}.cpct{background:var(--lblue);color:var(--blue);}
+.bg-row{display:flex;gap:8px;padding:0 10px 8px;}
+.bg-card{flex:1;background:#fff;border-radius:10px;padding:10px;box-shadow:var(--shadow-sm);text-align:center;}
+.bg-card .bgt{font-size:9px;font-weight:700;text-transform:uppercase;margin-bottom:3px;}
+.bg-card .bgn{font-family:'Playfair Display',serif;font-size:24px;}
 .bg-card.boys .bgt{color:var(--navy)}.bg-card.boys .bgn{color:var(--navy)}
 .bg-card.girls .bgt{color:var(--red)}.bg-card.girls .bgn{color:var(--red)}
 .bg-card.open .bgt{color:var(--late)}.bg-card.open .bgn{color:var(--late);}
 
-/* ── FEES ── */
-.fm-card{background:#fff;border-radius:var(--radius);margin:0 12px 10px;padding:14px;box-shadow:var(--shadow-sm);}
-.fm-card h3{font-family:'Playfair Display',serif;font-size:16px;color:var(--navy);margin-bottom:12px;}
-.fm-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--cream);}
-.fm-row:last-child{border-bottom:none;}
-.fm-name{font-size:12px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.fm-name.girl{color:var(--red);}
-.fm-row input{border:1.5px solid #ddd;border-radius:8px;padding:6px 9px;font-size:11px;font-family:'Outfit',sans-serif;background:var(--paper);}
-.fm-row input.fees{width:72px;text-align:center;}
-.fm-row input.mgr{width:110px;}
-.fm-row input:disabled{opacity:.5;}
+/* GRADES */
+.grades-card{background:#fff;border-radius:var(--radius);margin:0 10px 8px;padding:12px;box-shadow:var(--shadow-sm);}
+.grades-card h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--green);margin-bottom:10px;}
+.grade-student{border-bottom:1px solid var(--cream);padding:10px 0;}
+.grade-student:last-child{border-bottom:none;}
+.grade-stu-name{font-size:12px;font-weight:700;margin-bottom:6px;}
+.grade-stu-name.girl{color:var(--red);}
+.grade-subjects{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;margin-bottom:6px;}
+.grade-field label{font-size:8px;font-weight:700;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px;}
+.grade-field input{width:100%;border:1.5px solid #ddd;border-radius:6px;padding:5px 7px;font-family:'Outfit',sans-serif;font-size:12px;color:var(--ink);background:var(--paper);text-align:center;}
+.grade-field input:disabled{opacity:.5;}
+.grade-result{display:flex;gap:6px;padding:6px;background:var(--lgold);border-radius:8px;}
+.gr-item{flex:1;text-align:center;}
+.gr-item .gr-n{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;}
+.gr-item .gr-l{font-size:8px;color:var(--muted);font-weight:600;text-transform:uppercase;}
+.gr-item.avg .gr-n{color:var(--navy);}
+.gr-item.grade .gr-n{color:var(--green);}
+.gr-item.remark .gr-n{font-size:11px;color:var(--gold);}
 
-/* ── SCHOOL DAYS ── */
-.sd-card{background:#fff;border-radius:var(--radius);margin:0 12px 10px;padding:14px;box-shadow:var(--shadow-sm);}
-.sd-card h3{font-family:'Playfair Display',serif;font-size:16px;color:var(--navy);margin-bottom:4px;}
-.sd-card p{font-size:11px;color:var(--muted);margin-bottom:12px;}
-.sd-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-.sd-item label{font-size:10px;font-weight:700;color:var(--muted);display:block;margin-bottom:3px;text-align:center;}
-.sd-item input{width:100%;border:1.5px solid #ddd;border-radius:9px;padding:8px 4px;text-align:center;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:var(--navy);background:var(--paper);}
-.sd-item input:disabled{opacity:.5;}
+/* BEHAVIOUR */
+.beh-card{background:#fff;border-radius:var(--radius);margin:0 10px 8px;padding:12px;box-shadow:var(--shadow-sm);}
+.beh-card h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--purple);margin-bottom:4px;}
+.beh-card .beh-scale{font-size:10px;color:var(--muted);margin-bottom:10px;}
+.beh-student{border-bottom:1px solid var(--cream);padding:10px 0;}
+.beh-student:last-child{border-bottom:none;}
+.beh-stu-name{font-size:12px;font-weight:700;margin-bottom:6px;}
+.beh-stu-name.girl{color:var(--red);}
+.beh-entries{display:flex;flex-direction:column;gap:6px;}
+.beh-entry{background:var(--lpurple);border-radius:8px;padding:8px;}
+.beh-entry-label{font-size:9px;font-weight:700;color:var(--purple);margin-bottom:5px;text-transform:uppercase;}
+.beh-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:3px;margin-bottom:5px;}
+.beh-field label{font-size:8px;font-weight:700;color:var(--muted);display:block;margin-bottom:2px;}
+.beh-field select{width:100%;border:1.5px solid #ddd;border-radius:6px;padding:4px 6px;font-family:'Outfit',sans-serif;font-size:11px;background:var(--paper);}
+.beh-field select:disabled{opacity:.5;}
+.beh-comment input{width:100%;border:1.5px solid #ddd;border-radius:6px;padding:5px 8px;font-family:'Outfit',sans-serif;font-size:11px;background:var(--paper);}
+.beh-comment input:disabled{opacity:.5;}
+.beh-comment label{font-size:8px;font-weight:700;color:var(--muted);display:block;margin-bottom:2px;}
 
-/* ── SETTINGS ── */
-.settings-wrap{padding:10px 12px 20px;}
-.settings-section{background:#fff;border-radius:var(--radius);margin-bottom:14px;box-shadow:var(--shadow-sm);overflow:hidden;}
-.settings-section-title{background:var(--navy);color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:10px 14px;}
-.settings-field{padding:11px 14px;border-bottom:1px solid var(--cream);display:flex;flex-direction:column;gap:4px;}
+/* SETTINGS */
+.settings-wrap{padding:10px 10px 20px;}
+.settings-section{background:#fff;border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow-sm);overflow:hidden;}
+.settings-section-title{background:var(--navy);color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:9px 12px;}
+.settings-field{padding:10px 12px;border-bottom:1px solid var(--cream);display:flex;flex-direction:column;gap:3px;}
 .settings-field:last-child{border-bottom:none;}
-.settings-field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-.settings-field input,.settings-field select{width:100%;border:1.5px solid #ddd;border-radius:9px;padding:10px 12px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);outline:none;}
+.settings-field label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.settings-field input,.settings-field select{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:9px 11px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);background:var(--paper);outline:none;}
 .settings-field input:focus,.settings-field select:focus{border-color:var(--navy);}
 .settings-field input:disabled{opacity:.5;}
-.stu-item{padding:10px 14px;border-bottom:1px solid var(--cream);display:flex;gap:8px;align-items:center;}
+.stu-item{padding:9px 12px;border-bottom:1px solid var(--cream);display:flex;gap:7px;align-items:center;}
 .stu-item:last-child{border-bottom:none;}
-.stu-idx{font-size:11px;font-weight:700;color:#ccc;width:20px;flex-shrink:0;}
-.stu-item input{flex:1;border:1.5px solid #ddd;border-radius:9px;padding:8px 10px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);background:var(--paper);}
-.stu-item select{width:54px;border:1.5px solid #ddd;border-radius:9px;padding:8px 6px;font-family:'Outfit',sans-serif;font-size:13px;background:var(--paper);}
-.stu-del{background:var(--lred);border:none;border-radius:8px;width:32px;height:32px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.add-stu-btn{width:100%;padding:12px;background:var(--lgreen);border:none;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:var(--green);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
-.save-settings-btn{width:100%;padding:14px;background:var(--navy);border:none;border-radius:var(--radius);font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;margin-top:4px;transition:opacity .2s;}
-.save-settings-btn:active{opacity:.85;}
-.danger-zone{background:#fff;border-radius:var(--radius);margin-bottom:14px;box-shadow:var(--shadow-sm);overflow:hidden;}
+.stu-idx{font-size:10px;font-weight:700;color:#ccc;width:18px;flex-shrink:0;}
+.stu-item input{flex:1;border:1.5px solid #ddd;border-radius:8px;padding:7px 9px;font-family:'Outfit',sans-serif;font-size:12px;color:var(--ink);background:var(--paper);}
+.stu-item select{width:50px;border:1.5px solid #ddd;border-radius:8px;padding:7px 5px;font-family:'Outfit',sans-serif;font-size:12px;background:var(--paper);}
+.stu-del{background:var(--lred);border:none;border-radius:7px;width:30px;height:30px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.add-stu-btn{width:100%;padding:11px;background:var(--lgreen);border:none;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--green);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+.save-settings-btn{width:100%;padding:13px;background:var(--navy);border:none;border-radius:var(--radius);font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;margin-top:4px;}
+.save-settings-btn:disabled{opacity:.4;cursor:not-allowed;}
+.danger-zone{background:#fff;border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow-sm);overflow:hidden;}
 .danger-zone .settings-section-title{background:var(--red);}
-.reset-btn{width:100%;padding:13px;background:var(--lred);border:none;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
-.admin-notice{background:var(--lgold);border-radius:10px;padding:12px 14px;margin:0 12px 10px;font-size:12px;color:var(--gold);font-weight:600;display:none;}
+.reset-btn{width:100%;padding:12px;background:var(--lred);border:none;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+.admin-notice{background:var(--lgold);border-radius:10px;padding:10px 12px;margin:0 10px 8px;font-size:11px;color:var(--gold);font-weight:600;display:none;}
 
-/* ── LOADING OVERLAY ── */
-.loading{position:fixed;inset:0;background:rgba(26,46,74,.7);display:flex;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(4px);}
+/* INSTALL BANNER */
+.install-banner{background:var(--gold);color:#fff;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;font-weight:600;}
+.install-banner button{background:#fff;color:var(--gold);border:none;border-radius:7px;padding:5px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
+.install-banner .idismiss{background:transparent;color:rgba(255,255,255,.7);padding:3px;font-size:16px;min-width:auto;}
+
+/* LOADING */
+.loading{position:fixed;inset:0;background:rgba(26,46,74,.75);display:flex;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(4px);}
 .loading.hidden{display:none;}
-.spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+.spinner{width:38px;height:38px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ── INSTALL BANNER ── */
-.install-banner{background:var(--gold);color:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:600;}
-.install-banner button{background:#fff;color:var(--gold);border:none;border-radius:8px;padding:6px 14px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
-.install-banner .idismiss{background:transparent;color:rgba(255,255,255,.7);padding:4px;font-size:18px;min-width:auto;}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--ink);color:#fff;padding:9px 20px;border-radius:30px;font-size:12px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:400;white-space:nowrap;}
+/* TOAST */
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--ink);color:#fff;padding:8px 18px;border-radius:30px;font-size:11px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:400;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
-<!-- LOADING -->
 <div class="loading" id="loading"><div class="spinner"></div></div>
 
-<!-- AUTH SCREEN -->
 <div class="auth-screen" id="authScreen">
   <div class="auth-logo">📋</div>
   <h2 class="auth-title">Class Register</h2>
-  <p class="auth-sub">Jewel Model Schools<br/>Attendance & Records System</p>
+  <p class="auth-sub">Jewel Model Schools<br/>Official Attendance & Records System</p>
   <div class="auth-card">
     <div id="loginForm">
-      <div class="auth-field">
-        <label>Email Address</label>
-        <input type="email" id="loginEmail" placeholder="your@email.com" autocomplete="email"/>
-      </div>
-      <div class="auth-field">
-        <label>Password</label>
-        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/>
-      </div>
+      <div class="auth-field"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com" autocomplete="email"/></div>
+      <div class="auth-field"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/></div>
       <button class="auth-btn" onclick="doLogin()" id="loginBtn">Sign In</button>
       <div class="auth-err" id="loginErr"></div>
       <div class="auth-toggle">No account? <span onclick="showSignup()">Create one</span></div>
     </div>
     <div id="signupForm" style="display:none;">
-      <div class="auth-field">
-        <label>Email Address</label>
-        <input type="email" id="signupEmail" placeholder="your@email.com" autocomplete="email"/>
-      </div>
-      <div class="auth-field">
-        <label>Password (min 6 characters)</label>
-        <input type="password" id="signupPassword" placeholder="••••••••" autocomplete="new-password"/>
-      </div>
+      <div class="auth-field"><label>Email</label><input type="email" id="signupEmail" placeholder="your@email.com" autocomplete="email"/></div>
+      <div class="auth-field"><label>Password (min 6 chars)</label><input type="password" id="signupPassword" placeholder="••••••••" autocomplete="new-password"/></div>
       <div class="auth-field">
         <label>Role</label>
-        <select id="signupRole" style="width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:10px;padding:12px 14px;font-family:'Outfit',sans-serif;font-size:15px;color:#fff;outline:none;" onchange="toggleAdminCode()">
+        <select id="signupRole" onchange="toggleAdminCode()">
           <option value="teacher">Teacher</option>
           <option value="admin">Admin</option>
         </select>
@@ -248,26 +291,21 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
       </div>
       <button class="auth-btn" onclick="doSignup()" id="signupBtn">Create Account</button>
       <div class="auth-err" id="signupErr"></div>
-      <div class="auth-info" id="signupInfo">If you receive a confirmation email, please check your inbox and click the link, then return here to sign in.</div>
+      <div class="auth-info" id="signupInfo"></div>
       <div class="auth-toggle">Have an account? <span onclick="showLogin()">Sign in</span></div>
     </div>
   </div>
 </div>
 
-<!-- INSTALL BANNER -->
 <div class="install-banner" id="installBanner" style="display:none;">
-  <span>📲 Install app on home screen</span>
+  <span>📲 Install on home screen</span>
   <button onclick="triggerInstall()">Install</button>
   <button class="idismiss" onclick="document.getElementById('installBanner').style.display='none'">✕</button>
 </div>
 
-<!-- HEADER -->
 <header>
   <div class="hrow">
-    <div class="htitles">
-      <h1 id="hdrTitle">Class Register</h1>
-      <p id="hdrSub">Loading...</p>
-    </div>
+    <div class="htitles"><h1 id="hdrTitle">Class Register</h1><p id="hdrSub">Loading...</p></div>
     <div class="hright">
       <div class="date-chip" id="datechip"></div>
       <span class="role-badge" id="roleBadge"></span>
@@ -277,11 +315,9 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
 </header>
 
 <div class="nav-bar" id="weekNav"></div>
+<div class="admin-notice" id="adminNotice">👁️ Admin view — read only</div>
 
-<!-- ADMIN NOTICE -->
-<div class="admin-notice" id="adminNotice">👁️ You are viewing as Admin — read only</div>
-
-<!-- ATTENDANCE -->
+<!-- ATTENDANCE VIEW -->
 <div class="view on" id="vAttend">
   <div class="stats">
     <div class="stat sp"><div class="n" id="sP">0</div><div class="l">Present</div></div>
@@ -295,41 +331,64 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
     <button class="qbtn qc" id="btnClear" onclick="markAll('')"><span class="qi">🔄</span>Clear</button>
   </div>
   <div class="wkdate-strip">
-    <label>📅 Week <span id="wkLabel">1</span> ending date:</label>
+    <label>📅 Week <span id="wkLabel">1</span> ending:</label>
     <input type="date" id="wkEndDate" onchange="saveWkDate()"/>
+  </div>
+  <div class="legend">
+    <span class="leg-item"><span class="leg-dot P">P</span> Present</span>
+    <span class="leg-item"><span class="leg-dot A">A</span> Absent</span>
+    <span class="leg-item"><span class="leg-dot L">L</span> Late (counts as present)</span>
+    <span class="leg-item"><span class="leg-dot E">E</span> Excused</span>
   </div>
   <div class="sec">Students</div>
   <div id="studentList"></div>
+  <div class="class-totals-card" id="classTotalsCard">
+    <h4>Class Totals — Week <span id="ctWeekLabel">1</span></h4>
+    <div class="ct-grid">
+      <div class="ct-item boys"><div class="ct-n" id="ctBoysP">0</div><div class="ct-l">Boys Present</div></div>
+      <div class="ct-item girls"><div class="ct-n" id="ctGirlsP">0</div><div class="ct-l">Girls Present</div></div>
+      <div class="ct-item total"><div class="ct-n" id="ctTotalP">0</div><div class="ct-l">Total Present</div></div>
+      <div class="ct-item boys"><div class="ct-n" id="ctBoysA">0</div><div class="ct-l">Boys Absent</div></div>
+      <div class="ct-item girls"><div class="ct-n" id="ctGirlsA">0</div><div class="ct-l">Girls Absent</div></div>
+      <div class="ct-item total"><div class="ct-n" id="ctTotalA">0</div><div class="ct-l">Total Absent</div></div>
+    </div>
+  </div>
+  <div class="bfcf-card">
+    <h4>Brought Forward / Carried Forward — Week <span id="bfWeekLabel">1</span></h4>
+    <div class="bfcf-grid">
+      <div class="bfcf-item"><label>Boys — Brought Fwd</label><input type="number" id="bf_boys" min="0" placeholder="0" onchange="saveBFCF()"/></div>
+      <div class="bfcf-item"><label>Girls — Brought Fwd</label><input type="number" id="bf_girls" min="0" placeholder="0" onchange="saveBFCF()"/></div>
+      <div class="bfcf-item"><label>Boys — Carried Fwd</label><input type="number" id="cf_boys" min="0" placeholder="0" onchange="saveBFCF()"/></div>
+      <div class="bfcf-item"><label>Girls — Carried Fwd</label><input type="number" id="cf_girls" min="0" placeholder="0" onchange="saveBFCF()"/></div>
+      <div class="bfcf-item"><label>Times School Open</label><input type="number" id="school_open" min="0" max="5" placeholder="5" onchange="saveBFCF()"/></div>
+    </div>
+  </div>
 </div>
 
-<!-- SUMMARY -->
+<!-- SUMMARY VIEW -->
 <div class="view" id="vSummary">
-  <div style="padding:10px 4px 6px;"><div class="sec">Term Overview</div></div>
+  <div style="padding:8px 4px 4px;"><div class="sec">Term Overview</div></div>
   <div class="bg-row">
-    <div class="bg-card boys"><div class="bgt">Boys</div><div class="bgn" id="boysTotal">—</div></div>
-    <div class="bg-card girls"><div class="bgt">Girls</div><div class="bgn" id="girlsTotal">—</div></div>
+    <div class="bg-card boys"><div class="bgt">Boys Present</div><div class="bgn" id="boysTotal">—</div></div>
+    <div class="bg-card girls"><div class="bgt">Girls Present</div><div class="bgn" id="girlsTotal">—</div></div>
     <div class="bg-card open"><div class="bgt">School Days</div><div class="bgn" id="openDays">—</div></div>
   </div>
   <div class="sum-card" id="sumCards"></div>
 </div>
 
-<!-- FEES -->
-<div class="view" id="vFees">
-  <div style="padding:10px 4px 6px;"><div class="sec">Fees Paid · Manager Check</div></div>
-  <div class="fm-card" id="fmCards"></div>
+<!-- GRADES VIEW -->
+<div class="view" id="vGrades">
+  <div style="padding:8px 4px 4px;"><div class="sec">Grades — 3rd Term 2025/2026</div></div>
+  <div class="grades-card" id="gradesCard"></div>
 </div>
 
-<!-- DAYS -->
-<div class="view" id="vDays">
-  <div style="padding:10px 4px 6px;"><div class="sec">School Days Open</div></div>
-  <div class="sd-card">
-    <h3>Days Open Per Week</h3>
-    <p>Adjust for public holidays and school events</p>
-    <div class="sd-grid" id="sdGrid"></div>
-  </div>
+<!-- BEHAVIOUR VIEW -->
+<div class="view" id="vBehaviour">
+  <div style="padding:8px 4px 4px;"><div class="sec">Behaviour Log</div></div>
+  <div class="beh-card" id="behCard"></div>
 </div>
 
-<!-- SETTINGS -->
+<!-- SETTINGS VIEW -->
 <div class="view" id="vSettings">
   <div class="settings-wrap">
     <div class="settings-section">
@@ -339,22 +398,18 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
       <div class="settings-field"><label>Teacher's Name</label><input type="text" id="cfg_teacher" placeholder="e.g. Emordi Emeka James"/></div>
       <div class="settings-field">
         <label>Term</label>
-        <select id="cfg_term">
-          <option value="1st Term">1st Term</option>
-          <option value="2nd Term">2nd Term</option>
-          <option value="3rd Term" selected>3rd Term</option>
-        </select>
+        <select id="cfg_term"><option value="1st Term">1st Term</option><option value="2nd Term">2nd Term</option><option value="3rd Term" selected>3rd Term</option></select>
       </div>
       <div class="settings-field"><label>Academic Session</label><input type="text" id="cfg_session" placeholder="e.g. 2025/2026"/></div>
       <div class="settings-field"><label>Number of Weeks</label><input type="number" id="cfg_weeks" min="1" max="20" value="13"/></div>
     </div>
-    <div class="settings-section" id="stuSection">
+    <div class="settings-section">
       <div class="settings-section-title">👨‍👩‍👧‍👦 Student List</div>
       <div id="stuListSettings"></div>
       <button class="add-stu-btn" id="addStuBtn" onclick="addStudent()">➕ Add Student</button>
     </div>
     <button class="save-settings-btn" id="saveSettingsBtn" onclick="saveSettings()">💾 Save & Apply Settings</button>
-    <div style="height:14px;"></div>
+    <div style="height:12px;"></div>
     <div class="danger-zone">
       <div class="settings-section-title">⚠️ Danger Zone</div>
       <button class="reset-btn" onclick="resetAllData()">🗑️ Clear All Attendance Data</button>
@@ -362,49 +417,40 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <div class="bnav">
   <button class="bb active" id="bb0" onclick="switchView(0)"><span class="bi">📋</span>Mark</button>
   <button class="bb" id="bb1" onclick="switchView(1)"><span class="bi">📊</span>Summary</button>
-  <button class="bb" id="bb2" onclick="switchView(2)"><span class="bi">💰</span>Fees</button>
-  <button class="bb" id="bb3" onclick="switchView(3)"><span class="bi">🏫</span>Days</button>
+  <button class="bb" id="bb2" onclick="switchView(2)"><span class="bi">📝</span>Grades</button>
+  <button class="bb" id="bb3" onclick="switchView(3)"><span class="bi">🧠</span>Behaviour</button>
   <button class="bb" id="bb4" onclick="switchView(4)"><span class="bi">⚙️</span>Settings</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── SUPABASE ────────────────────────────────────────────────────────────
-const SUPA_URL = "https://orfhhiyaigeokebwglkb.supabase.co";
-const SUPA_KEY = "sb_publishable_BsLkDNVCE4FrJ-P4i5eGIw_euUo4SNm";
-const { createClient } = supabase;
-const sb = createClient(SUPA_URL, SUPA_KEY);
+// ── SUPABASE ──────────────────────────────────────────────────────────────
+const SUPA_URL="https://orfhhiyaigeokebwglkb.supabase.co";
+const SUPA_KEY="sb_publishable_BsLkDNVCE4FrJ-P4i5eGIw_euUo4SNm";
+const {createClient}=supabase;
+const sb=createClient(SUPA_URL,SUPA_KEY);
 
-// ── PWA MANIFEST ────────────────────────────────────────────────────────
-const manifest = {
-  name:"Class Register",short_name:"Register",
-  description:"School attendance register",
-  start_url:"./",display:"standalone",
-  background_color:"#f7f3ee",theme_color:"#1a2e4a",
-  orientation:"portrait",
-  icons:[{src:"data:image/svg+xml,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%231a2e4a'/><text x='96' y='130' font-size='100' text-anchor='middle'>📋</text></svg>`),sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"}]
-};
-const mBlob=new Blob([JSON.stringify(manifest)],{type:"application/json"});
-document.getElementById("pwa-manifest").href=URL.createObjectURL(mBlob);
-
-// ── SERVICE WORKER ───────────────────────────────────────────────────────
-if('serviceWorker' in navigator){
-  const sw=`const C='reg-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll([self.location.pathname])));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});`;
-  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),{scope:'./'}).catch(()=>{});
-}
-
-// ── INSTALL PROMPT ───────────────────────────────────────────────────────
+// ── PWA ───────────────────────────────────────────────────────────────────
+const manifest={name:"Class Register",short_name:"Register",description:"Official school attendance register",start_url:"./",display:"standalone",background_color:"#f7f3ee",theme_color:"#1a2e4a",orientation:"portrait",icons:[{src:"data:image/svg+xml,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%231a2e4a'/><text x='96' y='130' font-size='100' text-anchor='middle'>📋</text></svg>`),sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"}]};
+document.getElementById("pwa-manifest").href=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:"application/json"}));
+if('serviceWorker' in navigator){const sw=`const C='reg-v2';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll([self.location.pathname])));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),{scope:'./'}).catch(()=>{});}
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').style.display='flex';});
 window.addEventListener('appinstalled',()=>{document.getElementById('installBanner').style.display='none';toast('App installed ✓');});
 function triggerInstall(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;document.getElementById('installBanner').style.display='none';});}}
 
-// ── STATE ────────────────────────────────────────────────────────────────
+// ── CONSTANTS ─────────────────────────────────────────────────────────────
+const ADMIN_CODE="###MR. UTULU###";
+const MARKS=["P","A","L","E"];
+const DAYS=["Mon","Tue","Wed","Thu","Fri"];
+const SUBJECTS=["English Language","Mathematics","Basic Science","Social Studies","CRS","CCA","History","Verbal Reasoning","Quantitative Reasoning"];
+const BEH_CATS=["Punctuality","Neatness","Participation","Respect","Teamwork","Homework","Overall Conduct"];
+const BEH_RATINGS=["","E","G","S","N"];
+
 const DEFAULT_CONFIG={school:'Jewel Model Schools',class:'Basic Three',teacher:'Emordi Emeka James',term:'3rd Term',session:'2025/2026',weeks:13};
 const DEFAULT_STUDENTS=[
   {name:"Aisha Nana Abubakar",sex:"F"},{name:"Adams Alhassan",sex:"M"},
@@ -417,14 +463,16 @@ const DEFAULT_STUDENTS=[
   {name:"Tonga Abubakar",sex:"M"}
 ];
 
-let cfg={},students=[],attCache={},wkDatesCache={},feesCache={},mgrsCache={},sdCache={};
+// ── STATE ─────────────────────────────────────────────────────────────────
+let cfg={},students=[];
+let attCache={},wkDatesCache={},bfcfCache={},gradesCache={},behCache={},mgrCache={};
 let cWeek=1,cDay=0,currentUser=null,currentRole='teacher';
-const MARKS=["P","A","L","E"],DAYS=["Mon","Tue","Wed","Thu","Fri"];
 const isTeacher=()=>currentRole==='teacher';
 
-// ── AUTH ─────────────────────────────────────────────────────────────────
+// ── AUTH ──────────────────────────────────────────────────────────────────
 function showLogin(){document.getElementById('loginForm').style.display='block';document.getElementById('signupForm').style.display='none';}
 function showSignup(){document.getElementById('loginForm').style.display='none';document.getElementById('signupForm').style.display='block';}
+function toggleAdminCode(){const r=document.getElementById('signupRole').value;document.getElementById('adminCodeField').style.display=r==='admin'?'block':'none';if(r!=='admin')document.getElementById('adminCode').value='';}
 
 async function doLogin(){
   const email=document.getElementById('loginEmail').value.trim();
@@ -432,18 +480,12 @@ async function doLogin(){
   const btn=document.getElementById('loginBtn');
   const err=document.getElementById('loginErr');
   if(!email||!pass){showErr(err,'Please fill in all fields.');return;}
-  btn.disabled=true; btn.textContent='Signing in...';
+  btn.disabled=true;btn.textContent='Signing in...';
   const {error}=await sb.auth.signInWithPassword({email,password:pass});
-  btn.disabled=false; btn.textContent='Sign In';
-  if(error){showErr(err,error.message);}
+  btn.disabled=false;btn.textContent='Sign In';
+  if(error)showErr(err,error.message);
 }
 
-const ADMIN_CODE="###MR. UTULU###";
-function toggleAdminCode(){
-  const role=document.getElementById("signupRole").value;
-  document.getElementById("adminCodeField").style.display=role==="admin"?"block":"none";
-  if(role!=="admin")document.getElementById("adminCode").value="";
-}
 async function doSignup(){
   const email=document.getElementById('signupEmail').value.trim();
   const pass=document.getElementById('signupPassword').value;
@@ -452,138 +494,109 @@ async function doSignup(){
   const err=document.getElementById('signupErr');
   const info=document.getElementById('signupInfo');
   if(!email||!pass){showErr(err,'Please fill in all fields.');return;}
-  if(pass.length<6){showErr(err,"Password must be at least 6 characters.");return;}
-  if(role==="admin"){
-    const code=document.getElementById("adminCode").value;
-    if(code!==ADMIN_CODE){showErr(err,"Incorrect admin access code.");return;}
-  }
-  btn.disabled=true; btn.textContent='Creating account...';
+  if(pass.length<6){showErr(err,'Password must be at least 6 characters.');return;}
+  if(role==='admin'){const code=document.getElementById('adminCode').value;if(code!==ADMIN_CODE){showErr(err,'Incorrect admin access code.');return;}}
+  btn.disabled=true;btn.textContent='Creating account...';
   const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{role}}});
-  btn.disabled=false; btn.textContent='Create Account';
+  btn.disabled=false;btn.textContent='Create Account';
   if(error){showErr(err,error.message);return;}
-  // Update role in profiles table
-  if(data.user){
-    await sb.from('profiles').upsert({id:data.user.id,email,role});
-  }
-  if(data.session){
-    // Auto-confirmed
-  } else {
-    err.style.display='none';
-    info.style.display='block';
-    info.textContent='Account created! Check your email to confirm, then sign in. (If no email arrives, try signing in directly.)';
-  }
+  if(data.user)await sb.from('profiles').upsert({id:data.user.id,email,role});
+  if(!data.session){err.style.display='none';info.style.display='block';info.textContent='Account created! Check your email to confirm, then sign in.';}
 }
 
 async function doLogout(){
   await sb.auth.signOut();
-  currentUser=null; currentRole='teacher';
-  attCache={}; wkDatesCache={}; feesCache={}; mgrsCache={}; sdCache={};
+  currentUser=null;currentRole='teacher';
+  attCache={};wkDatesCache={};bfcfCache={};gradesCache={};behCache={};mgrCache={};
+  appInitialized=false;
   showAuthScreen();
 }
 
 function showErr(el,msg){el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
-
-function showAuthScreen(){
-  document.getElementById('authScreen').classList.remove('hidden');
-  hideLoading();
-}
+function showAuthScreen(){document.getElementById('authScreen').classList.remove('hidden');hideLoading();}
 function hideAuthScreen(){document.getElementById('authScreen').classList.add('hidden');}
 function showLoading(){document.getElementById('loading').classList.remove('hidden');}
 function hideLoading(){document.getElementById('loading').classList.add('hidden');}
 
-// ── SESSION LISTENER ─────────────────────────────────────────────────────
+// ── SESSION ───────────────────────────────────────────────────────────────
 let appInitialized=false;
-
-// Safety timeout — if nothing resolves in 6s, stop spinning and show login
-const loadingTimeout=setTimeout(()=>{
-  if(!appInitialized){hideLoading();showAuthScreen();}
-},6000);
+const loadingTimeout=setTimeout(()=>{if(!appInitialized){hideLoading();showAuthScreen();}},6000);
 
 sb.auth.onAuthStateChange(async(event,session)=>{
   if(session?.user){
-    if(appInitialized)return; // prevent double-init on token refresh
+    if(appInitialized)return;
     currentUser=session.user;
-    showLoading();
-    hideAuthScreen();
+    showLoading();hideAuthScreen();
     try{
       await Promise.race([
         (async()=>{await loadUserRole();await loadAllData();})(),
-        new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),8000))
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),8000))
       ]);
     }catch(e){console.warn('Load issue:',e);}
-    initApp();
-    appInitialized=true;
-    clearTimeout(loadingTimeout);
-    hideLoading();
+    initApp();appInitialized=true;clearTimeout(loadingTimeout);hideLoading();
   } else {
-    appInitialized=false;
-    clearTimeout(loadingTimeout);
-    showAuthScreen();
+    appInitialized=false;clearTimeout(loadingTimeout);showAuthScreen();
   }
 });
-
-// Immediately check session on load — hides spinner fast if no session
-sb.auth.getSession().then(({data:{session}})=>{
-  if(!session){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}
-});
+sb.auth.getSession().then(({data:{session}})=>{if(!session){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}});
 
 async function loadUserRole(){
   const {data}=await sb.from('profiles').select('role').eq('id',currentUser.id).single();
-  currentRole=data?.role||'teacher';
-  // Also check user_metadata as fallback
-  if(!data?.role && currentUser.user_metadata?.role){
-    currentRole=currentUser.user_metadata.role;
-    await sb.from('profiles').upsert({id:currentUser.id,email:currentUser.email,role:currentRole});
-  }
+  currentRole=data?.role||currentUser.user_metadata?.role||'teacher';
+  if(!data?.role)await sb.from('profiles').upsert({id:currentUser.id,email:currentUser.email,role:currentRole});
 }
 
-// ── DATA LOADING ─────────────────────────────────────────────────────────
+// ── DATA LOADING ──────────────────────────────────────────────────────────
 async function loadAllData(){
   cfg=JSON.parse(localStorage.getItem('jb3_cfg')||'null')||{...DEFAULT_CONFIG};
   students=JSON.parse(localStorage.getItem('jb3_stu')||'null')||DEFAULT_STUDENTS.map((s,i)=>({id:i+1,...s}));
 
-  // Load attendance from Supabase
-  const {data:attData}=await sb.from('attendance').select('*');
+  const [{data:attData},{data:wkData},{data:bfData},{data:grData},{data:bhData},{data:mgrData}]=await Promise.all([
+    sb.from('attendance').select('*'),
+    sb.from('week_dates').select('*'),
+    sb.from('bfcf').select('*'),
+    sb.from('grades').select('*'),
+    sb.from('behaviour').select('*'),
+    sb.from('fees').select('*'),
+  ]);
+
   attCache={};
-  if(attData) attData.forEach(r=>{
+  (attData||[]).forEach(r=>{
     if(!attCache[r.week])attCache[r.week]={};
     if(!attCache[r.week][r.day])attCache[r.week][r.day]={};
     attCache[r.week][r.day][r.student_id]=r.mark;
   });
 
-  // Load week dates
-  const {data:wkData}=await sb.from('week_dates').select('*');
   wkDatesCache={};
-  if(wkData) wkData.forEach(r=>wkDatesCache[r.week]=r.end_date);
+  (wkData||[]).forEach(r=>wkDatesCache[r.week]=r.end_date);
 
-  // Load fees
-  const {data:feesData}=await sb.from('fees').select('*');
-  feesCache={}; mgrsCache={};
-  if(feesData) feesData.forEach(r=>{feesCache[r.student_id]=r.amount;mgrsCache[r.student_id]=r.manager_name;});
+  bfcfCache={};
+  (bfData||[]).forEach(r=>bfcfCache[r.week]={bf_boys:r.bf_boys,bf_girls:r.bf_girls,cf_boys:r.cf_boys,cf_girls:r.cf_girls,school_open:r.school_open});
 
-  // Load school days
-  const {data:sdData}=await sb.from('school_days').select('*');
-  sdCache={};
-  if(sdData) sdData.forEach(r=>sdCache[r.week]=r.days_open);
+  gradesCache={};
+  (grData||[]).forEach(r=>gradesCache[r.student_id]=r.scores||{});
+
+  behCache={};
+  (bhData||[]).forEach(r=>{
+    if(!behCache[r.student_id])behCache[r.student_id]=[];
+    behCache[r.student_id][r.entry_index]={cats:r.cats||{},comment:r.comment||'',date:r.date||''};
+  });
+
+  mgrCache={};
+  (mgrData||[]).forEach(r=>mgrCache[r.student_id]={fees:r.amount||'',mgr:r.manager_name||'',date:r.date_checked||'',sig:r.signature||''});
 }
 
 function getAtt(w,d,sid){return (attCache[w]&&attCache[w][d]&&attCache[w][d][sid])||'';}
 
 async function setAtt(w,d,sid,v){
   if(!isTeacher()){toast('Admins cannot mark attendance');return;}
-  // Optimistic update
   if(!attCache[w])attCache[w]={};
   if(!attCache[w][d])attCache[w][d]={};
   attCache[w][d][sid]=v;
-  renderList();
-  // Find student name
+  renderList();updateClassTotals();
   const stu=students.find(s=>s.id===sid);
-  const {error}=await sb.from('attendance').upsert(
-    {student_id:sid,student_name:stu?.name||'',week:w,day:d,mark:v,recorded_by:currentUser.id,updated_at:new Date().toISOString()},
-    {onConflict:'student_id,week,day'}
-  );
-  if(error){toast('Save failed — check connection');console.error(error);}
-  else toast('Saved ✓');
+  const {error}=await sb.from('attendance').upsert({student_id:sid,student_name:stu?.name||'',week:w,day:d,mark:v,recorded_by:currentUser.id,updated_at:new Date().toISOString()},{onConflict:'student_id,week,day'});
+  if(error){toast('Save failed');console.error(error);}else toast('Saved ✓');
 }
 
 async function saveWkDate(){
@@ -591,48 +604,68 @@ async function saveWkDate(){
   const val=document.getElementById('wkEndDate').value;
   wkDatesCache[cWeek]=val;
   await sb.from('week_dates').upsert({week:cWeek,end_date:val},{onConflict:'week'});
-  toast('Date saved');
+  toast('Week date saved');
 }
 
-async function saveFee(sid,amount,mgr){
+async function saveBFCF(){
   if(!isTeacher())return;
-  feesCache[sid]=amount; mgrsCache[sid]=mgr;
-  await sb.from('fees').upsert({student_id:sid,amount,manager_name:mgr},{onConflict:'student_id'});
-}
-
-async function saveSchoolDay(week,days){
-  if(!isTeacher())return;
-  sdCache[week]=days;
-  await sb.from('school_days').upsert({week,days_open:days},{onConflict:'week'});
+  const bf_boys=parseInt(document.getElementById('bf_boys').value)||0;
+  const bf_girls=parseInt(document.getElementById('bf_girls').value)||0;
+  const cf_boys=parseInt(document.getElementById('cf_boys').value)||0;
+  const cf_girls=parseInt(document.getElementById('cf_girls').value)||0;
+  const school_open=parseInt(document.getElementById('school_open').value)||0;
+  bfcfCache[cWeek]={bf_boys,bf_girls,cf_boys,cf_girls,school_open};
+  await sb.from('bfcf').upsert({week:cWeek,bf_boys,bf_girls,cf_boys,cf_girls,school_open},{onConflict:'week'});
   toast('Saved');
+}
+
+async function saveMgr(sid){
+  if(!isTeacher())return;
+  const fees=document.getElementById(`fees_${sid}`).value;
+  const mgr=document.getElementById(`mgr_${sid}`).value;
+  const date=document.getElementById(`mgrdate_${sid}`).value;
+  const sig=document.getElementById(`sig_${sid}`).value;
+  mgrCache[sid]={fees,mgr,date,sig};
+  await sb.from('fees').upsert({student_id:sid,amount:fees,manager_name:mgr,date_checked:date,signature:sig},{onConflict:'student_id'});
+}
+
+async function saveGrade(sid,subject,val){
+  if(!isTeacher())return;
+  if(!gradesCache[sid])gradesCache[sid]={};
+  gradesCache[sid][subject]=val;
+  await sb.from('grades').upsert({student_id:sid,scores:gradesCache[sid]},{onConflict:'student_id'});
+  // update result display
+  renderGradeResult(sid);
+}
+
+async function saveBehaviour(sid,entryIdx,field,val){
+  if(!isTeacher())return;
+  if(!behCache[sid])behCache[sid]=[];
+  if(!behCache[sid][entryIdx])behCache[sid][entryIdx]={cats:{},comment:'',date:''};
+  if(field==='comment')behCache[sid][entryIdx].comment=val;
+  else if(field==='date')behCache[sid][entryIdx].date=val;
+  else behCache[sid][entryIdx].cats[field]=val;
+  const entry=behCache[sid][entryIdx];
+  await sb.from('behaviour').upsert({student_id:sid,entry_index:entryIdx,cats:entry.cats,comment:entry.comment,date:entry.date},{onConflict:'student_id,entry_index'});
 }
 
 // ── APP INIT ──────────────────────────────────────────────────────────────
 function initApp(){
-  setDateChip();
-  updateHeader();
-  buildNav();
-  renderList();
-  loadWkDate();
-  applyRoleUI();
+  setDateChip();updateHeader();buildNav();renderList();loadWkDate();loadBFCF();applyRoleUI();
 }
 
 function applyRoleUI(){
-  const rb=document.getElementById('roleBadge');
-  rb.textContent=currentRole==='admin'?'Admin':'Teacher';
-  rb.className='role-badge '+(currentRole==='admin'?'admin':'teacher');
-
   const isAdmin=currentRole==='admin';
-  const notice=document.getElementById('adminNotice');
-  notice.style.display=isAdmin?'block':'none';
-
-  // Disable write controls for admin
+  const rb=document.getElementById('roleBadge');
+  rb.textContent=isAdmin?'Admin':'Teacher';
+  rb.className='role-badge '+(isAdmin?'admin':'teacher');
+  document.getElementById('adminNotice').style.display=isAdmin?'block':'none';
   ['btnAllP','btnAllA','btnClear'].forEach(id=>document.getElementById(id).disabled=isAdmin);
   document.getElementById('wkEndDate').disabled=isAdmin;
   if(isAdmin){
-    document.getElementById('saveSettingsBtn').style.opacity='.4';
     document.getElementById('saveSettingsBtn').disabled=true;
     document.getElementById('addStuBtn').disabled=true;
+    ['bf_boys','bf_girls','cf_boys','cf_girls','school_open'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true;});
   }
 }
 
@@ -645,45 +678,77 @@ function updateHeader(){
 function setDateChip(){
   const d=new Date();
   document.getElementById('datechip').textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
-  const dow=d.getDay();
-  if(dow>=1&&dow<=5)cDay=dow-1;
+  const dow=d.getDay();if(dow>=1&&dow<=5)cDay=dow-1;
 }
 
 function buildNav(){
-  const nav=document.getElementById('weekNav'); nav.innerHTML='';
-  const wl=document.createElement('span'); wl.className='nav-lbl'; wl.textContent='WK:'; nav.appendChild(wl);
+  const nav=document.getElementById('weekNav');nav.innerHTML='';
+  const wl=document.createElement('span');wl.className='nav-lbl';wl.textContent='WK:';nav.appendChild(wl);
   for(let w=1;w<=cfg.weeks;w++){
-    const b=document.createElement('button'); b.className='nav-btn'+(w===cWeek?' active':'');
-    b.textContent=w; b.onclick=()=>{cWeek=w;buildNav();renderList();loadWkDate();};
+    const b=document.createElement('button');b.className='nav-btn'+(w===cWeek?' active':'');
+    b.textContent=w;b.onclick=()=>{cWeek=w;buildNav();renderList();loadWkDate();loadBFCF();updateClassTotals();};
     nav.appendChild(b);
   }
-  const dl=document.createElement('span'); dl.className='nav-lbl'; dl.style.marginLeft='10px'; dl.textContent='DAY:'; nav.appendChild(dl);
+  const dl=document.createElement('span');dl.className='nav-lbl';dl.style.marginLeft='8px';dl.textContent='DAY:';nav.appendChild(dl);
   DAYS.forEach((d,i)=>{
-    const b=document.createElement('button'); b.className='nav-btn'+(i===cDay?' active':'');
-    b.textContent=d; b.onclick=()=>{cDay=i;buildNav();renderList();};
+    const b=document.createElement('button');b.className='nav-btn'+(i===cDay?' active':'');
+    b.textContent=d;b.onclick=()=>{cDay=i;buildNav();renderList();updateClassTotals();};
     nav.appendChild(b);
   });
   document.getElementById('wkLabel').textContent=cWeek;
+  document.getElementById('ctWeekLabel').textContent=cWeek;
+  document.getElementById('bfWeekLabel').textContent=cWeek;
 }
+
 function loadWkDate(){document.getElementById('wkEndDate').value=wkDatesCache[cWeek]||'';}
 
+function loadBFCF(){
+  const d=bfcfCache[cWeek]||{};
+  ['bf_boys','bf_girls','cf_boys','cf_girls','school_open'].forEach(k=>{
+    const el=document.getElementById(k);if(el)el.value=d[k]||'';
+  });
+}
+
+// ── RENDER LIST ───────────────────────────────────────────────────────────
 function renderList(){
-  const list=document.getElementById('studentList'); list.innerHTML='';
+  const list=document.getElementById('studentList');list.innerHTML='';
   const isAdmin=currentRole==='admin';
   students.forEach(s=>{
     const cur=getAtt(cWeek,cDay,s.id);
+
+    // Week totals for this student this week
+    let wkP=0,wkA=0,wkL=0;
+    for(let d=0;d<5;d++){
+      const v=getAtt(cWeek,d,s.id);
+      if(v==='P')wkP++;else if(v==='A')wkA++;else if(v==='L')wkL++;
+    }
+
+    const m=mgrCache[s.id]||{};
     const card=document.createElement('div');
     card.className='scard'+(s.sex==='F'?' girl':'');
     card.innerHTML=`
-      <div class="snum">${s.id}</div>
-      <div class="sinfo">
-        <div class="sname${s.sex==='F'?' girl':''}">${s.name}</div>
-        <div class="smeta">${s.sex==='F'?'Female':'Male'}</div>
+      <div class="scard-top">
+        <div class="snum">${s.id}</div>
+        <div class="sinfo">
+          <div class="sname${s.sex==='F'?' girl':''}">${s.name}</div>
+          <div class="smeta">${s.sex==='F'?'Female':'Male'}</div>
+        </div>
+        <div class="mbtns">${MARKS.map(m=>`<button class="mbtn${cur===m?' sel-'+m:''}" ${isAdmin?'disabled':''} onclick="setAtt(${cWeek},${cDay},${s.id},'${cur===m?'':m}')">${m}</button>`).join('')}</div>
       </div>
-      <div class="mbtns">${MARKS.map(m=>`<button class="mbtn${cur===m?' sel-'+m:''}" ${isAdmin?'disabled':''} onclick="setAtt(${cWeek},${cDay},${s.id},'${cur===m?'':m}')">${m}</button>`).join('')}</div>`;
+      <div class="week-totals">
+        <div class="wtag present"><div class="wt-num">${wkP}</div><div class="wt-lbl">W.Present</div></div>
+        <div class="wtag absent"><div class="wt-num">${wkA}</div><div class="wt-lbl">A.Total</div></div>
+        <div class="wtag late"><div class="wt-num">${wkL}</div><div class="wt-lbl">Late</div></div>
+      </div>
+      <div class="scard-extra">
+        <div><label>Fees Paid</label><input id="fees_${s.id}" type="text" placeholder="₦" value="${m.fees||''}" ${isAdmin?'disabled':''} onchange="saveMgr(${s.id})"/></div>
+        <div><label>Manager Name</label><input id="mgr_${s.id}" type="text" placeholder="Name" value="${m.mgr||''}" ${isAdmin?'disabled':''} onchange="saveMgr(${s.id})"/></div>
+        <div><label>Date Checked</label><input id="mgrdate_${s.id}" type="date" value="${m.date||''}" ${isAdmin?'disabled':''} onchange="saveMgr(${s.id})"/></div>
+        <div><label>Signature / Initials</label><input id="sig_${s.id}" type="text" placeholder="Initials" value="${m.sig||''}" ${isAdmin?'disabled':''} onchange="saveMgr(${s.id})"/></div>
+      </div>`;
     list.appendChild(card);
   });
-  updateStats();
+  updateStats();updateClassTotals();
 }
 
 function updateStats(){
@@ -693,6 +758,23 @@ function updateStats(){
   document.getElementById('sA').textContent=a;
   document.getElementById('sL').textContent=l;
   document.getElementById('sPct').textContent=(p+a+l)>0?Math.round((p/students.length)*100)+'%':'—';
+}
+
+function updateClassTotals(){
+  let boysP=0,girlsP=0,boysA=0,girlsA=0;
+  students.forEach(s=>{
+    const v=getAtt(cWeek,cDay,s.id);
+    const present=v==='P'||v==='L';
+    const absent=v==='A';
+    if(s.sex==='M'){if(present)boysP++;if(absent)boysA++;}
+    else{if(present)girlsP++;if(absent)girlsA++;}
+  });
+  document.getElementById('ctBoysP').textContent=boysP;
+  document.getElementById('ctGirlsP').textContent=girlsP;
+  document.getElementById('ctTotalP').textContent=boysP+girlsP;
+  document.getElementById('ctBoysA').textContent=boysA;
+  document.getElementById('ctGirlsA').textContent=girlsA;
+  document.getElementById('ctTotalA').textContent=boysA+girlsA;
 }
 
 async function markAll(v){
@@ -706,58 +788,100 @@ async function markAll(v){
   toast('All marked ✓');
 }
 
+// ── SUMMARY ───────────────────────────────────────────────────────────────
 function renderSummary(){
-  let boysP=0,girlsP=0;
-  const openTotal=Object.values(sdCache).reduce((s,v)=>s+(parseInt(v)||0),0);
+  let boysP=0,girlsP=0,openTotal=0;
+  for(let w=1;w<=cfg.weeks;w++){const d=bfcfCache[w];if(d)openTotal+=d.school_open||0;}
   students.forEach(s=>{
     let p=0;
-    for(let w=1;w<=cfg.weeks;w++) for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==='P'||v==='L')p++;}
-    if(s.sex==='M')boysP+=p; else girlsP+=p;
+    for(let w=1;w<=cfg.weeks;w++)for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==='P'||v==='L')p++;}
+    if(s.sex==='M')boysP+=p;else girlsP+=p;
   });
   document.getElementById('boysTotal').textContent=boysP;
   document.getElementById('girlsTotal').textContent=girlsP;
   document.getElementById('openDays').textContent=openTotal||'—';
-  const c=document.getElementById('sumCards'); c.innerHTML='<h3>All Students — Term Totals</h3>';
+  const c=document.getElementById('sumCards');c.innerHTML='<h3>All Students — Term Totals</h3>';
   students.forEach(s=>{
     let p=0,a=0,l=0;
-    for(let w=1;w<=cfg.weeks;w++) for(let d=0;d<5;d++){
-      const v=getAtt(w,d,s.id);
-      if(v==='P')p++;else if(v==='A')a++;else if(v==='L')l++;
-    }
+    for(let w=1;w<=cfg.weeks;w++)for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==='P')p++;else if(v==='A')a++;else if(v==='L')l++;}
     const total=p+a+l;
     const pct=total>0?Math.round(((p+l)/total)*100)+'%':'—';
-    const row=document.createElement('div'); row.className='sum-row';
+    const row=document.createElement('div');row.className='sum-row';
     row.innerHTML=`<span class="sum-name${s.sex==='F'?' girl':''}">${s.name}</span>
       <div class="chips"><span class="chip cp">${p}P</span><span class="chip cl">${l}L</span><span class="chip ca">${a}A</span><span class="chip cpct">${pct}</span></div>`;
     c.appendChild(row);
   });
 }
 
-function renderFees(){
-  const c=document.getElementById('fmCards'); c.innerHTML='<h3>Fees Paid & Manager Check</h3>';
-  const disabled=!isTeacher();
+// ── GRADES ────────────────────────────────────────────────────────────────
+function renderGrades(){
+  const c=document.getElementById('gradesCard');c.innerHTML='<h3>Grades Record</h3>';
+  const isAdmin=currentRole==='admin';
   students.forEach(s=>{
-    const row=document.createElement('div'); row.className='fm-row';
-    row.innerHTML=`
-      <span class="fm-name${s.sex==='F'?' girl':''}">${s.id}. ${s.name}</span>
-      <input class="fees" type="text" placeholder="₦ Fees" value="${feesCache[s.id]||''}" ${disabled?'disabled':''} onchange="saveFee(${s.id},this.value,document.querySelector('[data-mgr=\\'${s.id}\\']').value)"/>
-      <input class="mgr" type="text" data-mgr="${s.id}" placeholder="Manager" value="${mgrsCache[s.id]||''}" ${disabled?'disabled':''} onchange="saveFee(${s.id},document.querySelector('.fm-row input.fees:nth-of-type(1)').value,this.value)"/>`;
-    c.appendChild(row);
+    const scores=gradesCache[s.id]||{};
+    const div=document.createElement('div');div.className='grade-student';
+    div.innerHTML=`<div class="grade-stu-name${s.sex==='F'?' girl':''}">${s.id}. ${s.name}</div>
+      <div class="grade-subjects">${SUBJECTS.map(sub=>`
+        <div class="grade-field">
+          <label>${sub}</label>
+          <input type="number" min="0" max="100" value="${scores[sub]||''}" placeholder="0-100"
+            ${isAdmin?'disabled':''}
+            onchange="saveGrade(${s.id},'${sub}',parseInt(this.value)||0)"
+            id="grade_${s.id}_${sub.replace(/ /g,'_')}"/>
+        </div>`).join('')}</div>
+      <div class="grade-result" id="grResult_${s.id}"></div>`;
+    c.appendChild(div);
+    renderGradeResult(s.id);
   });
 }
 
-function renderDays(){
-  const g=document.getElementById('sdGrid'); g.innerHTML='';
-  const disabled=!isTeacher();
-  for(let w=1;w<=cfg.weeks;w++){
-    const item=document.createElement('div'); item.className='sd-item';
-    item.innerHTML=`<label>Wk ${w}</label>
-      <input type="number" min="0" max="5" value="${sdCache[w]!==undefined?sdCache[w]:5}" ${disabled?'disabled':''}
-        onchange="saveSchoolDay(${w},parseInt(this.value)||0)"/>`;
-    g.appendChild(item);
-  }
+function renderGradeResult(sid){
+  const scores=gradesCache[sid]||{};
+  const vals=SUBJECTS.map(sub=>parseFloat(scores[sub])||0);
+  const filled=vals.filter(v=>v>0);
+  if(!filled.length){document.getElementById(`grResult_${sid}`).innerHTML='<span style="font-size:11px;color:#bbb;padding:4px;">Enter scores above</span>';return;}
+  const total=vals.reduce((a,b)=>a+b,0);
+  const avg=total/SUBJECTS.length;
+  const grade=avg>=80?'A':avg>=65?'B':avg>=50?'C':avg>=40?'D':'F';
+  const remark={A:'Excellent',B:'Very Good',C:'Good',D:'Pass',F:'Fail'}[grade];
+  document.getElementById(`grResult_${sid}`).innerHTML=`
+    <div class="gr-item avg"><div class="gr-n">${avg.toFixed(1)}</div><div class="gr-l">Average</div></div>
+    <div class="gr-item grade"><div class="gr-n">${grade}</div><div class="gr-l">Grade</div></div>
+    <div class="gr-item remark"><div class="gr-n">${remark}</div><div class="gr-l">Remark</div></div>`;
 }
 
+// ── BEHAVIOUR ─────────────────────────────────────────────────────────────
+function renderBehaviour(){
+  const c=document.getElementById('behCard');
+  c.innerHTML=`<h3>Behaviour Log</h3><div class="beh-scale">E = Excellent · G = Good · S = Satisfactory · N = Needs Improvement</div>`;
+  const isAdmin=currentRole==='admin';
+  students.forEach(s=>{
+    const entries=behCache[s.id]||[];
+    const div=document.createElement('div');div.className='beh-student';
+    div.innerHTML=`<div class="beh-stu-name${s.sex==='F'?' girl':''}">${s.id}. ${s.name}</div>
+      <div class="beh-entries">${[0,1,2].map(idx=>{
+        const e=entries[idx]||{cats:{},comment:'',date:''};
+        return `<div class="beh-entry">
+          <div class="beh-entry-label">Entry ${idx+1}</div>
+          <div class="beh-cats">${BEH_CATS.map(cat=>`
+            <div class="beh-field">
+              <label>${cat}</label>
+              <select ${isAdmin?'disabled':''} onchange="saveBehaviour(${s.id},${idx},'${cat}',this.value)">
+                ${BEH_RATINGS.map(r=>`<option value="${r}"${(e.cats[cat]||''===r)||e.cats[cat]===r?' selected':''}>${r||'—'}</option>`).join('')}
+              </select>
+            </div>`).join('')}</div>
+          <div class="beh-comment">
+            <label>Teacher's Comment</label>
+            <input type="text" placeholder="Comment..." value="${e.comment||''}" ${isAdmin?'disabled':''}
+              onchange="saveBehaviour(${s.id},${idx},'comment',this.value)"/>
+          </div>
+        </div>`;
+      }).join('')}</div>`;
+    c.appendChild(div);
+  });
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────
 function renderSettingsForm(){
   document.getElementById('cfg_school').value=cfg.school;
   document.getElementById('cfg_class').value=cfg.class;
@@ -766,20 +890,17 @@ function renderSettingsForm(){
   document.getElementById('cfg_session').value=cfg.session;
   document.getElementById('cfg_weeks').value=cfg.weeks;
   const disabled=!isTeacher();
-  ['cfg_school','cfg_class','cfg_teacher','cfg_session','cfg_weeks','cfg_term'].forEach(id=>{
-    document.getElementById(id).disabled=disabled;
-  });
+  ['cfg_school','cfg_class','cfg_teacher','cfg_session','cfg_weeks','cfg_term'].forEach(id=>document.getElementById(id).disabled=disabled);
   renderStudentSettings();
 }
 
 function renderStudentSettings(){
-  const c=document.getElementById('stuListSettings'); c.innerHTML='';
+  const c=document.getElementById('stuListSettings');c.innerHTML='';
   const disabled=!isTeacher();
   students.forEach((s,i)=>{
-    const row=document.createElement('div'); row.className='stu-item';
-    row.innerHTML=`
-      <span class="stu-idx">${i+1}</span>
-      <input type="text" value="${s.name}" placeholder="Student name" ${disabled?'disabled':''} onchange="students[${i}].name=this.value;"/>
+    const row=document.createElement('div');row.className='stu-item';
+    row.innerHTML=`<span class="stu-idx">${i+1}</span>
+      <input type="text" value="${s.name}" placeholder="Name" ${disabled?'disabled':''} onchange="students[${i}].name=this.value;"/>
       <select ${disabled?'disabled':''} onchange="students[${i}].sex=this.value;">
         <option value="M"${s.sex==='M'?' selected':''}>M</option>
         <option value="F"${s.sex==='F'?' selected':''}>F</option>
@@ -799,11 +920,7 @@ function addStudent(){
 function removeStudent(idx){
   if(!isTeacher())return;
   if(students.length<=1){toast('Need at least 1 student');return;}
-  if(confirm(`Remove ${students[idx].name}?`)){
-    students.splice(idx,1);
-    students.forEach((s,i)=>s.id=i+1);
-    renderStudentSettings();
-  }
+  if(confirm(`Remove ${students[idx].name}?`)){students.splice(idx,1);students.forEach((s,i)=>s.id=i+1);renderStudentSettings();}
 }
 
 function saveSettings(){
@@ -818,39 +935,34 @@ function saveSettings(){
   students.forEach((s,i)=>s.id=i+1);
   localStorage.setItem('jb3_cfg',JSON.stringify(cfg));
   localStorage.setItem('jb3_stu',JSON.stringify(students));
-  updateHeader(); buildNav(); renderList();
+  updateHeader();buildNav();renderList();
   toast('Settings saved ✓');
   setTimeout(()=>switchView(0),800);
 }
 
 async function resetAllData(){
   if(!isTeacher()){toast('Only teachers can clear data');return;}
-  if(confirm('Delete ALL attendance data from the database? This cannot be undone.')){
+  if(confirm('Delete ALL attendance data? This cannot be undone.')){
     await sb.from('attendance').delete().neq('id',0);
-    attCache={}; renderList(); toast('Data cleared');
+    attCache={};renderList();toast('Data cleared');
   }
 }
 
-const VIEWS=['vAttend','vSummary','vFees','vDays','vSettings'];
+// ── VIEW SWITCHING ────────────────────────────────────────────────────────
+const VIEWS=['vAttend','vSummary','vGrades','vBehaviour','vSettings'];
 function switchView(idx){
-  VIEWS.forEach((v,i)=>{
-    document.getElementById(v).classList.toggle('on',i===idx);
-    document.getElementById('bb'+i).classList.toggle('active',i===idx);
-  });
+  VIEWS.forEach((v,i)=>{document.getElementById(v).classList.toggle('on',i===idx);document.getElementById('bb'+i).classList.toggle('active',i===idx);});
   document.getElementById('weekNav').style.display=idx!==4?'flex':'none';
   if(idx===1)renderSummary();
-  if(idx===2)renderFees();
-  if(idx===3)renderDays();
+  if(idx===2)renderGrades();
+  if(idx===3)renderBehaviour();
   if(idx===4)renderSettingsForm();
 }
 
 function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2000);
 }
-
-// Init — auth state listener handles the rest
 </script>
 </body>
 </html>
