@@ -11,8 +11,7 @@
 <link id="pwa-manifest" rel="manifest" href=""/>
 <title>Class Register · Jewel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
 :root{
@@ -607,7 +606,7 @@ function hideLoading(){document.getElementById('loading').classList.add('hidden'
 
 // ── SESSION ───────────────────────────────────────────────────────────────
 let appInitialized=false;
-const loadingTimeout=setTimeout(()=>{if(!appInitialized){hideLoading();showAuthScreen();}},6000);
+const loadingTimeout=setTimeout(()=>{if(!appInitialized){hideLoading();showAuthScreen();}},20000);
 
 sb.auth.onAuthStateChange(async(event,session)=>{
   // Ignore token refresh events — only act on real sign-in/sign-out
@@ -622,12 +621,18 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     currentUser=session.user;
     showLoading();hideAuthScreen();
     try{
-      await Promise.race([
-        (async()=>{await loadUserRole();await loadAllData();})(),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),8000))
-      ]);
-    }catch(e){console.warn('Load issue:',e);}
-    initApp();appInitialized=true;clearTimeout(loadingTimeout);hideLoading();
+      await loadUserRole();
+    }catch(e){console.warn('Role load failed:',e);}
+    // Show app immediately after role loads — data loads in background
+    initApp();
+    appInitialized=true;
+    clearTimeout(loadingTimeout);
+    hideLoading();
+    // Load data in background — no timeout, no blocking
+    try{
+      await loadAllData();
+      renderList(); // refresh once data arrives
+    }catch(e){console.warn('Data load failed:',e);}
   } else if(event==='SIGNED_OUT'){
     appInitialized=false;clearTimeout(loadingTimeout);
     currentUser=null;currentRole='teacher';
