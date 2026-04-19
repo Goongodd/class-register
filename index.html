@@ -620,19 +620,26 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     if(appInitialized)return; // already loaded
     currentUser=session.user;
     showLoading();hideAuthScreen();
+    // Load role with 3s timeout max — don't block on it
     try{
-      await loadUserRole();
+      await Promise.race([
+        loadUserRole(),
+        new Promise(r=>setTimeout(r,3000))
+      ]);
     }catch(e){console.warn('Role load failed:',e);}
-    // Show app immediately after role loads — data loads in background
+
+    // Show dashboard IMMEDIATELY — never wait for data
     initApp();
     appInitialized=true;
     clearTimeout(loadingTimeout);
     hideLoading();
-    // Load data in background — no timeout, no blocking
-    try{
-      await loadAllData();
-      renderList(); // refresh once data arrives
-    }catch(e){console.warn('Data load failed:',e);}
+
+    // Sync data completely in background — never blocks UI
+    loadAllData().then(()=>{
+      renderList();
+      loadWkDate();
+      loadBFCF();
+    }).catch(e=>console.warn('Background sync failed:',e));
   } else if(event==='SIGNED_OUT'){
     appInitialized=false;clearTimeout(loadingTimeout);
     currentUser=null;currentRole='teacher';
@@ -719,34 +726,28 @@ async function loadAllData(){
   cfg     = JSON.parse(localStorage.getItem('jb3_cfg')||'null')||{...DEFAULT_CONFIG};
   students= JSON.parse(localStorage.getItem('jb3_stu')||'null')||DEFAULT_STUDENTS.map((s,i)=>({id:i+1,...s}));
 
-  // Load from local cache instantly — app is usable immediately
-  const hasCache=loadFromCache();
+  // Load from local cache instantly
+  loadFromCache();
 
-  // Then sync from Supabase in background
-  syncFromSupabase(hasCache);
+  // Fire and forget — sync from Supabase without blocking anything
+  syncFromSupabase().catch(e=>console.warn('Sync error:',e));
 }
 
-async function syncFromSupabase(hasCacheAlready){
-  try{
-    const [attData,wkData,bfData,grData,bhData,mgrData]=await Promise.all([
-      safeQuery('attendance'),
-      safeQuery('week_dates'),
-      safeQuery('bfcf'),
-      safeQuery('grades'),
-      safeQuery('behaviour'),
-      safeQuery('fees'),
-    ]);
-    applyData(attData,wkData,bfData,grData,bhData,mgrData);
-    saveCache();
-    // Silently refresh the UI with fresh data
-    if(hasCacheAlready){
-      renderList();
-      loadWkDate();
-      loadBFCF();
-    }
-  }catch(e){
-    console.warn('Background sync failed:',e);
-  }
+async function syncFromSupabase(){
+  const [attData,wkData,bfData,grData,bhData,mgrData]=await Promise.all([
+    safeQuery('attendance'),
+    safeQuery('week_dates'),
+    safeQuery('bfcf'),
+    safeQuery('grades'),
+    safeQuery('behaviour'),
+    safeQuery('fees'),
+  ]);
+  applyData(attData,wkData,bfData,grData,bhData,mgrData);
+  saveCache();
+  // Quietly refresh UI with fresh server data
+  renderList();
+  loadWkDate();
+  loadBFCF();
 }
 
 function getAtt(w,d,sid){return (attCache[w]&&attCache[w][d]&&attCache[w][d][sid])||'';}
