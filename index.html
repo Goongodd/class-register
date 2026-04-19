@@ -271,14 +271,28 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
   <div class="auth-card">
     <div id="loginForm">
       <div class="auth-field"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com" autocomplete="email"/></div>
-      <div class="auth-field"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/></div>
+      <div class="auth-field">
+        <label>Password</label>
+        <div style="position:relative;">
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" style="width:100%;padding-right:44px;"/>
+          <button type="button" onclick="togglePwd('loginPassword','loginEye')" id="loginEye"
+            style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;font-size:16px;color:rgba(255,255,255,0.5);">👁</button>
+        </div>
+      </div>
       <button class="auth-btn" onclick="doLogin()" id="loginBtn">Sign In</button>
       <div class="auth-err" id="loginErr"></div>
       <div class="auth-toggle">No account? <span onclick="showSignup()">Create one</span></div>
     </div>
     <div id="signupForm" style="display:none;">
       <div class="auth-field"><label>Email</label><input type="email" id="signupEmail" placeholder="your@email.com" autocomplete="email"/></div>
-      <div class="auth-field"><label>Password (min 6 chars)</label><input type="password" id="signupPassword" placeholder="••••••••" autocomplete="new-password"/></div>
+      <div class="auth-field">
+        <label>Password (min 6 chars)</label>
+        <div style="position:relative;">
+          <input type="password" id="signupPassword" placeholder="••••••••" autocomplete="new-password" style="width:100%;padding-right:44px;"/>
+          <button type="button" onclick="togglePwd('signupPassword','signupEye')" id="signupEye"
+            style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;font-size:16px;color:rgba(255,255,255,0.5);">👁</button>
+        </div>
+      </div>
       <div class="auth-field">
         <label>Role</label>
         <select id="signupRole" onchange="toggleAdminCode()">
@@ -528,6 +542,12 @@ const isTeacher=()=>currentRole==='teacher';
 
 // ── AUTH ──────────────────────────────────────────────────────────────────
 function showLogin(){document.getElementById('loginForm').style.display='block';document.getElementById('signupForm').style.display='none';}
+function togglePwd(inputId,btnId){
+  const inp=document.getElementById(inputId);
+  const btn=document.getElementById(btnId);
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁';}
+}
 function showSignup(){document.getElementById('loginForm').style.display='none';document.getElementById('signupForm').style.display='block';}
 function toggleAdminCode(){const r=document.getElementById('signupRole').value;document.getElementById('adminCodeField').style.display=r==='admin'?'block':'none';if(r!=='admin')document.getElementById('adminCode').value='';}
 
@@ -593,9 +613,9 @@ async function doSignup(){
 }
 
 async function doLogout(){
-  appInitialized=false; // reset before sign out so SIGNED_OUT handler can clean up
+  appInitialized=false;
+  clearUserCache(); // wipe this user's local cache on sign out
   await sb.auth.signOut();
-  // SIGNED_OUT event in onAuthStateChange handles the rest
 }
 
 function showErr(el,msg){el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
@@ -642,8 +662,11 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     }).catch(e=>console.warn('Background sync failed:',e));
   } else if(event==='SIGNED_OUT'){
     appInitialized=false;clearTimeout(loadingTimeout);
+    // Reset all in-memory state so next user starts clean
     currentUser=null;currentRole='teacher';
     attCache={};wkDatesCache={};bfcfCache={};gradesCache={};behCache={};mgrCache={};
+    cfg={};students=[];
+    SUBJECTS=["English Language","Mathematics","Basic Science","Social Studies","CRS","CCA","History","Verbal Reasoning","Quantitative Reasoning"];
     showAuthScreen();
   }
 });
@@ -659,34 +682,55 @@ async function loadUserRole(){
 }
 
 // ── DATA LOADING ──────────────────────────────────────────────────────────
-// ── CACHE KEYS ────────────────────────────────────────────────────────────
-const CK={
-  att:'jb3_c_att', wkd:'jb3_c_wkd', bfcf:'jb3_c_bfcf',
-  grades:'jb3_c_grades', beh:'jb3_c_beh', mgr:'jb3_c_mgr'
-};
+// ── CACHE KEYS — scoped per user ID to prevent data leakage ──────────────
+function CK(uid){
+  const u=uid||'anon';
+  return {
+    att:    `jb3_${u}_att`,
+    wkd:    `jb3_${u}_wkd`,
+    bfcf:   `jb3_${u}_bfcf`,
+    grades: `jb3_${u}_grades`,
+    beh:    `jb3_${u}_beh`,
+    mgr:    `jb3_${u}_mgr`,
+    cfg:    `jb3_${u}_cfg`,
+    stu:    `jb3_${u}_stu`,
+    subj:   `jb3_${u}_subjects`,
+    ts:     `jb3_${u}_cache_ts`,
+  };
+}
 
 function saveCache(){
+  if(!currentUser)return;
+  const k=CK(currentUser.id);
   try{
-    localStorage.setItem(CK.att,  JSON.stringify(attCache));
-    localStorage.setItem(CK.wkd,  JSON.stringify(wkDatesCache));
-    localStorage.setItem(CK.bfcf, JSON.stringify(bfcfCache));
-    localStorage.setItem(CK.grades,JSON.stringify(gradesCache));
-    localStorage.setItem(CK.beh,  JSON.stringify(behCache));
-    localStorage.setItem(CK.mgr,  JSON.stringify(mgrCache));
-    localStorage.setItem('jb3_cache_ts', Date.now().toString());
+    localStorage.setItem(k.att,   JSON.stringify(attCache));
+    localStorage.setItem(k.wkd,   JSON.stringify(wkDatesCache));
+    localStorage.setItem(k.bfcf,  JSON.stringify(bfcfCache));
+    localStorage.setItem(k.grades,JSON.stringify(gradesCache));
+    localStorage.setItem(k.beh,   JSON.stringify(behCache));
+    localStorage.setItem(k.mgr,   JSON.stringify(mgrCache));
+    localStorage.setItem(k.ts,    Date.now().toString());
   }catch(e){console.warn('Cache save failed:',e);}
 }
 
 function loadFromCache(){
+  if(!currentUser)return false;
+  const k=CK(currentUser.id);
   try{
-    attCache    = JSON.parse(localStorage.getItem(CK.att)   ||'{}');
-    wkDatesCache= JSON.parse(localStorage.getItem(CK.wkd)   ||'{}');
-    bfcfCache   = JSON.parse(localStorage.getItem(CK.bfcf)  ||'{}');
-    gradesCache = JSON.parse(localStorage.getItem(CK.grades)||'{}');
-    behCache    = JSON.parse(localStorage.getItem(CK.beh)   ||'{}');
-    mgrCache    = JSON.parse(localStorage.getItem(CK.mgr)   ||'{}');
-    return localStorage.getItem('jb3_cache_ts')!==null;
+    attCache    = JSON.parse(localStorage.getItem(k.att)   ||'{}');
+    wkDatesCache= JSON.parse(localStorage.getItem(k.wkd)   ||'{}');
+    bfcfCache   = JSON.parse(localStorage.getItem(k.bfcf)  ||'{}');
+    gradesCache = JSON.parse(localStorage.getItem(k.grades)||'{}');
+    behCache    = JSON.parse(localStorage.getItem(k.beh)   ||'{}');
+    mgrCache    = JSON.parse(localStorage.getItem(k.mgr)   ||'{}');
+    return localStorage.getItem(k.ts)!==null;
   }catch(e){return false;}
+}
+
+function clearUserCache(){
+  if(!currentUser)return;
+  const k=CK(currentUser.id);
+  Object.values(k).forEach(key=>localStorage.removeItem(key));
 }
 
 // ── OFFLINE QUEUE ─────────────────────────────────────────────────────────
@@ -760,9 +804,11 @@ window.addEventListener('offline',()=>{
   updateOnlineBanner();
 });
 
-async function safeQuery(table,select='*'){
+async function safeQuery(table,select='*',uid=null){
   try{
-    const {data,error}=await sb.from(table).select(select);
+    let q=sb.from(table).select(select);
+    if(uid) q=q.eq('user_id',uid);
+    const {data,error}=await q;
     if(error)console.warn(`Query failed [${table}]:`,error.message);
     return data||[];
   }catch(e){
@@ -794,8 +840,13 @@ function applyData(attData,wkData,bfData,grData,bhData,mgrData){
 }
 
 async function loadAllData(){
-  cfg     = JSON.parse(localStorage.getItem('jb3_cfg')||'null')||{...DEFAULT_CONFIG};
-  students= JSON.parse(localStorage.getItem('jb3_stu')||'null')||DEFAULT_STUDENTS.map((s,i)=>({id:i+1,...s}));
+  const k=CK(currentUser?.id);
+  cfg     = JSON.parse(localStorage.getItem(k.cfg)||'null')||{...DEFAULT_CONFIG};
+  students= JSON.parse(localStorage.getItem(k.stu)||'null')||DEFAULT_STUDENTS.map((s,i)=>({id:i+1,...s}));
+  // Load subjects scoped to this user
+  const savedSubjects=localStorage.getItem(k.subj);
+  if(savedSubjects) SUBJECTS=JSON.parse(savedSubjects);
+  else SUBJECTS=["English Language","Mathematics","Basic Science","Social Studies","CRS","CCA","History","Verbal Reasoning","Quantitative Reasoning"];
 
   // Load from local cache instantly
   loadFromCache();
@@ -805,13 +856,15 @@ async function loadAllData(){
 }
 
 async function syncFromSupabase(){
+  const uid=currentUser?.id;
+  if(!uid)return;
   const [attData,wkData,bfData,grData,bhData,mgrData]=await Promise.all([
-    safeQuery('attendance'),
-    safeQuery('week_dates'),
-    safeQuery('bfcf'),
-    safeQuery('grades'),
-    safeQuery('behaviour'),
-    safeQuery('fees'),
+    safeQuery('attendance',  '*', uid),
+    safeQuery('week_dates',  '*', uid),
+    safeQuery('bfcf',        '*', uid),
+    safeQuery('grades',      '*', uid),
+    safeQuery('behaviour',   '*', uid),
+    safeQuery('fees',        '*', uid),
   ]);
   applyData(attData,wkData,bfData,grData,bhData,mgrData);
   saveCache();
@@ -832,7 +885,7 @@ async function setAtt(w,d,sid,v){
   saveCache(); // always update local cache immediately
 
   const stu=students.find(s=>s.id===sid);
-  const record={student_id:sid,student_name:stu?.name||'',week:w,day:d,mark:v,recorded_by:currentUser?.id,updated_at:new Date().toISOString()};
+  const record={user_id:currentUser?.id,student_id:sid,student_name:stu?.name||'',week:w,day:d,mark:v,recorded_by:currentUser?.id,updated_at:new Date().toISOString()};
 
   if(!isOnline()){
     // Queue for later sync
@@ -859,7 +912,7 @@ async function saveWkDate(){
   if(!isTeacher())return;
   const val=document.getElementById('wkEndDate').value;
   wkDatesCache[cWeek]=val;
-  await sb.from('week_dates').upsert({week:cWeek,end_date:val},{onConflict:'week'});
+  await sb.from('week_dates').upsert({user_id:currentUser?.id,week:cWeek,end_date:val},{onConflict:'user_id,week'});
   toast('Week date saved');
 }
 
@@ -871,7 +924,7 @@ async function saveBFCF(){
   const cf_girls=parseInt(document.getElementById('cf_girls').value)||0;
   const school_open=parseInt(document.getElementById('school_open').value)||0;
   bfcfCache[cWeek]={bf_boys,bf_girls,cf_boys,cf_girls,school_open};
-  await sb.from('bfcf').upsert({week:cWeek,bf_boys,bf_girls,cf_boys,cf_girls,school_open},{onConflict:'week'});
+  await sb.from('bfcf').upsert({user_id:currentUser?.id,week:cWeek,bf_boys,bf_girls,cf_boys,cf_girls,school_open},{onConflict:'user_id,week'});
   toast('Saved');
 }
 
@@ -882,14 +935,14 @@ async function saveMgr(sid){
   const date=document.getElementById(`mgrdate_${sid}`).value;
   const sig=document.getElementById(`sig_${sid}`).value;
   mgrCache[sid]={fees,mgr,date,sig};
-  await sb.from('fees').upsert({student_id:sid,amount:fees,manager_name:mgr,date_checked:date,signature:sig},{onConflict:'student_id'});
+  await sb.from('fees').upsert({user_id:currentUser?.id,student_id:sid,amount:fees,manager_name:mgr,date_checked:date,signature:sig},{onConflict:'user_id,student_id'});
 }
 
 async function saveGrade(sid,subject,val){
   if(!isTeacher())return;
   if(!gradesCache[sid])gradesCache[sid]={};
   gradesCache[sid][subject]=val;
-  await sb.from('grades').upsert({student_id:sid,scores:gradesCache[sid]},{onConflict:'student_id'});
+  await sb.from('grades').upsert({user_id:currentUser?.id,student_id:sid,scores:gradesCache[sid]},{onConflict:'user_id,student_id'});
   // update result display
   renderGradeResult(sid);
 }
@@ -902,7 +955,7 @@ async function saveBehaviour(sid,entryIdx,field,val){
   else if(field==='date')behCache[sid][entryIdx].date=val;
   else behCache[sid][entryIdx].cats[field]=val;
   const entry=behCache[sid][entryIdx];
-  await sb.from('behaviour').upsert({student_id:sid,entry_index:entryIdx,cats:entry.cats,comment:entry.comment,date:entry.date},{onConflict:'student_id,entry_index'});
+  await sb.from('behaviour').upsert({user_id:currentUser?.id,student_id:sid,entry_index:entryIdx,cats:entry.cats,comment:entry.comment,date:entry.date},{onConflict:'user_id,student_id,entry_index'});
 }
 
 // ── APP INIT ──────────────────────────────────────────────────────────────
@@ -1043,7 +1096,7 @@ async function markAll(v){
   if(!attCache[cWeek][cDay])attCache[cWeek][cDay]={};
   students.forEach(s=>attCache[cWeek][cDay][s.id]=v);
   renderList();
-  const rows=students.map(s=>({student_id:s.id,student_name:s.name,week:cWeek,day:cDay,mark:v,recorded_by:currentUser?.id,updated_at:new Date().toISOString()}));
+  const rows=students.map(s=>({user_id:currentUser?.id,student_id:s.id,student_name:s.name,week:cWeek,day:cDay,mark:v,recorded_by:currentUser?.id,updated_at:new Date().toISOString()}));
   saveCache(); // update local cache immediately
 
   if(!isOnline()){
@@ -1239,9 +1292,10 @@ function saveSettings(){
   // Clean and save subjects
   SUBJECTS=SUBJECTS.filter(s=>s.trim()!=='');
   if(SUBJECTS.length===0)SUBJECTS=['English Language'];
-  localStorage.setItem('jb3_cfg',JSON.stringify(cfg));
-  localStorage.setItem('jb3_stu',JSON.stringify(students));
-  localStorage.setItem('jb3_subjects',JSON.stringify(SUBJECTS));
+  const k=CK(currentUser?.id);
+  localStorage.setItem(k.cfg, JSON.stringify(cfg));
+  localStorage.setItem(k.stu, JSON.stringify(students));
+  localStorage.setItem(k.subj,JSON.stringify(SUBJECTS));
   updateHeader();buildNav();renderList();
   toast('Settings saved ✓');
   setTimeout(()=>switchView(0),800);
