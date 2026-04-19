@@ -645,43 +645,55 @@ async function loadUserRole(){
 }
 
 // ── DATA LOADING ──────────────────────────────────────────────────────────
+async function safeQuery(table, select='*'){
+  try{
+    const {data,error}=await sb.from(table).select(select);
+    if(error){console.warn(`Query failed for ${table}:`,error.message);}
+    return data||[];
+  }catch(e){
+    console.warn(`Exception querying ${table}:`,e.message);
+    return [];
+  }
+}
+
 async function loadAllData(){
   cfg=JSON.parse(localStorage.getItem('jb3_cfg')||'null')||{...DEFAULT_CONFIG};
   students=JSON.parse(localStorage.getItem('jb3_stu')||'null')||DEFAULT_STUDENTS.map((s,i)=>({id:i+1,...s}));
 
-  const [{data:attData},{data:wkData},{data:bfData},{data:grData},{data:bhData},{data:mgrData}]=await Promise.all([
-    sb.from('attendance').select('*'),
-    sb.from('week_dates').select('*'),
-    sb.from('bfcf').select('*'),
-    sb.from('grades').select('*'),
-    sb.from('behaviour').select('*'),
-    sb.from('fees').select('*'),
+  // Load each table independently so one failure never blocks login
+  const [attData,wkData,bfData,grData,bhData,mgrData]=await Promise.all([
+    safeQuery('attendance'),
+    safeQuery('week_dates'),
+    safeQuery('bfcf'),
+    safeQuery('grades'),
+    safeQuery('behaviour'),
+    safeQuery('fees'),
   ]);
 
   attCache={};
-  (attData||[]).forEach(r=>{
+  attData.forEach(r=>{
     if(!attCache[r.week])attCache[r.week]={};
     if(!attCache[r.week][r.day])attCache[r.week][r.day]={};
     attCache[r.week][r.day][r.student_id]=r.mark;
   });
 
   wkDatesCache={};
-  (wkData||[]).forEach(r=>wkDatesCache[r.week]=r.end_date);
+  wkData.forEach(r=>wkDatesCache[r.week]=r.end_date);
 
   bfcfCache={};
-  (bfData||[]).forEach(r=>bfcfCache[r.week]={bf_boys:r.bf_boys,bf_girls:r.bf_girls,cf_boys:r.cf_boys,cf_girls:r.cf_girls,school_open:r.school_open});
+  bfData.forEach(r=>bfcfCache[r.week]={bf_boys:r.bf_boys,bf_girls:r.bf_girls,cf_boys:r.cf_boys,cf_girls:r.cf_girls,school_open:r.school_open});
 
   gradesCache={};
-  (grData||[]).forEach(r=>gradesCache[r.student_id]=r.scores||{});
+  grData.forEach(r=>gradesCache[r.student_id]=r.scores||{});
 
   behCache={};
-  (bhData||[]).forEach(r=>{
+  bhData.forEach(r=>{
     if(!behCache[r.student_id])behCache[r.student_id]=[];
     behCache[r.student_id][r.entry_index]={cats:r.cats||{},comment:r.comment||'',date:r.date||''};
   });
 
   mgrCache={};
-  (mgrData||[]).forEach(r=>mgrCache[r.student_id]={fees:r.amount||'',mgr:r.manager_name||'',date:r.date_checked||'',sig:r.signature||''});
+  mgrData.forEach(r=>mgrCache[r.student_id]={fees:r.amount||'',mgr:r.manager_name||'',date:r.date_checked||'',sig:r.signature||''});
 }
 
 function getAtt(w,d,sid){return (attCache[w]&&attCache[w][d]&&attCache[w][d][sid])||'';}
