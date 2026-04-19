@@ -492,18 +492,39 @@ function showLoading(){document.getElementById('loading').classList.remove('hidd
 function hideLoading(){document.getElementById('loading').classList.add('hidden');}
 
 // ── SESSION LISTENER ─────────────────────────────────────────────────────
+let appInitialized=false;
+
+// Safety timeout — if nothing resolves in 6s, stop spinning and show login
+const loadingTimeout=setTimeout(()=>{
+  if(!appInitialized){hideLoading();showAuthScreen();}
+},6000);
+
 sb.auth.onAuthStateChange(async(event,session)=>{
   if(session?.user){
+    if(appInitialized)return; // prevent double-init on token refresh
     currentUser=session.user;
     showLoading();
     hideAuthScreen();
-    await loadUserRole();
-    await loadAllData();
+    try{
+      await Promise.race([
+        (async()=>{await loadUserRole();await loadAllData();})(),
+        new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),8000))
+      ]);
+    }catch(e){console.warn('Load issue:',e);}
     initApp();
+    appInitialized=true;
+    clearTimeout(loadingTimeout);
     hideLoading();
   } else {
+    appInitialized=false;
+    clearTimeout(loadingTimeout);
     showAuthScreen();
   }
+});
+
+// Immediately check session on load — hides spinner fast if no session
+sb.auth.getSession().then(({data:{session}})=>{
+  if(!session){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}
 });
 
 async function loadUserRole(){
