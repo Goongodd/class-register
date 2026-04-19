@@ -408,6 +408,11 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
       <div id="stuListSettings"></div>
       <button class="add-stu-btn" id="addStuBtn" onclick="addStudent()">➕ Add Student</button>
     </div>
+    <div class="settings-section" id="subjectsSection">
+      <div class="settings-section-title">📚 Subjects</div>
+      <div id="subjectListSettings"></div>
+      <button class="add-stu-btn" id="addSubjectBtn" onclick="addSubject()" style="background:var(--lblue);color:var(--blue);">➕ Add Subject</button>
+    </div>
     <button class="save-settings-btn" id="saveSettingsBtn" onclick="saveSettings()">💾 Save & Apply Settings</button>
     <div style="height:12px;"></div>
     <div class="danger-zone">
@@ -447,7 +452,7 @@ function triggerInstall(){if(deferredPrompt){deferredPrompt.prompt();deferredPro
 const ADMIN_CODE="###MR. UTULU###";
 const MARKS=["P","A","L","E"];
 const DAYS=["Mon","Tue","Wed","Thu","Fri"];
-const SUBJECTS=["English Language","Mathematics","Basic Science","Social Studies","CRS","CCA","History","Verbal Reasoning","Quantitative Reasoning"];
+let SUBJECTS=JSON.parse(localStorage.getItem('jb3_subjects')||'null')||["English Language","Mathematics","Basic Science","Social Studies","CRS","CCA","History","Verbal Reasoning","Quantitative Reasoning"];
 const BEH_CATS=["Punctuality","Neatness","Participation","Respect","Teamwork","Homework","Overall Conduct"];
 const BEH_RATINGS=["","E","G","S","N"];
 
@@ -665,6 +670,7 @@ function applyRoleUI(){
   if(isAdmin){
     document.getElementById('saveSettingsBtn').disabled=true;
     document.getElementById('addStuBtn').disabled=true;
+    document.getElementById('addSubjectBtn').disabled=true;
     ['bf_boys','bf_girls','cf_boys','cf_girls','school_open'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true;});
   }
 }
@@ -892,6 +898,35 @@ function renderSettingsForm(){
   const disabled=!isTeacher();
   ['cfg_school','cfg_class','cfg_teacher','cfg_session','cfg_weeks','cfg_term'].forEach(id=>document.getElementById(id).disabled=disabled);
   renderStudentSettings();
+  renderSubjectSettings();
+}
+
+function renderSubjectSettings(){
+  const c=document.getElementById('subjectListSettings');c.innerHTML='';
+  const disabled=!isTeacher();
+  SUBJECTS.forEach((subj,i)=>{
+    const row=document.createElement('div');row.className='stu-item';
+    row.innerHTML=`<span class="stu-idx">${i+1}</span>
+      <input type="text" value="${subj}" placeholder="Subject name" ${disabled?'disabled':''}
+        onchange="SUBJECTS[${i}]=this.value.trim();"/>
+      ${!disabled?`<button class="stu-del" onclick="removeSubject(${i})" title="Remove subject">🗑</button>`:''}`;
+    c.appendChild(row);
+  });
+}
+
+function addSubject(){
+  if(!isTeacher())return;
+  SUBJECTS.push('');
+  renderSubjectSettings();
+}
+
+function removeSubject(idx){
+  if(!isTeacher())return;
+  if(SUBJECTS.length<=1){toast('Need at least 1 subject');return;}
+  if(confirm(`Remove "${SUBJECTS[idx]}"?`)){
+    SUBJECTS.splice(idx,1);
+    renderSubjectSettings();
+  }
 }
 
 function renderStudentSettings(){
@@ -933,8 +968,12 @@ function saveSettings(){
   cfg.weeks=parseInt(document.getElementById('cfg_weeks').value)||13;
   students=students.filter(s=>s.name.trim()!=='');
   students.forEach((s,i)=>s.id=i+1);
+  // Clean and save subjects
+  SUBJECTS=SUBJECTS.filter(s=>s.trim()!=='');
+  if(SUBJECTS.length===0)SUBJECTS=['English Language'];
   localStorage.setItem('jb3_cfg',JSON.stringify(cfg));
   localStorage.setItem('jb3_stu',JSON.stringify(students));
+  localStorage.setItem('jb3_subjects',JSON.stringify(SUBJECTS));
   updateHeader();buildNav();renderList();
   toast('Settings saved ✓');
   setTimeout(()=>switchView(0),800);
