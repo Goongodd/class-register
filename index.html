@@ -713,6 +713,9 @@ function saveCache(){
   if(!currentUser)return;
   const k=CK(currentUser.id);
   try{
+    localStorage.setItem(k.cfg,   JSON.stringify(cfg));
+    localStorage.setItem(k.stu,   JSON.stringify(students));
+    localStorage.setItem(k.subj,  JSON.stringify(SUBJECTS));
     localStorage.setItem(k.att,   JSON.stringify(attCache));
     localStorage.setItem(k.wkd,   JSON.stringify(wkDatesCache));
     localStorage.setItem(k.bfcf,  JSON.stringify(bfcfCache));
@@ -740,7 +743,9 @@ function loadFromCache(){
 function clearUserCache(){
   if(!currentUser)return;
   const k=CK(currentUser.id);
-  Object.values(k).forEach(key=>localStorage.removeItem(key));
+  // Only clear attendance caches — never wipe cfg/students/subjects
+  // Those survive logout so the user doesn't have to re-setup every time
+  [k.att,k.wkd,k.bfcf,k.grades,k.beh,k.mgr,k.ts].forEach(key=>localStorage.removeItem(key));
 }
 
 // ── OFFLINE QUEUE ─────────────────────────────────────────────────────────
@@ -852,34 +857,68 @@ function applyData(attData,wkData,bfData,grData,bhData,mgrData){
 async function loadAllData(){
   const k=CK(currentUser?.id);
 
-  // Always guarantee cfg is populated — never leave it empty
-  const savedCfg=localStorage.getItem(k.cfg);
-  cfg = savedCfg ? JSON.parse(savedCfg) : {...DEFAULT_CONFIG};
-  if(!cfg.school||!cfg.class||!cfg.teacher){
-    // Partial or corrupted cfg — merge with defaults
-    cfg = Object.assign({...DEFAULT_CONFIG}, cfg);
+  // Step 1: Load from local cache immediately (fast)
+  const hasCachedCfg = localStorage.getItem(k.cfg);
+  if(hasCachedCfg){
+    try{
+      cfg      = Object.assign({...DEFAULT_CONFIG}, JSON.parse(hasCachedCfg));
+      const savedStu  = localStorage.getItem(k.stu);
+      const savedSubj = localStorage.getItem(k.subj);
+      students = savedStu  ? JSON.parse(savedStu)  : [];
+      SUBJECTS = savedSubj ? JSON.parse(savedSubj) : [];
+    }catch(e){ cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[]; }
+  } else {
+    // No local cache — load from Supabase synchronously before showing app
+    const loaded = await loadUserSettings();
+    if(!loaded){
+      cfg = {...DEFAULT_CONFIG};
+      students = [];
+      SUBJECTS = [];
+    }
   }
 
-  // Always guarantee students list is populated
-  const savedStu=localStorage.getItem(k.stu);
-  students = savedStu ? JSON.parse(savedStu) : DEFAULT_STUDENTS.map((s,i)=>({id:i+1,...s}));
-  // Empty student list is valid for new users — don't replace with defaults
-
-  // Load subjects scoped to this user
-  const savedSubjects=localStorage.getItem(k.subj);
-  if(savedSubjects) SUBJECTS=JSON.parse(savedSubjects);
-  else SUBJECTS=[];
-
-  // Load from local cache instantly
+  // Step 2: Load attendance caches from localStorage
   loadFromCache();
 
-  // Fire and forget — sync from Supabase without blocking anything
+  // Step 3: Background sync from Supabase — refreshes everything silently
   syncFromSupabase().catch(e=>console.warn('Sync error:',e));
+}
+
+// Save cfg/students/subjects to Supabase
+async function saveUserSettings(){
+  if(!currentUser)return;
+  await sb.from('user_settings').upsert({
+    user_id: currentUser.id,
+    cfg: cfg,
+    students: students,
+    subjects: SUBJECTS,
+    updated_at: new Date().toISOString()
+  },{onConflict:'user_id'});
+}
+
+// Load cfg/students/subjects from Supabase
+async function loadUserSettings(){
+  if(!currentUser)return false;
+  try{
+    const {data,error}=await sb.from('user_settings').select('*').eq('user_id',currentUser.id).single();
+    if(error||!data)return false;
+    if(data.cfg)      cfg      = Object.assign({...DEFAULT_CONFIG}, data.cfg);
+    if(data.students) students = data.students;
+    if(data.subjects) SUBJECTS = data.subjects;
+    // Also save to local cache
+    saveCache();
+    return true;
+  }catch(e){
+    console.warn('loadUserSettings failed:',e);
+    return false;
+  }
 }
 
 async function syncFromSupabase(){
   const uid=currentUser?.id;
   if(!uid)return;
+  // Refresh settings from DB too — keeps cfg/students/subjects in sync
+  await loadUserSettings().catch(()=>{});
   const [attData,wkData,bfData,grData,bhData,mgrData]=await Promise.all([
     safeQuery('attendance',  '*', uid),
     safeQuery('week_dates',  '*', uid),
@@ -891,6 +930,8 @@ async function syncFromSupabase(){
   applyData(attData,wkData,bfData,grData,bhData,mgrData);
   saveCache();
   // Quietly refresh UI with fresh server data
+  updateHeader();
+  buildNav();
   renderList();
   loadWkDate();
   loadBFCF();
@@ -985,8 +1026,8 @@ function initApp(){
   setDateChip();updateHeader();buildNav();renderList();loadWkDate();loadBFCF();applyRoleUI();
   updateOnlineBanner();
   if(isOnline())flushQueue();
-  // Nudge new users to set up their class
-  if(!cfg.class||!cfg.teacher||!students.length){
+  // Only nudge if genuinely new — no class AND no students AND no subjects
+  if(!cfg.class&&!cfg.teacher&&!students.length&&!SUBJECTS.length){
     setTimeout(()=>{
       toast('👋 Welcome! Please go to Settings ⚙️ to set up your class.');
       setTimeout(()=>switchView(4),2500);
@@ -1324,16 +1365,14 @@ function saveSettings(){
   students.forEach((s,i)=>s.id=i+1);
   // Clean and save subjects
   SUBJECTS=SUBJECTS.filter(s=>s.trim()!=='');
-  if(SUBJECTS.length===0)SUBJECTS=['English Language'];
-  const k=CK(currentUser?.id);
-  localStorage.setItem(k.cfg, JSON.stringify(cfg));
-  localStorage.setItem(k.stu, JSON.stringify(students));
-  localStorage.setItem(k.subj,JSON.stringify(SUBJECTS));
+  if(SUBJECTS.length===0)SUBJECTS=[];
+  // Save to local cache
+  saveCache();
+  // Save to Supabase for cross-device persistence
+  saveUserSettings().catch(e=>console.warn('Settings save to DB failed:',e));
   updateHeader();buildNav();renderList();
   toast('Settings saved ✓');
   setTimeout(()=>switchView(0),800);
-  // Also refresh Supabase sync so other users see updated class info
-  syncFromSupabase().catch(()=>{});
 }
 
 async function resetAllData(){
