@@ -531,41 +531,70 @@ function showSignup(){document.getElementById('loginForm').style.display='none';
 function toggleAdminCode(){const r=document.getElementById('signupRole').value;document.getElementById('adminCodeField').style.display=r==='admin'?'block':'none';if(r!=='admin')document.getElementById('adminCode').value='';}
 
 async function doLogin(){
-  const email=document.getElementById('loginEmail').value.trim();
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase();
   const pass=document.getElementById('loginPassword').value;
   const btn=document.getElementById('loginBtn');
   const err=document.getElementById('loginErr');
   if(!email||!pass){showErr(err,'Please fill in all fields.');return;}
   btn.disabled=true;btn.textContent='Signing in...';
-  const {error}=await sb.auth.signInWithPassword({email,password:pass});
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
   btn.disabled=false;btn.textContent='Sign In';
-  if(error)showErr(err,error.message);
+  if(error){
+    // Give a clearer message for common errors
+    if(error.message.includes('Invalid login')||error.message.includes('invalid_credentials')){
+      showErr(err,'Incorrect email or password. Please try again.');
+    } else if(error.message.includes('Email not confirmed')){
+      showErr(err,'Please confirm your email first. Check your inbox for a confirmation link.');
+    } else {
+      showErr(err,error.message);
+    }
+  }
+  // On success, onAuthStateChange fires automatically — no need to do anything here
 }
 
 async function doSignup(){
-  const email=document.getElementById('signupEmail').value.trim();
+  const email=document.getElementById('signupEmail').value.trim().toLowerCase();
   const pass=document.getElementById('signupPassword').value;
   const role=document.getElementById('signupRole').value;
   const btn=document.getElementById('signupBtn');
   const err=document.getElementById('signupErr');
   const info=document.getElementById('signupInfo');
+  info.style.display='none';
   if(!email||!pass){showErr(err,'Please fill in all fields.');return;}
   if(pass.length<6){showErr(err,'Password must be at least 6 characters.');return;}
   if(role==='admin'){const code=document.getElementById('adminCode').value;if(code!==ADMIN_CODE){showErr(err,'Incorrect admin access code.');return;}}
-  btn.disabled=true;btn.textContent='Creating account...';
-  const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{role}}});
+  btn.disabled=true;btn.textContent='Checking...';
+
+  // Check if email already registered
+  const {data:existing}=await sb.from('profiles').select('email').eq('email',email).maybeSingle();
+  if(existing){
+    btn.disabled=false;btn.textContent='Create Account';
+    showErr(err,'An account with this email already exists. Please sign in instead.');return;
+  }
+
+  btn.textContent='Creating account...';
+  const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{role},emailRedirectTo:window.location.href}});
   btn.disabled=false;btn.textContent='Create Account';
   if(error){showErr(err,error.message);return;}
-  if(data.user)await sb.from('profiles').upsert({id:data.user.id,email,role});
-  if(!data.session){err.style.display='none';info.style.display='block';info.textContent='Account created! Check your email to confirm, then sign in.';}
+
+  if(data.user){
+    await sb.from('profiles').upsert({id:data.user.id,email,role});
+  }
+
+  if(data.session){
+    // Email confirmation is off — user is immediately active, auth listener handles rest
+  } else {
+    // Email confirmation is on — show clear instructions
+    err.style.display='none';
+    info.style.display='block';
+    info.textContent='Account created! You should receive a confirmation email. Click the link in the email, then return here to sign in. If no email arrives within 2 minutes, go to Supabase → Authentication → Providers → Email and turn off Confirm Email.';
+  }
 }
 
 async function doLogout(){
+  appInitialized=false; // reset before sign out so SIGNED_OUT handler can clean up
   await sb.auth.signOut();
-  currentUser=null;currentRole='teacher';
-  attCache={};wkDatesCache={};bfcfCache={};gradesCache={};behCache={};mgrCache={};
-  appInitialized=false;
-  showAuthScreen();
+  // SIGNED_OUT event in onAuthStateChange handles the rest
 }
 
 function showErr(el,msg){el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
@@ -579,8 +608,15 @@ let appInitialized=false;
 const loadingTimeout=setTimeout(()=>{if(!appInitialized){hideLoading();showAuthScreen();}},6000);
 
 sb.auth.onAuthStateChange(async(event,session)=>{
-  if(session?.user){
-    if(appInitialized)return;
+  // Ignore token refresh events — only act on real sign-in/sign-out
+  if(event==='TOKEN_REFRESHED')return;
+  if(event==='SIGNED_IN'||event==='INITIAL_SESSION'){
+    if(!session?.user){
+      // INITIAL_SESSION with no user = not logged in
+      if(!appInitialized){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}
+      return;
+    }
+    if(appInitialized)return; // already loaded
     currentUser=session.user;
     showLoading();hideAuthScreen();
     try{
@@ -590,11 +626,17 @@ sb.auth.onAuthStateChange(async(event,session)=>{
       ]);
     }catch(e){console.warn('Load issue:',e);}
     initApp();appInitialized=true;clearTimeout(loadingTimeout);hideLoading();
-  } else {
-    appInitialized=false;clearTimeout(loadingTimeout);showAuthScreen();
+  } else if(event==='SIGNED_OUT'){
+    appInitialized=false;clearTimeout(loadingTimeout);
+    currentUser=null;currentRole='teacher';
+    attCache={};wkDatesCache={};bfcfCache={};gradesCache={};behCache={};mgrCache={};
+    showAuthScreen();
   }
 });
-sb.auth.getSession().then(({data:{session}})=>{if(!session){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}});
+// Fast check — if no session at all, stop spinner immediately
+sb.auth.getSession().then(({data:{session}})=>{
+  if(!session&&!appInitialized){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}
+});
 
 async function loadUserRole(){
   const {data}=await sb.from('profiles').select('role').eq('id',currentUser.id).single();
