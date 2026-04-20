@@ -799,7 +799,7 @@ async function flushQueue(){
       recorded_by:currentUser?.id||item.recorded_by,
       updated_at:new Date().toISOString()
     }));
-    const {error}=await sb.from('attendance').upsert(rows,{onConflict:'student_id,week,day'});
+    const {error}=await sb.from('attendance').upsert(rows,{onConflict:'user_id,student_id,week,day'});
     if(!error){
       clearQueue();
       toast('Offline marks synced ✓');
@@ -958,7 +958,7 @@ async function setAtt(w,d,sid,v){
   }
 
   // Online — save to Supabase directly
-  const {error}=await sb.from('attendance').upsert(record,{onConflict:'student_id,week,day'});
+  const {error}=await sb.from('attendance').upsert(record,{onConflict:'user_id,student_id,week,day'});
   if(error){
     // Save failed — add to queue as fallback
     addToQueue(record);
@@ -1179,7 +1179,7 @@ async function markAll(v){
     return;
   }
 
-  const {error}=await sb.from('attendance').upsert(rows,{onConflict:'student_id,week,day'});
+  const {error}=await sb.from('attendance').upsert(rows,{onConflict:'user_id,student_id,week,day'});
   if(error){
     rows.forEach(r=>addToQueue(r));
     toast('Queued — will sync later');
