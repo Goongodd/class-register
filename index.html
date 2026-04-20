@@ -143,6 +143,7 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
 .bfcf-card{background:#fff;margin:0 10px 20px;border-radius:var(--radius);padding:12px;box-shadow:var(--shadow-sm);}
 .bfcf-card h4{font-size:10px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;}
 .bfcf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.bfcf-item.full{grid-column:1/-1;}
 .bfcf-item label{font-size:9px;font-weight:700;color:var(--muted);display:block;margin-bottom:3px;}
 .bfcf-item input{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:7px 10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--navy);background:var(--paper);text-align:center;}
 .bfcf-item input:disabled{opacity:.5;}
@@ -417,7 +418,7 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
       <div class="bfcf-item"><label>Girls — Brought Fwd</label><input type="number" id="bf_girls" min="0" placeholder="0" onchange="saveBFCF()"/></div>
       <div class="bfcf-item"><label>Boys — Carried Fwd</label><input type="number" id="cf_boys" min="0" placeholder="0" onchange="saveBFCF()"/></div>
       <div class="bfcf-item"><label>Girls — Carried Fwd</label><input type="number" id="cf_girls" min="0" placeholder="0" onchange="saveBFCF()"/></div>
-      <div class="bfcf-item"><label>Times School Open</label><input type="number" id="school_open" min="0" max="5" placeholder="5" onchange="saveBFCF()"/></div>
+      <div class="bfcf-item full"><label>Times School Open This Week</label><input type="number" id="school_open" min="0" max="5" placeholder="5" onchange="saveBFCF()"/></div>
     </div>
   </div>
 </div>
@@ -714,18 +715,33 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     hideLoading();
 
     // Sync data completely in background — never blocks UI
-    loadAllData().then(()=>{
+    // Call loadAllData for cache/settings, then force a fresh Supabase sync
+    loadAllData().then(async ()=>{
       renderList();
       loadWkDate();
       loadBFCF();
+      // Force attendance sync from Supabase regardless of any guards
+      if(currentRole==='teacher'){
+        await forceSyncAttendance();
+      }
     }).catch(e=>console.warn('Background sync failed:',e));
   } else if(event==='SIGNED_OUT'){
-    appInitialized=false;clearTimeout(loadingTimeout);
-    // Reset all in-memory state so next user starts clean
-    currentUser=null;currentRole='teacher';
-    attCache={};wkDatesCache={};bfcfCache={};gradesCache={};behCache={};mgrCache={};
-    cfg={};students=[];
-    SUBJECTS=[];
+    appInitialized=false;
+    clearTimeout(loadingTimeout);
+    // Reset all state
+    currentUser=null; currentRole='teacher'; adminViewingTeacher=null;
+    attCache={}; wkDatesCache={}; bfcfCache={}; gradesCache={}; behCache={}; mgrCache={};
+    cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
+    // Full UI reset — make sure nothing from admin session bleeds through
+    document.getElementById('vAdminPortal').classList.remove('on');
+    document.getElementById('adminViewingBar').classList.remove('on');
+    document.getElementById('adminNotice').style.display='none';
+    document.getElementById('weekNav').style.display='none';
+    document.querySelector('.bnav').style.display='flex';
+    // Reset all views to default
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+    document.getElementById('vAttend').classList.add('on');
+    document.querySelectorAll('.bb').forEach((b,i)=>b.classList.toggle('active',i===0));
     showAuthScreen();
   }
 });
@@ -869,6 +885,27 @@ window.addEventListener('online',()=>{
 window.addEventListener('offline',()=>{
   updateOnlineBanner();
 });
+
+// Force sync attendance data directly — bypasses all guards
+async function forceSyncAttendance(){
+  if(!currentUser)return;
+  const uid=currentUser.id;
+  try{
+    const [attData,wkData,bfData,grData,bhData,mgrData]=await Promise.all([
+      safeQuery('attendance',  '*', uid),
+      safeQuery('week_dates',  '*', uid),
+      safeQuery('bfcf',        '*', uid),
+      safeQuery('grades',      '*', uid),
+      safeQuery('behaviour',   '*', uid),
+      safeQuery('fees',        '*', uid),
+    ]);
+    applyData(attData,wkData,bfData,grData,bhData,mgrData);
+    saveCache();
+    renderList();
+    loadWkDate();
+    loadBFCF();
+  }catch(e){console.warn('Force sync failed:',e);}
+}
 
 async function safeQuery(table,select='*',uid=null){
   try{
@@ -1115,8 +1152,18 @@ async function loadTeacherList(){
   const list=document.getElementById('teacherList');
   list.innerHTML='<div class="ap-empty">Loading teachers...</div>';
   try{
+    // Try fetching all profiles where role is teacher
     const {data,error}=await sb.from('profiles').select('*').eq('role','teacher').order('email');
-    if(error||!data||!data.length){
+    if(error){
+      // RLS may be blocking — show helpful message
+      console.warn('Profiles query error:',error.message);
+      list.innerHTML=`<div class="ap-empty">
+        <p style="margin-bottom:8px">Could not load teachers.</p>
+        <p style="font-size:11px;color:#bbb">Run the admin RLS SQL in Supabase to fix this.</p>
+      </div>`;
+      return;
+    }
+    if(!data||!data.length){
       list.innerHTML='<div class="ap-empty">No teachers registered yet.</div>';
       return;
     }
@@ -1124,18 +1171,25 @@ async function loadTeacherList(){
     data.forEach(teacher=>{
       const card=document.createElement('div');
       card.className='ap-teacher-card';
-      // Get first letter of email for avatar
       const initials=teacher.email?teacher.email[0].toUpperCase():'T';
+      // Get class name from user_settings if available
       card.innerHTML=`<div class="ap-teacher-inner">
         <div class="ap-avatar">${initials}</div>
         <div class="ap-info">
           <div class="ap-email">${teacher.email}</div>
-          <div class="ap-meta">Teacher · Tap to view register</div>
+          <div class="ap-meta" id="tmeta_${teacher.id}">Teacher · Loading class info...</div>
         </div>
         <div class="ap-arrow">›</div>
       </div>`;
       card.onclick=()=>adminViewTeacher(teacher);
       list.appendChild(card);
+      // Load class name in background
+      sb.from('user_settings').select('cfg').eq('user_id',teacher.id).single()
+        .then(({data:s})=>{
+          const el=document.getElementById(`tmeta_${teacher.id}`);
+          if(el&&s?.cfg?.class) el.textContent=`${s.cfg.class} · ${s.cfg.teacher||''}`;
+          else if(el) el.textContent='Teacher · No class set up yet';
+        }).catch(()=>{});
     });
   }catch(e){
     list.innerHTML='<div class="ap-empty">Failed to load teachers. Check connection.</div>';
@@ -1202,12 +1256,18 @@ function adminBackToPortal(){
   adminViewingTeacher=null;
   attCache={}; wkDatesCache={}; bfcfCache={};
   gradesCache={}; behCache={}; mgrCache={};
-  // Restore admin's own settings from their cache
-  // (admins have their own cfg/students but they're irrelevant — just restore defaults)
-  cfg={...DEFAULT_CONFIG};
-  students=[]; SUBJECTS=[];
-  showAdminPortal();
+  cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
+  // Hide nav and viewing bar
+  document.getElementById('adminViewingBar').classList.remove('on');
+  document.getElementById('adminNotice').style.display='none';
+  document.getElementById('weekNav').style.display='none';
+  // Hide all regular views
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  // Show portal
+  document.getElementById('vAdminPortal').classList.add('on');
+  document.querySelector('.bnav').style.display='none';
   updateHeader();
+  loadTeacherList();
 }
 
 function applyRoleUI(){
