@@ -252,6 +252,29 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
 .reset-btn{width:100%;padding:12px;background:var(--lred);border:none;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
 .admin-notice{background:var(--lgold);border-radius:10px;padding:10px 12px;margin:0 10px 8px;font-size:11px;color:var(--gold);font-weight:600;display:none;}
 
+/* ADMIN PORTAL */
+#vAdminPortal{display:none;}
+#vAdminPortal.on{display:block;}
+.admin-portal-wrap{padding:10px 10px 20px;}
+.ap-header{background:var(--navy);border-radius:var(--radius);padding:16px 14px;margin-bottom:12px;box-shadow:var(--shadow);}
+.ap-header h2{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:4px;}
+.ap-header p{font-size:11px;color:rgba(255,255,255,.55);}
+.ap-teacher-card{background:#fff;border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadowsm);overflow:hidden;cursor:pointer;transition:box-shadow .15s;}
+.ap-teacher-card:active{box-shadow:var(--shadow);}
+.ap-teacher-inner{display:flex;align-items:center;gap:12px;padding:14px 14px;}
+.ap-avatar{width:40px;height:40px;border-radius:50%;background:var(--lblue);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.ap-info{flex:1;min-width:0;}
+.ap-email{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ap-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.ap-arrow{font-size:16px;color:var(--muted);}
+.ap-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;}
+
+/* ADMIN VIEWING TEACHER */
+.admin-viewing-bar{background:var(--navy2);color:#fff;padding:10px 14px;display:none;align-items:center;gap:10px;position:sticky;top:60px;z-index:94;}
+.admin-viewing-bar.on{display:flex;}
+.admin-viewing-bar span{flex:1;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.admin-back-btn{background:rgba(255,255,255,.15);border:none;border-radius:8px;padding:6px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;}
+
 /* INSTALL BANNER */
 .install-banner{background:var(--gold);color:#fff;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;font-weight:600;}
 .install-banner button{background:#fff;color:var(--gold);border:none;border-radius:7px;padding:5px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
@@ -456,6 +479,23 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
   </div>
 </div>
 
+<!-- ADMIN PORTAL VIEW -->
+<div id="vAdminPortal">
+  <div class="admin-portal-wrap">
+    <div class="ap-header">
+      <h2>Admin Portal</h2>
+      <p>Select a teacher to view their register</p>
+    </div>
+    <div id="teacherList"></div>
+  </div>
+</div>
+
+<!-- ADMIN VIEWING BAR -->
+<div class="admin-viewing-bar" id="adminViewingBar">
+  <span id="adminViewingLabel">Viewing: —</span>
+  <button class="admin-back-btn" onclick="adminBackToPortal()">← Back to Teachers</button>
+</div>
+
 <div class="bnav">
   <button class="bb active" id="bb0" onclick="switchView(0)"><span class="bi">📋</span>Mark</button>
   <button class="bb" id="bb1" onclick="switchView(1)"><span class="bi">📊</span>Summary</button>
@@ -548,7 +588,8 @@ const DEFAULT_STUDENTS=[];
 let cfg={},students=[];
 let attCache={},wkDatesCache={},bfcfCache={},gradesCache={},behCache={},mgrCache={};
 let cWeek=1,cDay=0,currentUser=null,currentRole='teacher';
-const isTeacher=()=>currentRole==='teacher';
+let adminViewingTeacher=null; // when admin is viewing a specific teacher
+const isTeacher=()=>currentRole==='teacher'&&!adminViewingTeacher;
 
 // ── AUTH ──────────────────────────────────────────────────────────────────
 function showLogin(){document.getElementById('loginForm').style.display='block';document.getElementById('signupForm').style.display='none';}
@@ -1031,16 +1072,133 @@ async function saveBehaviour(sid,entryIdx,field,val){
 
 // ── APP INIT ──────────────────────────────────────────────────────────────
 function initApp(){
-  setDateChip();updateHeader();buildNav();renderList();loadWkDate();loadBFCF();applyRoleUI();
+  setDateChip();updateHeader();applyRoleUI();
   updateOnlineBanner();
-  if(isOnline())flushQueue();
-  // Only nudge if genuinely new — no class AND no students AND no subjects
-  if(!cfg.class&&!cfg.teacher&&!students.length&&!SUBJECTS.length){
-    setTimeout(()=>{
-      toast('👋 Welcome! Please go to Settings ⚙️ to set up your class.');
-      setTimeout(()=>switchView(4),2500);
-    },800);
+  if(currentRole==='admin'){
+    // Admin goes straight to portal
+    showAdminPortal();
+  } else {
+    // Teacher normal flow
+    buildNav();renderList();loadWkDate();loadBFCF();
+    if(isOnline())flushQueue();
+    if(!cfg.class&&!cfg.teacher&&!students.length&&!SUBJECTS.length){
+      setTimeout(()=>{
+        toast('👋 Welcome! Please go to Settings ⚙️ to set up your class.');
+        setTimeout(()=>switchView(4),2500);
+      },800);
+    }
   }
+}
+
+// ── ADMIN PORTAL ──────────────────────────────────────────────────────────
+async function showAdminPortal(){
+  // Hide all regular views, show portal
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('vAdminPortal').classList.add('on');
+  document.getElementById('weekNav').style.display='none';
+  document.getElementById('adminNotice').style.display='none';
+  document.getElementById('adminViewingBar').classList.remove('on');
+  adminViewingTeacher=null;
+  // Hide bottom nav for admin portal
+  document.querySelector('.bnav').style.display='none';
+  // Load teacher list
+  await loadTeacherList();
+}
+
+async function loadTeacherList(){
+  const list=document.getElementById('teacherList');
+  list.innerHTML='<div class="ap-empty">Loading teachers...</div>';
+  try{
+    const {data,error}=await sb.from('profiles').select('*').eq('role','teacher').order('email');
+    if(error||!data||!data.length){
+      list.innerHTML='<div class="ap-empty">No teachers registered yet.</div>';
+      return;
+    }
+    list.innerHTML='';
+    data.forEach(teacher=>{
+      const card=document.createElement('div');
+      card.className='ap-teacher-card';
+      // Get first letter of email for avatar
+      const initials=teacher.email?teacher.email[0].toUpperCase():'T';
+      card.innerHTML=`<div class="ap-teacher-inner">
+        <div class="ap-avatar">${initials}</div>
+        <div class="ap-info">
+          <div class="ap-email">${teacher.email}</div>
+          <div class="ap-meta">Teacher · Tap to view register</div>
+        </div>
+        <div class="ap-arrow">›</div>
+      </div>`;
+      card.onclick=()=>adminViewTeacher(teacher);
+      list.appendChild(card);
+    });
+  }catch(e){
+    list.innerHTML='<div class="ap-empty">Failed to load teachers. Check connection.</div>';
+    console.warn('Load teachers failed:',e);
+  }
+}
+
+async function adminViewTeacher(teacher){
+  // Load that teacher's data
+  toast('Loading '+teacher.email+'...');
+  adminViewingTeacher=teacher;
+
+  try{
+    // Load teacher's settings
+    const {data:settings}=await sb.from('user_settings')
+      .select('*').eq('user_id',teacher.id).single();
+    if(settings){
+      cfg      = Object.assign({...DEFAULT_CONFIG}, settings.cfg||{});
+      students = settings.students||[];
+      SUBJECTS = settings.subjects||[];
+    } else {
+      cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
+    }
+
+    // Load teacher's attendance data
+    const [attData,wkData,bfData,grData,bhData,mgrData]=await Promise.all([
+      sb.from('attendance').select('*').eq('user_id',teacher.id),
+      sb.from('week_dates').select('*').eq('user_id',teacher.id),
+      sb.from('bfcf').select('*').eq('user_id',teacher.id),
+      sb.from('grades').select('*').eq('user_id',teacher.id),
+      sb.from('behaviour').select('*').eq('user_id',teacher.id),
+      sb.from('fees').select('*').eq('user_id',teacher.id),
+    ]);
+
+    applyData(
+      attData.data||[], wkData.data||[], bfData.data||[],
+      grData.data||[], bhData.data||[], mgrData.data||[]
+    );
+  }catch(e){
+    toast('Failed to load teacher data');
+    console.warn(e); return;
+  }
+
+  // Show register views
+  document.getElementById('vAdminPortal').classList.remove('on');
+  document.querySelector('.bnav').style.display='flex';
+  document.getElementById('weekNav').style.display='flex';
+  document.getElementById('adminNotice').style.display='block';
+  document.getElementById('adminViewingBar').classList.add('on');
+  document.getElementById('adminViewingLabel').textContent='Viewing: '+teacher.email;
+
+  // Show mark tab with teacher's data
+  updateHeader();
+  buildNav();
+  renderList();
+  loadWkDate();
+  loadBFCF();
+  switchView(0);
+  toast('Viewing '+teacher.email);
+}
+
+function adminBackToPortal(){
+  // Reset to clean state
+  adminViewingTeacher=null;
+  cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
+  attCache={}; wkDatesCache={}; bfcfCache={};
+  gradesCache={}; behCache={}; mgrCache={};
+  showAdminPortal();
+  updateHeader();
 }
 
 function applyRoleUI(){
