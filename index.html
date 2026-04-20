@@ -760,6 +760,8 @@ function CK(uid){
 
 function saveCache(){
   if(!currentUser)return;
+  // Never overwrite cache while admin is viewing a teacher's data
+  if(adminViewingTeacher)return;
   const k=CK(currentUser.id);
   try{
     localStorage.setItem(k.cfg,   JSON.stringify(cfg));
@@ -904,6 +906,8 @@ function applyData(attData,wkData,bfData,grData,bhData,mgrData){
 }
 
 async function loadAllData(){
+  // Never load admin's own data over a teacher they're currently viewing
+  if(adminViewingTeacher)return;
   const k=CK(currentUser?.id);
 
   // Step 1: Load from local cache immediately (fast)
@@ -964,6 +968,8 @@ async function loadUserSettings(){
 }
 
 async function syncFromSupabase(){
+  // Never overwrite teacher data admin is currently viewing
+  if(adminViewingTeacher)return;
   const uid=currentUser?.id;
   if(!uid)return;
   // Refresh settings from DB too — keeps cfg/students/subjects in sync
@@ -1192,11 +1198,14 @@ async function adminViewTeacher(teacher){
 }
 
 function adminBackToPortal(){
-  // Reset to clean state
+  // Clear teacher's data from memory
   adminViewingTeacher=null;
-  cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
   attCache={}; wkDatesCache={}; bfcfCache={};
   gradesCache={}; behCache={}; mgrCache={};
+  // Restore admin's own settings from their cache
+  // (admins have their own cfg/students but they're irrelevant — just restore defaults)
+  cfg={...DEFAULT_CONFIG};
+  students=[]; SUBJECTS=[];
   showAdminPortal();
   updateHeader();
 }
