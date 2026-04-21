@@ -810,9 +810,10 @@ function loadFromCache(){
 function clearUserCache(){
   if(!currentUser)return;
   const k=CK(currentUser.id);
-  // Only clear attendance caches — never wipe cfg/students/subjects
-  // Those survive logout so the user doesn't have to re-setup every time
-  [k.att,k.wkd,k.bfcf,k.grades,k.beh,k.mgr,k.ts].forEach(key=>localStorage.removeItem(key));
+  // Only clear the timestamp — all data stays in localStorage
+  // Supabase is the master copy; on next login, sync refreshes everything
+  // We never wipe week dates, fees, manager fields, or attendance on logout
+  [k.ts].forEach(key=>localStorage.removeItem(key));
 }
 
 // ── OFFLINE QUEUE ─────────────────────────────────────────────────────────
@@ -1067,6 +1068,7 @@ async function saveWkDate(){
   if(!isTeacher())return;
   const val=document.getElementById('wkEndDate').value;
   wkDatesCache[cWeek]=val;
+  saveCache(); // persist to localStorage immediately
   await sb.from('week_dates').upsert({user_id:currentUser?.id,week:cWeek,end_date:val},{onConflict:'user_id,week'});
   toast('Week date saved');
 }
@@ -1090,6 +1092,7 @@ async function saveMgr(sid){
   const date=document.getElementById(`mgrdate_${sid}`).value;
   const sig=document.getElementById(`sig_${sid}`).value;
   mgrCache[sid]={fees,mgr,date,sig};
+  saveCache(); // persist to localStorage immediately so it survives logout
   await sb.from('fees').upsert({user_id:currentUser?.id,student_id:sid,amount:fees,manager_name:mgr,date_checked:date,signature:sig},{onConflict:'user_id,student_id'});
 }
 
@@ -1287,14 +1290,16 @@ function applyRoleUI(){
 }
 
 function updateHeader(){
-  const cls   = cfg.class   ||'Register';
+  const cls   = cfg.class   ||'';
   const school= cfg.school  ||'Jewel Model Primary School';
   const teacher=cfg.teacher ||'';
   const term  = cfg.term    ||'';
   const session=cfg.session ||'';
-  document.getElementById('hdrTitle').textContent=`${cls} Register`;
+  // Only append "Register" if class name doesn't already contain it
+  const titleSuffix = cls.toLowerCase().includes('register') ? '' : ' Register';
+  document.getElementById('hdrTitle').textContent=cls ? `${cls}${titleSuffix}` : 'Class Register';
   document.getElementById('hdrSub').textContent=`${school}${teacher?' · '+teacher:''}${term?' · '+term:''}${session?' '+session:''}`;
-  document.title=`${cls} Register`;
+  document.title=cls ? `${cls}${titleSuffix}` : 'Class Register';
 }
 
 function setDateChip(){
