@@ -142,6 +142,32 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
 /* BF / CF CARD */
 .bfcf-card{background:#fff;margin:0 10px 20px;border-radius:var(--radius);padding:12px;box-shadow:var(--shadow-sm);}
 .bfcf-card h4{font-size:10px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;}
+/* TERM SUMMARY CARD */
+.term-summary-card{background:var(--navy);margin:0 10px 10px;border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);}
+.term-summary-card h4{font-size:10px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;}
+.ts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.ts-item{background:rgba(255,255,255,.08);border-radius:9px;padding:10px;text-align:center;}
+.ts-item .tsn{font-family:'Playfair Display',serif;font-size:22px;color:#fff;}
+.ts-item .tsl{font-size:8px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:2px;}
+.ts-item.boys .tsn{color:#7ec8f7;}
+.ts-item.girls .tsn{color:#f7a0a0;}
+.ts-item.total .tsn{color:var(--gold);}
+.ts-item.pct .tsn{color:var(--lgreen);font-size:18px;}
+/* DAYS TAB */
+.days-card{background:#fff;border-radius:var(--radius);margin:0 10px 10px;padding:12px;box-shadow:var(--shadow-sm);}
+.days-card h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--navy);margin-bottom:4px;}
+.days-card p{font-size:11px;color:var(--muted);margin-bottom:12px;}
+.days-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.days-item label{font-size:9px;font-weight:700;color:var(--muted);display:block;margin-bottom:3px;text-align:center;}
+.days-item input{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:7px 4px;text-align:center;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:var(--navy);background:var(--paper);}
+.days-item input:disabled{opacity:.5;}
+/* WEEK MANAGER SIGN */
+.wk-mgr-card{background:#fff;border-radius:var(--radius);margin:0 10px 10px;padding:12px;box-shadow:var(--shadow-sm);}
+.wk-mgr-card h4{font-size:10px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;}
+.wk-mgr-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.wk-mgr-grid label{font-size:9px;font-weight:700;color:var(--muted);display:block;margin-bottom:2px;}
+.wk-mgr-grid input{width:100%;border:1.5px solid #ddd;border-radius:7px;padding:6px 8px;font-family:'Outfit',sans-serif;font-size:12px;color:var(--ink);background:var(--paper);}
+.wk-mgr-grid input:disabled{opacity:.5;}
 .bfcf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .bfcf-item.full{grid-column:1/-1;}
 .bfcf-item label{font-size:9px;font-weight:700;color:var(--muted);display:block;margin-bottom:3px;}
@@ -418,7 +444,7 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
       <div class="bfcf-item"><label>Girls — Brought Fwd</label><input type="number" id="bf_girls" min="0" placeholder="0" onchange="saveBFCF()"/></div>
       <div class="bfcf-item"><label>Boys — Carried Fwd</label><input type="number" id="cf_boys" min="0" placeholder="0" onchange="saveBFCF()"/></div>
       <div class="bfcf-item"><label>Girls — Carried Fwd</label><input type="number" id="cf_girls" min="0" placeholder="0" onchange="saveBFCF()"/></div>
-      <div class="bfcf-item full"><label>Times School Open This Week</label><input type="number" id="school_open" min="0" max="5" placeholder="5" onchange="saveBFCF()"/></div>
+      <!-- school_open moved to Days tab -->
     </div>
   </div>
 </div>
@@ -480,6 +506,41 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
   </div>
 </div>
 
+<!-- DAYS VIEW -->
+<div class="view" id="vDays">
+  <div style="padding:8px 4px 4px"><div class="sec">School Days Open</div></div>
+  <div class="bfcf-card" style="margin:0 10px 8px">
+    <h4>Times School Was Open Per Week</h4>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:10px">Enter how many days school was open each week. Adjust for public holidays and events.</p>
+    <div id="daysGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
+  </div>
+  <div class="bfcf-card" style="margin:0 10px 8px">
+    <h4>Term Summary</h4>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="termSummaryGrid">
+      <div class="bfcf-item">
+        <label>Total School Days</label>
+        <div id="totalSchoolDays" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--navy);text-align:center;padding:8px">—</div>
+      </div>
+      <div class="bfcf-item">
+        <label>Average Attendance %</label>
+        <div id="avgAttPct" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--green);text-align:center;padding:8px">—</div>
+      </div>
+      <div class="bfcf-item">
+        <label>Total Boys Attendance</label>
+        <div id="totalBoysAtt" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--blue);text-align:center;padding:8px">—</div>
+      </div>
+      <div class="bfcf-item">
+        <label>Total Girls Attendance</label>
+        <div id="totalGirlsAtt" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--red);text-align:center;padding:8px">—</div>
+      </div>
+    </div>
+  </div>
+  <div class="bfcf-card" style="margin:0 10px 20px">
+    <h4>Weekly Attendance %</h4>
+    <div id="weeklyPctGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
+  </div>
+</div>
+
 <!-- ADMIN PORTAL VIEW -->
 <div id="vAdminPortal">
   <div class="admin-portal-wrap">
@@ -502,7 +563,8 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
   <button class="bb" id="bb1" onclick="switchView(1)"><span class="bi">📊</span>Summary</button>
   <button class="bb" id="bb2" onclick="switchView(2)"><span class="bi">📝</span>Grades</button>
   <button class="bb" id="bb3" onclick="switchView(3)"><span class="bi">🧠</span>Behaviour</button>
-  <button class="bb" id="bb4" onclick="switchView(4)"><span class="bi">⚙️</span>Settings</button>
+  <button class="bb" id="bb4" onclick="switchView(4)"><span class="bi">🏫</span>Days</button>
+  <button class="bb" id="bb5" onclick="switchView(5)"><span class="bi">⚙️</span>Settings</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -587,7 +649,7 @@ const DEFAULT_STUDENTS=[];
 
 // ── STATE ─────────────────────────────────────────────────────────────────
 let cfg={},students=[];
-let attCache={},wkDatesCache={},bfcfCache={},gradesCache={},behCache={},mgrCache={};
+let attCache={},wkDatesCache={},bfcfCache={},gradesCache={},behCache={},mgrCache={},wkMgrCache={};
 let cWeek=1,cDay=0,currentUser=null,currentRole='teacher';
 let adminViewingTeacher=null; // when admin is viewing a specific teacher
 const isTeacher=()=>currentRole==='teacher'&&!adminViewingTeacher;
@@ -730,7 +792,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     clearTimeout(loadingTimeout);
     // Reset all state
     currentUser=null; currentRole='teacher'; adminViewingTeacher=null;
-    attCache={}; wkDatesCache={}; bfcfCache={}; gradesCache={}; behCache={}; mgrCache={};
+    attCache={}; wkDatesCache={}; bfcfCache={}; gradesCache={}; behCache={}; mgrCache={}; wkMgrCache={};
     cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
     // Full UI reset — make sure nothing from admin session bleeds through
     document.getElementById('vAdminPortal').classList.remove('on');
@@ -771,6 +833,7 @@ function CK(uid){
     stu:    `jb3_${u}_stu`,
     subj:   `jb3_${u}_subjects`,
     ts:     `jb3_${u}_cache_ts`,
+    wkmgr:  `jb3_${u}_wkmgr`,
   };
 }
 
@@ -789,6 +852,7 @@ function saveCache(){
     localStorage.setItem(k.grades,JSON.stringify(gradesCache));
     localStorage.setItem(k.beh,   JSON.stringify(behCache));
     localStorage.setItem(k.mgr,   JSON.stringify(mgrCache));
+    localStorage.setItem(k.wkmgr, JSON.stringify(wkMgrCache));
     localStorage.setItem(k.ts,    Date.now().toString());
   }catch(e){console.warn('Cache save failed:',e);}
 }
@@ -921,17 +985,26 @@ async function safeQuery(table,select='*',uid=null){
   }
 }
 
-function applyData(attData,wkData,bfData,grData,bhData,mgrData){
+function applyData(attData,wkData,bfData,grData,bhData,mgrData,wkMgrData=[]){
   attCache={};
   attData.forEach(r=>{
     if(!attCache[r.week])attCache[r.week]={};
     if(!attCache[r.week][r.day])attCache[r.week][r.day]={};
     attCache[r.week][r.day][r.student_id]=r.mark;
   });
-  wkDatesCache={};
-  wkData.forEach(r=>wkDatesCache[r.week]=r.end_date);
-  bfcfCache={};
-  bfData.forEach(r=>bfcfCache[r.week]={bf_boys:r.bf_boys,bf_girls:r.bf_girls,cf_boys:r.cf_boys,cf_girls:r.cf_girls,school_open:r.school_open});
+  // Merge DB week dates with local — never wipe local entries not in DB
+  const newWkd={};
+  wkData.forEach(r=>newWkd[r.week]=r.end_date);
+  // Keep any local entries that DB doesn't have yet
+  Object.keys(wkDatesCache).forEach(w=>{
+    if(!newWkd[w]&&wkDatesCache[w]) newWkd[w]=wkDatesCache[w];
+  });
+  wkDatesCache=newWkd;
+  // Merge DB bfcf with local — never wipe local entries not in DB
+  const newBfcf={};
+  bfData.forEach(r=>newBfcf[r.week]={bf_boys:r.bf_boys,bf_girls:r.bf_girls,cf_boys:r.cf_boys,cf_girls:r.cf_girls,school_open:r.school_open});
+  Object.keys(bfcfCache).forEach(w=>{if(!newBfcf[w])newBfcf[w]=bfcfCache[w];});
+  bfcfCache=newBfcf;
   gradesCache={};
   grData.forEach(r=>gradesCache[r.student_id]=r.scores||{});
   behCache={};
@@ -939,8 +1012,13 @@ function applyData(attData,wkData,bfData,grData,bhData,mgrData){
     if(!behCache[r.student_id])behCache[r.student_id]=[];
     behCache[r.student_id][r.entry_index]={cats:r.cats||{},comment:r.comment||'',date:r.date||''};
   });
-  mgrCache={};
-  mgrData.forEach(r=>mgrCache[r.student_id]={fees:r.amount||'',mgr:r.manager_name||'',date:r.date_checked||'',sig:r.signature||''});
+  // Merge DB manager data with local
+  const newMgr={};
+  mgrData.forEach(r=>newMgr[r.student_id]={fees:r.amount||'',mgr:r.manager_name||'',date:r.date_checked||'',sig:r.signature||''});
+  Object.keys(mgrCache).forEach(sid=>{if(!newMgr[sid])newMgr[sid]=mgrCache[sid];});
+  mgrCache=newMgr;
+  wkMgrCache={};
+  wkMgrData.forEach(r=>wkMgrCache[r.week]={mgr:r.manager_name||'',date:r.date_checked||'',sig:r.signature||''});
 }
 
 async function loadAllData(){
@@ -1012,15 +1090,16 @@ async function syncFromSupabase(){
   if(!uid)return;
   // Refresh settings from DB too — keeps cfg/students/subjects in sync
   await loadUserSettings().catch(()=>{});
-  const [attData,wkData,bfData,grData,bhData,mgrData]=await Promise.all([
+  const [attData,wkData,bfData,grData,bhData,mgrData,wkMgrData]=await Promise.all([
     safeQuery('attendance',  '*', uid),
     safeQuery('week_dates',  '*', uid),
     safeQuery('bfcf',        '*', uid),
     safeQuery('grades',      '*', uid),
     safeQuery('behaviour',   '*', uid),
     safeQuery('fees',        '*', uid),
+    safeQuery('week_manager','*', uid),
   ]);
-  applyData(attData,wkData,bfData,grData,bhData,mgrData);
+  applyData(attData,wkData,bfData,grData,bhData,mgrData,wkMgrData);
   saveCache();
   // Quietly refresh UI with fresh server data
   updateHeader();
@@ -1068,21 +1147,36 @@ async function saveWkDate(){
   if(!isTeacher())return;
   const val=document.getElementById('wkEndDate').value;
   wkDatesCache[cWeek]=val;
-  saveCache(); // persist to localStorage immediately
-  await sb.from('week_dates').upsert({user_id:currentUser?.id,week:cWeek,end_date:val},{onConflict:'user_id,week'});
-  toast('Week date saved');
+  saveCache(); // persist locally first — always survives
+  // Save to Supabase — with error feedback
+  const {error}=await sb.from('week_dates').upsert(
+    {user_id:currentUser?.id,week:cWeek,end_date:val},
+    {onConflict:'user_id,week'}
+  );
+  if(error){
+    console.warn('Week date save failed:',error.message);
+    toast('Saved locally — will sync later');
+  } else {
+    toast('Week date saved ✓');
+  }
 }
 
 async function saveBFCF(){
   if(!isTeacher())return;
-  const bf_boys=parseInt(document.getElementById('bf_boys').value)||0;
-  const bf_girls=parseInt(document.getElementById('bf_girls').value)||0;
-  const cf_boys=parseInt(document.getElementById('cf_boys').value)||0;
-  const cf_girls=parseInt(document.getElementById('cf_girls').value)||0;
-  const school_open=parseInt(document.getElementById('school_open').value)||0;
+  const getVal=id=>{const el=document.getElementById(id);return el?parseInt(el.value)||0:0;};
+  const bf_boys=getVal('bf_boys');
+  const bf_girls=getVal('bf_girls');
+  const cf_boys=getVal('cf_boys');
+  const cf_girls=getVal('cf_girls');
+  const school_open=getVal('school_open');
   bfcfCache[cWeek]={bf_boys,bf_girls,cf_boys,cf_girls,school_open};
-  await sb.from('bfcf').upsert({user_id:currentUser?.id,week:cWeek,bf_boys,bf_girls,cf_boys,cf_girls,school_open},{onConflict:'user_id,week'});
-  toast('Saved');
+  saveCache(); // always persist locally first
+  const {error}=await sb.from('bfcf').upsert(
+    {user_id:currentUser?.id,week:cWeek,bf_boys,bf_girls,cf_boys,cf_girls,school_open},
+    {onConflict:'user_id,week'}
+  );
+  if(error){console.warn('BFCF save failed:',error.message);}
+  else toast('Saved ✓');
 }
 
 async function saveMgr(sid){
@@ -1430,28 +1524,134 @@ async function markAll(v){
 }
 
 // ── SUMMARY ───────────────────────────────────────────────────────────────
+function renderDaysTab(){
+  const isAdm=!isTeacher();
+  // Days grid — one input per week
+  const grid=document.getElementById('daysGrid');
+  if(grid){
+    grid.innerHTML='';
+    for(let w=1;w<=(cfg.weeks||13);w++){
+      const val=(bfcfCache[w]&&bfcfCache[w].school_open!==undefined)?bfcfCache[w].school_open:5;
+      const item=document.createElement('div');
+      item.innerHTML=`<div style="text-align:center">
+        <label style="font-size:9px;font-weight:700;color:var(--muted);display:block;margin-bottom:3px">Wk ${w}</label>
+        <input type="number" min="0" max="5" value="${val}"
+          style="width:100%;border:1.5px solid #ddd;border-radius:8px;padding:7px 4px;text-align:center;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:var(--navy);background:var(--paper);"
+          ${isAdm?'disabled':''}
+          onchange="updateSchoolOpen(${w},parseInt(this.value)||0)"/>
+      </div>`;
+      grid.appendChild(item);
+    }
+  }
+
+  // Term summary calculations
+  let totalOpen=0,totalP=0,totalAll=0,boysP=0,girlsP=0;
+  for(let w=1;w<=(cfg.weeks||13);w++){
+    totalOpen+=(bfcfCache[w]&&bfcfCache[w].school_open)||0;
+  }
+  students.forEach(s=>{
+    let p=0,marked=0;
+    for(let w=1;w<=(cfg.weeks||13);w++)for(let d=0;d<5;d++){
+      const v=getAtt(w,d,s.id);
+      if(v==='P'||v==='L')p++;
+      if(v)marked++;
+    }
+    totalP+=p; totalAll+=marked;
+    if(s.sex==='M')boysP+=p; else girlsP+=p;
+  });
+
+  const avgPct=totalAll>0?Math.round((totalP/totalAll)*100)+'%':'—';
+  const tsd=document.getElementById('totalSchoolDays');
+  const aap=document.getElementById('avgAttPct');
+  const tba=document.getElementById('totalBoysAtt');
+  const tga=document.getElementById('totalGirlsAtt');
+  if(tsd)tsd.textContent=totalOpen||'—';
+  if(aap)aap.textContent=avgPct;
+  if(tba)tba.textContent=boysP;
+  if(tga)tga.textContent=girlsP;
+
+  // Weekly attendance % grid
+  const wpg=document.getElementById('weeklyPctGrid');
+  if(wpg){
+    wpg.innerHTML='';
+    for(let w=1;w<=(cfg.weeks||13);w++){
+      let wP=0,wTotal=0;
+      students.forEach(s=>{
+        for(let d=0;d<5;d++){
+          const v=getAtt(w,d,s.id);
+          if(v==='P'||v==='L')wP++;
+          if(v)wTotal++;
+        }
+      });
+      const pct=wTotal>0?Math.round((wP/wTotal)*100)+'%':'—';
+      const item=document.createElement('div');
+      item.style.cssText='background:var(--lblue);border-radius:8px;padding:8px;text-align:center;';
+      item.innerHTML=`<div style="font-size:9px;font-weight:700;color:var(--muted);margin-bottom:2px">Week ${w}</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--navy)">${pct}</div>`;
+      wpg.appendChild(item);
+    }
+  }
+}
+
+async function updateSchoolOpen(week,val){
+  if(!isTeacher())return;
+  if(!bfcfCache[week])bfcfCache[week]={bf_boys:0,bf_girls:0,cf_boys:0,cf_girls:0,school_open:0};
+  bfcfCache[week].school_open=val;
+  saveCache();
+  const d=bfcfCache[week];
+  await sb.from('bfcf').upsert(
+    {user_id:currentUser?.id,week,bf_boys:d.bf_boys||0,bf_girls:d.bf_girls||0,cf_boys:d.cf_boys||0,cf_girls:d.cf_girls||0,school_open:val},
+    {onConflict:'user_id,week'}
+  ).catch(()=>{});
+}
+
 function renderSummary(){
-  let boysP=0,girlsP=0,openTotal=0;
-  for(let w=1;w<=cfg.weeks;w++){const d=bfcfCache[w];if(d)openTotal+=d.school_open||0;}
+  const weeks=cfg.weeks||13;
+  let boysP=0,girlsP=0,openTotal=0,termTotal=0,termMarked=0;
+  for(let w=1;w<=weeks;w++){const d=bfcfCache[w];if(d)openTotal+=d.school_open||0;}
   students.forEach(s=>{
     let p=0;
-    for(let w=1;w<=cfg.weeks;w++)for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==='P'||v==='L')p++;}
+    for(let w=1;w<=weeks;w++)for(let d=0;d<5;d++){
+      const v=getAtt(w,d,s.id);
+      if(v==='P'||v==='L'){p++;termTotal++;}
+      if(v)termMarked++;
+    }
     if(s.sex==='M')boysP+=p;else girlsP+=p;
   });
   document.getElementById('boysTotal').textContent=boysP;
   document.getElementById('girlsTotal').textContent=girlsP;
   document.getElementById('openDays').textContent=openTotal||'—';
-  const c=document.getElementById('sumCards');c.innerHTML='<h3>All Students — Term Totals</h3>';
+
+  const c=document.getElementById('sumCards');
+  c.innerHTML='';
+
+  // Term totals banner matching physical register
+  const avgPct=termMarked>0?Math.round((termTotal/termMarked)*100)+'%':'—';
+  const banner=document.createElement('div');
+  banner.style.cssText='background:var(--navy);border-radius:12px;padding:14px;margin-bottom:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;';
+  banner.innerHTML=`
+    <div><div style="font-family:'Playfair Display',serif;font-size:22px;color:#fff">${boysP+girlsP}</div><div style="font-size:9px;color:rgba(255,255,255,.55);text-transform:uppercase;font-weight:700;margin-top:2px">Total Present</div></div>
+    <div><div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--gold)">${openTotal||'—'}</div><div style="font-size:9px;color:rgba(255,255,255,.55);text-transform:uppercase;font-weight:700;margin-top:2px">Days Open</div></div>
+    <div><div style="font-family:'Playfair Display',serif;font-size:22px;color:#7ec8f7">${avgPct}</div><div style="font-size:9px;color:rgba(255,255,255,.55);text-transform:uppercase;font-weight:700;margin-top:2px">Avg Att.</div></div>`;
+  c.appendChild(banner);
+
+  // Per student totals
+  const card=document.createElement('div');card.className='sum-card';
+  card.innerHTML='<h3>All Students — Term Totals</h3>';
   students.forEach(s=>{
     let p=0,a=0,l=0;
-    for(let w=1;w<=cfg.weeks;w++)for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==='P')p++;else if(v==='A')a++;else if(v==='L')l++;}
+    for(let w=1;w<=weeks;w++)for(let d=0;d<5;d++){
+      const v=getAtt(w,d,s.id);
+      if(v==='P')p++;else if(v==='A')a++;else if(v==='L')l++;
+    }
     const total=p+a+l;
     const pct=total>0?Math.round(((p+l)/total)*100)+'%':'—';
     const row=document.createElement('div');row.className='sum-row';
     row.innerHTML=`<span class="sum-name${s.sex==='F'?' girl':''}">${s.name}</span>
       <div class="chips"><span class="chip cp">${p}P</span><span class="chip cl">${l}L</span><span class="chip ca">${a}A</span><span class="chip cpct">${pct}</span></div>`;
-    c.appendChild(row);
+    card.appendChild(row);
   });
+  c.appendChild(card);
 }
 
 // ── GRADES ────────────────────────────────────────────────────────────────
