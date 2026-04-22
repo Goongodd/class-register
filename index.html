@@ -473,39 +473,6 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
 </div>
 
 <!-- SETTINGS VIEW -->
-<div class="view" id="vSettings">
-  <div class="settings-wrap">
-    <div class="settings-section">
-      <div class="settings-section-title">🏫 School Information</div>
-      <div class="settings-field"><label>School Name</label><input type="text" id="cfg_school" placeholder="e.g. Jewel Model Schools"/></div>
-      <div class="settings-field"><label>Class Name</label><input type="text" id="cfg_class" placeholder="e.g. Basic Three"/></div>
-      <div class="settings-field"><label>Teacher's Name</label><input type="text" id="cfg_teacher" placeholder="e.g. Emordi Emeka James"/></div>
-      <div class="settings-field">
-        <label>Term</label>
-        <select id="cfg_term"><option value="1st Term">1st Term</option><option value="2nd Term">2nd Term</option><option value="3rd Term" selected>3rd Term</option></select>
-      </div>
-      <div class="settings-field"><label>Academic Session</label><input type="text" id="cfg_session" placeholder="e.g. 2025/2026"/></div>
-      <div class="settings-field"><label>Number of Weeks</label><input type="number" id="cfg_weeks" min="1" max="20" value="13"/></div>
-    </div>
-    <div class="settings-section">
-      <div class="settings-section-title">👨‍👩‍👧‍👦 Student List</div>
-      <div id="stuListSettings"></div>
-      <button class="add-stu-btn" id="addStuBtn" onclick="addStudent()">➕ Add Student</button>
-    </div>
-    <div class="settings-section" id="subjectsSection">
-      <div class="settings-section-title">📚 Subjects</div>
-      <div id="subjectListSettings"></div>
-      <button class="add-stu-btn" id="addSubjectBtn" onclick="addSubject()" style="background:var(--lblue);color:var(--blue);">➕ Add Subject</button>
-    </div>
-    <button class="save-settings-btn" id="saveSettingsBtn" onclick="saveSettings()">💾 Save & Apply Settings</button>
-    <div style="height:12px;"></div>
-    <div class="danger-zone">
-      <div class="settings-section-title">⚠️ Danger Zone</div>
-      <button class="reset-btn" onclick="resetAllData()">🗑️ Clear All Attendance Data</button>
-    </div>
-  </div>
-</div>
-
 <!-- DAYS VIEW -->
 <div class="view" id="vDays">
   <div style="padding:8px 4px 4px"><div class="sec">School Days Open</div></div>
@@ -538,6 +505,40 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
   <div class="bfcf-card" style="margin:0 10px 20px">
     <h4>Weekly Attendance %</h4>
     <div id="weeklyPctGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
+  </div>
+</div>
+
+
+<div class="view" id="vSettings">
+  <div class="settings-wrap">
+    <div class="settings-section">
+      <div class="settings-section-title">🏫 School Information</div>
+      <div class="settings-field"><label>School Name</label><input type="text" id="cfg_school" placeholder="e.g. Jewel Model Schools"/></div>
+      <div class="settings-field"><label>Class Name</label><input type="text" id="cfg_class" placeholder="e.g. Basic Three"/></div>
+      <div class="settings-field"><label>Teacher's Name</label><input type="text" id="cfg_teacher" placeholder="e.g. Emordi Emeka James"/></div>
+      <div class="settings-field">
+        <label>Term</label>
+        <select id="cfg_term"><option value="1st Term">1st Term</option><option value="2nd Term">2nd Term</option><option value="3rd Term" selected>3rd Term</option></select>
+      </div>
+      <div class="settings-field"><label>Academic Session</label><input type="text" id="cfg_session" placeholder="e.g. 2025/2026"/></div>
+      <div class="settings-field"><label>Number of Weeks</label><input type="number" id="cfg_weeks" min="1" max="20" value="13"/></div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">👨‍👩‍👧‍👦 Student List</div>
+      <div id="stuListSettings"></div>
+      <button class="add-stu-btn" id="addStuBtn" onclick="addStudent()">➕ Add Student</button>
+    </div>
+    <div class="settings-section" id="subjectsSection">
+      <div class="settings-section-title">📚 Subjects</div>
+      <div id="subjectListSettings"></div>
+      <button class="add-stu-btn" id="addSubjectBtn" onclick="addSubject()" style="background:var(--lblue);color:var(--blue);">➕ Add Subject</button>
+    </div>
+    <button class="save-settings-btn" id="saveSettingsBtn" onclick="saveSettings()">💾 Save & Apply Settings</button>
+    <div style="height:12px;"></div>
+    <div class="danger-zone">
+      <div class="settings-section-title">⚠️ Danger Zone</div>
+      <button class="reset-btn" onclick="resetAllData()">🗑️ Clear All Attendance Data</button>
+    </div>
   </div>
 </div>
 
@@ -1224,7 +1225,7 @@ function initApp(){
     if(!cfg.class&&!cfg.teacher&&!students.length&&!SUBJECTS.length){
       setTimeout(()=>{
         toast('👋 Welcome! Please go to Settings ⚙️ to set up your class.');
-        setTimeout(()=>switchView(4),2500);
+        setTimeout(()=>switchView(5),2500);
       },800);
     }
   }
@@ -1867,14 +1868,25 @@ async function resetAllData(){
 }
 
 // ── VIEW SWITCHING ────────────────────────────────────────────────────────
-const VIEWS=['vAttend','vSummary','vGrades','vBehaviour','vSettings'];
+// Views: 0=Mark 1=Summary 2=Grades 3=Behaviour 4=Days 5=Settings
+const VIEWS=['vAttend','vSummary','vGrades','vBehaviour','vDays','vSettings'];
 function switchView(idx){
-  VIEWS.forEach((v,i)=>{document.getElementById(v).classList.toggle('on',i===idx);document.getElementById('bb'+i).classList.toggle('active',i===idx);});
-  document.getElementById('weekNav').style.display=idx!==4?'flex':'none';
+  // Hide admin portal if visible
+  const ap=document.getElementById('vAdminPortal');
+  if(ap)ap.classList.remove('on');
+  VIEWS.forEach((v,i)=>{
+    const el=document.getElementById(v);
+    if(el)el.classList.toggle('on',i===idx);
+    const bb=document.getElementById('bb'+i);
+    if(bb)bb.classList.toggle('active',i===idx);
+  });
+  // Hide week nav only on Settings tab
+  document.getElementById('weekNav').style.display=idx!==5?'flex':'none';
   if(idx===1)renderSummary();
   if(idx===2)renderGrades();
   if(idx===3)renderBehaviour();
-  if(idx===4)renderSettingsForm();
+  if(idx===4)renderDaysTab();
+  if(idx===5)renderSettingsForm();
 }
 
 function toast(msg){
