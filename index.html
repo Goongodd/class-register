@@ -771,23 +771,45 @@ sb.auth.onAuthStateChange(async(event,session)=>{
       ]);
     }catch(e){console.warn('Role load failed:',e);}
 
-    // Show dashboard IMMEDIATELY — never wait for data
-    initApp();
-    appInitialized=true;
-    clearTimeout(loadingTimeout);
-    hideLoading();
+    // Check if we have a local cache for this user
+    const k=CK(currentUser.id);
+    const hasCachedCfg=localStorage.getItem(k.cfg);
 
-    // Sync data completely in background — never blocks UI
-    // Call loadAllData for cache/settings, then force a fresh Supabase sync
-    loadAllData().then(async ()=>{
-      renderList();
-      loadWkDate();
-      loadBFCF();
-      // Force attendance sync from Supabase regardless of any guards
+    if(hasCachedCfg){
+      // Has local cache — show dashboard immediately, sync in background
+      await loadAllData();
+      initApp();
+      appInitialized=true;
+      clearTimeout(loadingTimeout);
+      hideLoading();
+      // Background sync for fresh data
       if(currentRole==='teacher'){
-        await forceSyncAttendance();
+        forceSyncAttendance().then(()=>{
+          renderList();
+          loadWkDate();
+          loadBFCF();
+        }).catch(e=>console.warn('Background sync failed:',e));
       }
-    }).catch(e=>console.warn('Background sync failed:',e));
+    } else {
+      // No local cache — new browser or cleared storage
+      // Must wait for Supabase data before showing dashboard
+      try{
+        await Promise.race([
+          loadAllData(),
+          new Promise((_,rej)=>setTimeout(()=>rej(new Error('data timeout')),12000))
+        ]);
+        if(currentRole==='teacher'){
+          await forceSyncAttendance();
+        }
+      }catch(e){
+        console.warn('Initial data load failed:',e);
+        // Still show dashboard even if data load fails — better than blank
+      }
+      initApp();
+      appInitialized=true;
+      clearTimeout(loadingTimeout);
+      hideLoading();
+    }
   } else if(event==='SIGNED_OUT'){
     appInitialized=false;
     clearTimeout(loadingTimeout);
