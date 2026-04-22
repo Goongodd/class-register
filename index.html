@@ -11,6 +11,7 @@
 <link id="pwa-manifest" rel="manifest" href=""/>
 <title>Class Register · Jewel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
 :root{
@@ -26,7 +27,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
-body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);min-height:100dvh;padding-bottom:80px;-webkit-font-smoothing:antialiased;}
+body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);min-height:100dvh;padding-bottom:110px;-webkit-font-smoothing:antialiased;}
 
 /* AUTH */
 .auth-screen{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;z-index:1000;transition:opacity .4s;}
@@ -139,9 +140,36 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
 .ct-item.total .ct-n{color:var(--gold);}
 
 /* BF / CF CARD */
-.bfcf-card{background:#fff;margin:0 10px 8px;border-radius:var(--radius);padding:12px;box-shadow:var(--shadow-sm);}
+.bfcf-card{background:#fff;margin:0 10px 20px;border-radius:var(--radius);padding:12px;box-shadow:var(--shadow-sm);}
 .bfcf-card h4{font-size:10px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;}
+/* TERM SUMMARY CARD */
+.term-summary-card{background:var(--navy);margin:0 10px 10px;border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);}
+.term-summary-card h4{font-size:10px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;}
+.ts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.ts-item{background:rgba(255,255,255,.08);border-radius:9px;padding:10px;text-align:center;}
+.ts-item .tsn{font-family:'Playfair Display',serif;font-size:22px;color:#fff;}
+.ts-item .tsl{font-size:8px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:2px;}
+.ts-item.boys .tsn{color:#7ec8f7;}
+.ts-item.girls .tsn{color:#f7a0a0;}
+.ts-item.total .tsn{color:var(--gold);}
+.ts-item.pct .tsn{color:var(--lgreen);font-size:18px;}
+/* DAYS TAB */
+.days-card{background:#fff;border-radius:var(--radius);margin:0 10px 10px;padding:12px;box-shadow:var(--shadow-sm);}
+.days-card h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--navy);margin-bottom:4px;}
+.days-card p{font-size:11px;color:var(--muted);margin-bottom:12px;}
+.days-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.days-item label{font-size:9px;font-weight:700;color:var(--muted);display:block;margin-bottom:3px;text-align:center;}
+.days-item input{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:7px 4px;text-align:center;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:var(--navy);background:var(--paper);}
+.days-item input:disabled{opacity:.5;}
+/* WEEK MANAGER SIGN */
+.wk-mgr-card{background:#fff;border-radius:var(--radius);margin:0 10px 10px;padding:12px;box-shadow:var(--shadow-sm);}
+.wk-mgr-card h4{font-size:10px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;}
+.wk-mgr-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.wk-mgr-grid label{font-size:9px;font-weight:700;color:var(--muted);display:block;margin-bottom:2px;}
+.wk-mgr-grid input{width:100%;border:1.5px solid #ddd;border-radius:7px;padding:6px 8px;font-family:'Outfit',sans-serif;font-size:12px;color:var(--ink);background:var(--paper);}
+.wk-mgr-grid input:disabled{opacity:.5;}
 .bfcf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.bfcf-item.full{grid-column:1/-1;}
 .bfcf-item label{font-size:9px;font-weight:700;color:var(--muted);display:block;margin-bottom:3px;}
 .bfcf-item input{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:7px 10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--navy);background:var(--paper);text-align:center;}
 .bfcf-item input:disabled{opacity:.5;}
@@ -156,9 +184,9 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
 .leg-dot.E{background:var(--lblue);color:var(--blue);}
 
 /* BOTTOM NAV */
-.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;padding:5px 0 env(safe-area-inset-bottom,5px);z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,.06);}
-.bb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:3px 0;background:none;border:none;font-family:'Outfit',sans-serif;font-size:8px;font-weight:600;color:#bbb;cursor:pointer;transition:color .15s;}
-.bb .bi{font-size:18px;}.bb.active{color:var(--navy);}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--border);display:flex;padding:8px 0 env(safe-area-inset-bottom,12px);z-index:200;box-shadow:0 -4px 16px rgba(0,0,0,.10);min-height:60px;}
+.bb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;background:none;border:none;font-family:'Outfit',sans-serif;font-size:9px;font-weight:600;color:#bbb;cursor:pointer;transition:color .15s;}
+.bb .bi{font-size:20px;}.bb.active{color:var(--navy);}
 
 /* VIEWS */
 .view{display:none;}.view.on{display:block;}
@@ -186,13 +214,21 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
 .grades-card h3{font-family:'Playfair Display',serif;font-size:15px;color:var(--green);margin-bottom:10px;}
 .grade-student{border-bottom:1px solid var(--cream);padding:10px 0;}
 .grade-student:last-child{border-bottom:none;}
-.grade-stu-name{font-size:12px;font-weight:700;margin-bottom:6px;}
+.grade-stu-name{font-size:12px;font-weight:700;margin-bottom:8px;}
 .grade-stu-name.girl{color:var(--red);}
-.grade-subjects{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;margin-bottom:6px;}
-.grade-field label{font-size:8px;font-weight:700;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px;}
-.grade-field input{width:100%;border:1.5px solid #ddd;border-radius:6px;padding:5px 7px;font-family:'Outfit',sans-serif;font-size:12px;color:var(--ink);background:var(--paper);text-align:center;}
-.grade-field input:disabled{opacity:.5;}
-.grade-result{display:flex;gap:6px;padding:6px;background:var(--lgold);border-radius:8px;}
+/* Subject block */
+.subj-block{background:var(--cream);border-radius:9px;padding:8px;margin-bottom:6px;}
+.subj-block-title{font-size:10px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.ca-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:5px;}
+.ca-field label{font-size:7px;font-weight:700;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px;text-align:center;}
+.ca-field input{width:100%;border:1.5px solid #ddd;border-radius:6px;padding:5px 3px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;color:var(--ink);background:#fff;text-align:center;}
+.ca-field input:disabled{opacity:.5;}
+.ca-field.exam input{border-color:var(--navy);background:var(--lblue);}
+.subj-total-row{display:flex;align-items:center;justify-content:space-between;padding-top:4px;border-top:1px solid #ddd;}
+.subj-total-row span{font-size:10px;color:var(--muted);}
+.subj-total-val{font-size:13px;font-weight:700;color:var(--navy);font-family:'Playfair Display',serif;}
+/* Grade result */
+.grade-result{display:flex;gap:6px;padding:8px;background:var(--lgold);border-radius:8px;margin-top:4px;}
 .gr-item{flex:1;text-align:center;}
 .gr-item .gr-n{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;}
 .gr-item .gr-l{font-size:8px;color:var(--muted);font-weight:600;text-transform:uppercase;}
@@ -220,7 +256,7 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
 .beh-comment label{font-size:8px;font-weight:700;color:var(--muted);display:block;margin-bottom:2px;}
 
 /* SETTINGS */
-.settings-wrap{padding:10px 10px 20px;}
+.settings-wrap{padding:10px 10px 40px;}
 .settings-section{background:#fff;border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow-sm);overflow:hidden;}
 .settings-section-title{background:var(--navy);color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:9px 12px;}
 .settings-field{padding:10px 12px;border-bottom:1px solid var(--cream);display:flex;flex-direction:column;gap:3px;}
@@ -243,6 +279,29 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
 .reset-btn{width:100%;padding:12px;background:var(--lred);border:none;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
 .admin-notice{background:var(--lgold);border-radius:10px;padding:10px 12px;margin:0 10px 8px;font-size:11px;color:var(--gold);font-weight:600;display:none;}
 
+/* ADMIN PORTAL */
+#vAdminPortal{display:none;}
+#vAdminPortal.on{display:block;}
+.admin-portal-wrap{padding:10px 10px 20px;}
+.ap-header{background:var(--navy);border-radius:var(--radius);padding:16px 14px;margin-bottom:12px;box-shadow:var(--shadow);}
+.ap-header h2{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:4px;}
+.ap-header p{font-size:11px;color:rgba(255,255,255,.55);}
+.ap-teacher-card{background:#fff;border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadowsm);overflow:hidden;cursor:pointer;transition:box-shadow .15s;}
+.ap-teacher-card:active{box-shadow:var(--shadow);}
+.ap-teacher-inner{display:flex;align-items:center;gap:12px;padding:14px 14px;}
+.ap-avatar{width:40px;height:40px;border-radius:50%;background:var(--lblue);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.ap-info{flex:1;min-width:0;}
+.ap-email{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ap-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.ap-arrow{font-size:16px;color:var(--muted);}
+.ap-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;}
+
+/* ADMIN VIEWING TEACHER */
+.admin-viewing-bar{background:var(--navy2);color:#fff;padding:10px 14px;display:none;align-items:center;gap:10px;position:sticky;top:60px;z-index:94;}
+.admin-viewing-bar.on{display:flex;}
+.admin-viewing-bar span{flex:1;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.admin-back-btn{background:rgba(255,255,255,.15);border:none;border-radius:8px;padding:6px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;}
+
 /* INSTALL BANNER */
 .install-banner{background:var(--gold);color:#fff;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;font-weight:600;}
 .install-banner button{background:#fff;color:var(--gold);border:none;border-radius:7px;padding:5px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
@@ -255,7 +314,7 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* TOAST */
-.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--ink);color:#fff;padding:8px 18px;border-radius:30px;font-size:11px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:400;white-space:nowrap;}
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--ink);color:#fff;padding:8px 18px;border-radius:30px;font-size:11px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:400;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
@@ -270,14 +329,28 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
   <div class="auth-card">
     <div id="loginForm">
       <div class="auth-field"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com" autocomplete="email"/></div>
-      <div class="auth-field"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/></div>
+      <div class="auth-field">
+        <label>Password</label>
+        <div style="position:relative;">
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" style="width:100%;padding-right:44px;"/>
+          <button type="button" onclick="togglePwd('loginPassword','loginEye')" id="loginEye"
+            style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;font-size:16px;color:rgba(255,255,255,0.5);">👁</button>
+        </div>
+      </div>
       <button class="auth-btn" onclick="doLogin()" id="loginBtn">Sign In</button>
       <div class="auth-err" id="loginErr"></div>
       <div class="auth-toggle">No account? <span onclick="showSignup()">Create one</span></div>
     </div>
     <div id="signupForm" style="display:none;">
       <div class="auth-field"><label>Email</label><input type="email" id="signupEmail" placeholder="your@email.com" autocomplete="email"/></div>
-      <div class="auth-field"><label>Password (min 6 chars)</label><input type="password" id="signupPassword" placeholder="••••••••" autocomplete="new-password"/></div>
+      <div class="auth-field">
+        <label>Password (min 6 chars)</label>
+        <div style="position:relative;">
+          <input type="password" id="signupPassword" placeholder="••••••••" autocomplete="new-password" style="width:100%;padding-right:44px;"/>
+          <button type="button" onclick="togglePwd('signupPassword','signupEye')" id="signupEye"
+            style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;font-size:16px;color:rgba(255,255,255,0.5);">👁</button>
+        </div>
+      </div>
       <div class="auth-field">
         <label>Role</label>
         <select id="signupRole" onchange="toggleAdminCode()">
@@ -294,6 +367,17 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
       <div class="auth-info" id="signupInfo"></div>
       <div class="auth-toggle">Have an account? <span onclick="showLogin()">Sign in</span></div>
     </div>
+  </div>
+</div>
+
+<!-- SIGNUP SUCCESS POPUP -->
+<div id="signupSuccessPopup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:#fff;border-radius:20px;padding:32px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.2);">
+    <div style="font-size:52px;margin-bottom:16px;">🎉</div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:22px;color:#1a2e4a;margin-bottom:10px;">Account Created!</h2>
+    <p style="font-size:14px;color:#555;line-height:1.6;margin-bottom:8px;">Your account has been successfully created.</p>
+    <p style="font-size:14px;color:#555;line-height:1.6;margin-bottom:24px;">Please tap <strong>Go to Sign In</strong> below and log in with your email and password.</p>
+    <button onclick="closeSignupSuccess()" style="width:100%;padding:14px;background:#1a2e4a;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;">Go to Sign In →</button>
   </div>
 </div>
 
@@ -360,7 +444,7 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
       <div class="bfcf-item"><label>Girls — Brought Fwd</label><input type="number" id="bf_girls" min="0" placeholder="0" onchange="saveBFCF()"/></div>
       <div class="bfcf-item"><label>Boys — Carried Fwd</label><input type="number" id="cf_boys" min="0" placeholder="0" onchange="saveBFCF()"/></div>
       <div class="bfcf-item"><label>Girls — Carried Fwd</label><input type="number" id="cf_girls" min="0" placeholder="0" onchange="saveBFCF()"/></div>
-      <div class="bfcf-item"><label>Times School Open</label><input type="number" id="school_open" min="0" max="5" placeholder="5" onchange="saveBFCF()"/></div>
+      <!-- school_open moved to Days tab -->
     </div>
   </div>
 </div>
@@ -408,6 +492,11 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
       <div id="stuListSettings"></div>
       <button class="add-stu-btn" id="addStuBtn" onclick="addStudent()">➕ Add Student</button>
     </div>
+    <div class="settings-section" id="subjectsSection">
+      <div class="settings-section-title">📚 Subjects</div>
+      <div id="subjectListSettings"></div>
+      <button class="add-stu-btn" id="addSubjectBtn" onclick="addSubject()" style="background:var(--lblue);color:var(--blue);">➕ Add Subject</button>
+    </div>
     <button class="save-settings-btn" id="saveSettingsBtn" onclick="saveSettings()">💾 Save & Apply Settings</button>
     <div style="height:12px;"></div>
     <div class="danger-zone">
@@ -417,12 +506,65 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
   </div>
 </div>
 
+<!-- DAYS VIEW -->
+<div class="view" id="vDays">
+  <div style="padding:8px 4px 4px"><div class="sec">School Days Open</div></div>
+  <div class="bfcf-card" style="margin:0 10px 8px">
+    <h4>Times School Was Open Per Week</h4>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:10px">Enter how many days school was open each week. Adjust for public holidays and events.</p>
+    <div id="daysGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
+  </div>
+  <div class="bfcf-card" style="margin:0 10px 8px">
+    <h4>Term Summary</h4>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="termSummaryGrid">
+      <div class="bfcf-item">
+        <label>Total School Days</label>
+        <div id="totalSchoolDays" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--navy);text-align:center;padding:8px">—</div>
+      </div>
+      <div class="bfcf-item">
+        <label>Average Attendance %</label>
+        <div id="avgAttPct" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--green);text-align:center;padding:8px">—</div>
+      </div>
+      <div class="bfcf-item">
+        <label>Total Boys Attendance</label>
+        <div id="totalBoysAtt" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--blue);text-align:center;padding:8px">—</div>
+      </div>
+      <div class="bfcf-item">
+        <label>Total Girls Attendance</label>
+        <div id="totalGirlsAtt" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--red);text-align:center;padding:8px">—</div>
+      </div>
+    </div>
+  </div>
+  <div class="bfcf-card" style="margin:0 10px 20px">
+    <h4>Weekly Attendance %</h4>
+    <div id="weeklyPctGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
+  </div>
+</div>
+
+<!-- ADMIN PORTAL VIEW -->
+<div id="vAdminPortal">
+  <div class="admin-portal-wrap">
+    <div class="ap-header">
+      <h2>Admin Portal</h2>
+      <p>Select a teacher to view their register</p>
+    </div>
+    <div id="teacherList"></div>
+  </div>
+</div>
+
+<!-- ADMIN VIEWING BAR -->
+<div class="admin-viewing-bar" id="adminViewingBar">
+  <span id="adminViewingLabel">Viewing: —</span>
+  <button class="admin-back-btn" onclick="adminBackToPortal()">← Back to Teachers</button>
+</div>
+
 <div class="bnav">
   <button class="bb active" id="bb0" onclick="switchView(0)"><span class="bi">📋</span>Mark</button>
   <button class="bb" id="bb1" onclick="switchView(1)"><span class="bi">📊</span>Summary</button>
   <button class="bb" id="bb2" onclick="switchView(2)"><span class="bi">📝</span>Grades</button>
   <button class="bb" id="bb3" onclick="switchView(3)"><span class="bi">🧠</span>Behaviour</button>
-  <button class="bb" id="bb4" onclick="switchView(4)"><span class="bi">⚙️</span>Settings</button>
+  <button class="bb" id="bb4" onclick="switchView(4)"><span class="bi">🏫</span>Days</button>
+  <button class="bb" id="bb5" onclick="switchView(5)"><span class="bi">⚙️</span>Settings</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -437,7 +579,58 @@ const sb=createClient(SUPA_URL,SUPA_KEY);
 // ── PWA ───────────────────────────────────────────────────────────────────
 const manifest={name:"Class Register",short_name:"Register",description:"Official school attendance register",start_url:"./",display:"standalone",background_color:"#f7f3ee",theme_color:"#1a2e4a",orientation:"portrait",icons:[{src:"data:image/svg+xml,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%231a2e4a'/><text x='96' y='130' font-size='100' text-anchor='middle'>📋</text></svg>`),sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"}]};
 document.getElementById("pwa-manifest").href=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:"application/json"}));
-if('serviceWorker' in navigator){const sw=`const C='reg-v2';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll([self.location.pathname])));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),{scope:'./'}).catch(()=>{});}
+if('serviceWorker' in navigator){
+  // Cache version tied to build time — auto-busts on every deployment
+  const CACHE_VER='reg-'+Date.now();
+  const sw=`
+    const C='${CACHE_VER}';
+    self.addEventListener('install',e=>{
+      e.waitUntil(
+        caches.keys().then(keys=>Promise.all(
+          keys.filter(k=>k!==C).map(k=>caches.delete(k))
+        )).then(()=>caches.open(C).then(c=>c.addAll([self.location.pathname])))
+      );
+      self.skipWaiting();
+    });
+    self.addEventListener('activate',e=>{
+      e.waitUntil(
+        caches.keys().then(keys=>Promise.all(
+          keys.filter(k=>k!==C).map(k=>caches.delete(k))
+        )).then(()=>clients.claim())
+      );
+    });
+    self.addEventListener('fetch',e=>{
+      // Always fetch fresh for HTML, use cache for other assets
+      if(e.request.mode==='navigate'){
+        e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));
+      } else {
+        e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
+      }
+    });
+  `.replace('${CACHE_VER}', CACHE_VER);
+  navigator.serviceWorker.register(
+    URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),
+    {scope:'./'}
+  ).then(reg=>{
+    // Force update check on every page load
+    reg.update();
+    // When a new SW is waiting, activate it immediately
+    reg.addEventListener('updatefound',()=>{
+      const newSW=reg.installing;
+      newSW.addEventListener('statechange',()=>{
+        if(newSW.state==='installed'&&navigator.serviceWorker.controller){
+          // New version ready — reload silently
+          navigator.serviceWorker.addEventListener('controllerchange',()=>window.location.reload());
+          newSW.postMessage({type:'SKIP_WAITING'});
+        }
+      });
+    });
+  }).catch(()=>{});
+  // Listen for skip waiting message
+  navigator.serviceWorker.addEventListener('message',e=>{
+    if(e.data?.type==='SKIP_WAITING'&&self.skipWaiting)self.skipWaiting();
+  });
+}
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').style.display='flex';});
 window.addEventListener('appinstalled',()=>{document.getElementById('installBanner').style.display='none';toast('App installed ✓');});
@@ -447,69 +640,104 @@ function triggerInstall(){if(deferredPrompt){deferredPrompt.prompt();deferredPro
 const ADMIN_CODE="###MR. UTULU###";
 const MARKS=["P","A","L","E"];
 const DAYS=["Mon","Tue","Wed","Thu","Fri"];
-const SUBJECTS=["English Language","Mathematics","Basic Science","Social Studies","CRS","CCA","History","Verbal Reasoning","Quantitative Reasoning"];
+let SUBJECTS=[];
 const BEH_CATS=["Punctuality","Neatness","Participation","Respect","Teamwork","Homework","Overall Conduct"];
 const BEH_RATINGS=["","E","G","S","N"];
 
-const DEFAULT_CONFIG={school:'Jewel Model Schools',class:'Basic Three',teacher:'Emordi Emeka James',term:'3rd Term',session:'2025/2026',weeks:13};
-const DEFAULT_STUDENTS=[
-  {name:"Aisha Nana Abubakar",sex:"F"},{name:"Adams Alhassan",sex:"M"},
-  {name:"Adewunyi Marvelous",sex:"M"},{name:"Alhassan Mohammed",sex:"M"},
-  {name:"Anyatonwu Emilia",sex:"F"},{name:"Aondoaseer Sonia",sex:"F"},
-  {name:"Bala Joshua",sex:"M"},{name:"Henry Janelle",sex:"F"},
-  {name:"Ifeanyi David",sex:"M"},{name:"Inegedu Roman",sex:"M"},
-  {name:"Kasarawa Safwan",sex:"M"},{name:"Odigie Salome",sex:"F"},
-  {name:"Orogun Flint Gerald",sex:"M"},{name:"Robodu Redeemer",sex:"M"},
-  {name:"Tonga Abubakar",sex:"M"}
-];
+const DEFAULT_CONFIG={school:'Jewel Model Primary School',class:'',teacher:'',term:'',session:'',weeks:13};
+const DEFAULT_STUDENTS=[];
 
 // ── STATE ─────────────────────────────────────────────────────────────────
 let cfg={},students=[];
-let attCache={},wkDatesCache={},bfcfCache={},gradesCache={},behCache={},mgrCache={};
+let attCache={},wkDatesCache={},bfcfCache={},gradesCache={},behCache={},mgrCache={},wkMgrCache={};
 let cWeek=1,cDay=0,currentUser=null,currentRole='teacher';
-const isTeacher=()=>currentRole==='teacher';
+let adminViewingTeacher=null; // when admin is viewing a specific teacher
+const isTeacher=()=>currentRole==='teacher'&&!adminViewingTeacher;
 
 // ── AUTH ──────────────────────────────────────────────────────────────────
 function showLogin(){document.getElementById('loginForm').style.display='block';document.getElementById('signupForm').style.display='none';}
+function togglePwd(inputId,btnId){
+  const inp=document.getElementById(inputId);
+  const btn=document.getElementById(btnId);
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁';}
+}
 function showSignup(){document.getElementById('loginForm').style.display='none';document.getElementById('signupForm').style.display='block';}
+function showSignupSuccess(){
+  document.getElementById('signupSuccessPopup').style.display='flex';
+}
+function closeSignupSuccess(){
+  document.getElementById('signupSuccessPopup').style.display='none';
+  document.getElementById('loginForm').style.display='block';
+  document.getElementById('signupForm').style.display='none';
+  const email=document.getElementById('signupEmail').value;
+  if(email)document.getElementById('loginEmail').value=email;
+}
 function toggleAdminCode(){const r=document.getElementById('signupRole').value;document.getElementById('adminCodeField').style.display=r==='admin'?'block':'none';if(r!=='admin')document.getElementById('adminCode').value='';}
 
 async function doLogin(){
-  const email=document.getElementById('loginEmail').value.trim();
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase();
   const pass=document.getElementById('loginPassword').value;
   const btn=document.getElementById('loginBtn');
   const err=document.getElementById('loginErr');
   if(!email||!pass){showErr(err,'Please fill in all fields.');return;}
   btn.disabled=true;btn.textContent='Signing in...';
-  const {error}=await sb.auth.signInWithPassword({email,password:pass});
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
   btn.disabled=false;btn.textContent='Sign In';
-  if(error)showErr(err,error.message);
+  if(error){
+    // Give a clearer message for common errors
+    if(error.message.includes('Invalid login')||error.message.includes('invalid_credentials')){
+      showErr(err,'Incorrect email or password. Please try again.');
+    } else if(error.message.includes('Email not confirmed')){
+      showErr(err,'Please confirm your email first. Check your inbox for a confirmation link.');
+    } else {
+      showErr(err,error.message);
+    }
+  }
+  // On success, onAuthStateChange fires automatically — no need to do anything here
 }
 
 async function doSignup(){
-  const email=document.getElementById('signupEmail').value.trim();
+  const email=document.getElementById('signupEmail').value.trim().toLowerCase();
   const pass=document.getElementById('signupPassword').value;
   const role=document.getElementById('signupRole').value;
   const btn=document.getElementById('signupBtn');
   const err=document.getElementById('signupErr');
   const info=document.getElementById('signupInfo');
+  info.style.display='none';
   if(!email||!pass){showErr(err,'Please fill in all fields.');return;}
   if(pass.length<6){showErr(err,'Password must be at least 6 characters.');return;}
   if(role==='admin'){const code=document.getElementById('adminCode').value;if(code!==ADMIN_CODE){showErr(err,'Incorrect admin access code.');return;}}
-  btn.disabled=true;btn.textContent='Creating account...';
-  const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{role}}});
+  btn.disabled=true;btn.textContent='Checking...';
+
+  // Check if email already registered
+  const {data:existing}=await sb.from('profiles').select('email').eq('email',email).maybeSingle();
+  if(existing){
+    btn.disabled=false;btn.textContent='Create Account';
+    showErr(err,'An account with this email already exists. Please sign in instead.');return;
+  }
+
+  btn.textContent='Creating account...';
+  const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{role},emailRedirectTo:window.location.href}});
   btn.disabled=false;btn.textContent='Create Account';
   if(error){showErr(err,error.message);return;}
-  if(data.user)await sb.from('profiles').upsert({id:data.user.id,email,role});
-  if(!data.session){err.style.display='none';info.style.display='block';info.textContent='Account created! Check your email to confirm, then sign in.';}
+
+  if(data.user){
+    await sb.from('profiles').upsert({id:data.user.id,email,role});
+  }
+
+  // Always show the success popup regardless of confirmation setting
+  // If session exists, sign them out first so they go through sign in properly
+  if(data.session){
+    await sb.auth.signOut();
+  }
+  showSignupSuccess();
 }
 
 async function doLogout(){
-  await sb.auth.signOut();
-  currentUser=null;currentRole='teacher';
-  attCache={};wkDatesCache={};bfcfCache={};gradesCache={};behCache={};mgrCache={};
   appInitialized=false;
-  showAuthScreen();
+  clearUserCache(); // wipe this user's local cache on sign out
+  await sb.auth.signOut();
 }
 
 function showErr(el,msg){el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
@@ -520,25 +748,69 @@ function hideLoading(){document.getElementById('loading').classList.add('hidden'
 
 // ── SESSION ───────────────────────────────────────────────────────────────
 let appInitialized=false;
-const loadingTimeout=setTimeout(()=>{if(!appInitialized){hideLoading();showAuthScreen();}},6000);
+const loadingTimeout=setTimeout(()=>{if(!appInitialized){hideLoading();showAuthScreen();}},20000);
 
 sb.auth.onAuthStateChange(async(event,session)=>{
-  if(session?.user){
-    if(appInitialized)return;
+  // Ignore token refresh events — only act on real sign-in/sign-out
+  if(event==='TOKEN_REFRESHED')return;
+  if(event==='SIGNED_IN'||event==='INITIAL_SESSION'){
+    if(!session?.user){
+      // INITIAL_SESSION with no user = not logged in
+      if(!appInitialized){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}
+      return;
+    }
+    if(appInitialized)return; // already loaded
     currentUser=session.user;
     showLoading();hideAuthScreen();
+    // Load role with 3s timeout max — don't block on it
     try{
       await Promise.race([
-        (async()=>{await loadUserRole();await loadAllData();})(),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),8000))
+        loadUserRole(),
+        new Promise(r=>setTimeout(r,3000))
       ]);
-    }catch(e){console.warn('Load issue:',e);}
-    initApp();appInitialized=true;clearTimeout(loadingTimeout);hideLoading();
-  } else {
-    appInitialized=false;clearTimeout(loadingTimeout);showAuthScreen();
+    }catch(e){console.warn('Role load failed:',e);}
+
+    // Show dashboard IMMEDIATELY — never wait for data
+    initApp();
+    appInitialized=true;
+    clearTimeout(loadingTimeout);
+    hideLoading();
+
+    // Sync data completely in background — never blocks UI
+    // Call loadAllData for cache/settings, then force a fresh Supabase sync
+    loadAllData().then(async ()=>{
+      renderList();
+      loadWkDate();
+      loadBFCF();
+      // Force attendance sync from Supabase regardless of any guards
+      if(currentRole==='teacher'){
+        await forceSyncAttendance();
+      }
+    }).catch(e=>console.warn('Background sync failed:',e));
+  } else if(event==='SIGNED_OUT'){
+    appInitialized=false;
+    clearTimeout(loadingTimeout);
+    // Reset all state
+    currentUser=null; currentRole='teacher'; adminViewingTeacher=null;
+    attCache={}; wkDatesCache={}; bfcfCache={}; gradesCache={}; behCache={}; mgrCache={}; wkMgrCache={};
+    cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
+    // Full UI reset — make sure nothing from admin session bleeds through
+    document.getElementById('vAdminPortal').classList.remove('on');
+    document.getElementById('adminViewingBar').classList.remove('on');
+    document.getElementById('adminNotice').style.display='none';
+    document.getElementById('weekNav').style.display='none';
+    document.querySelector('.bnav').style.display='flex';
+    // Reset all views to default
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+    document.getElementById('vAttend').classList.add('on');
+    document.querySelectorAll('.bb').forEach((b,i)=>b.classList.toggle('active',i===0));
+    showAuthScreen();
   }
 });
-sb.auth.getSession().then(({data:{session}})=>{if(!session){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}});
+// Fast check — if no session at all, stop spinner immediately
+sb.auth.getSession().then(({data:{session}})=>{
+  if(!session&&!appInitialized){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}
+});
 
 async function loadUserRole(){
   const {data}=await sb.from('profiles').select('role').eq('id',currentUser.id).single();
@@ -547,43 +819,294 @@ async function loadUserRole(){
 }
 
 // ── DATA LOADING ──────────────────────────────────────────────────────────
-async function loadAllData(){
-  cfg=JSON.parse(localStorage.getItem('jb3_cfg')||'null')||{...DEFAULT_CONFIG};
-  students=JSON.parse(localStorage.getItem('jb3_stu')||'null')||DEFAULT_STUDENTS.map((s,i)=>({id:i+1,...s}));
+// ── CACHE KEYS — scoped per user ID to prevent data leakage ──────────────
+function CK(uid){
+  const u=uid||'anon';
+  return {
+    att:    `jb3_${u}_att`,
+    wkd:    `jb3_${u}_wkd`,
+    bfcf:   `jb3_${u}_bfcf`,
+    grades: `jb3_${u}_grades`,
+    beh:    `jb3_${u}_beh`,
+    mgr:    `jb3_${u}_mgr`,
+    cfg:    `jb3_${u}_cfg`,
+    stu:    `jb3_${u}_stu`,
+    subj:   `jb3_${u}_subjects`,
+    ts:     `jb3_${u}_cache_ts`,
+    wkmgr:  `jb3_${u}_wkmgr`,
+  };
+}
 
-  const [{data:attData},{data:wkData},{data:bfData},{data:grData},{data:bhData},{data:mgrData}]=await Promise.all([
-    sb.from('attendance').select('*'),
-    sb.from('week_dates').select('*'),
-    sb.from('bfcf').select('*'),
-    sb.from('grades').select('*'),
-    sb.from('behaviour').select('*'),
-    sb.from('fees').select('*'),
-  ]);
+function saveCache(){
+  if(!currentUser)return;
+  // Never overwrite cache while admin is viewing a teacher's data
+  if(adminViewingTeacher)return;
+  const k=CK(currentUser.id);
+  try{
+    localStorage.setItem(k.cfg,   JSON.stringify(cfg));
+    localStorage.setItem(k.stu,   JSON.stringify(students));
+    localStorage.setItem(k.subj,  JSON.stringify(SUBJECTS));
+    localStorage.setItem(k.att,   JSON.stringify(attCache));
+    localStorage.setItem(k.wkd,   JSON.stringify(wkDatesCache));
+    localStorage.setItem(k.bfcf,  JSON.stringify(bfcfCache));
+    localStorage.setItem(k.grades,JSON.stringify(gradesCache));
+    localStorage.setItem(k.beh,   JSON.stringify(behCache));
+    localStorage.setItem(k.mgr,   JSON.stringify(mgrCache));
+    localStorage.setItem(k.wkmgr, JSON.stringify(wkMgrCache));
+    localStorage.setItem(k.ts,    Date.now().toString());
+  }catch(e){console.warn('Cache save failed:',e);}
+}
 
+function loadFromCache(){
+  if(!currentUser)return false;
+  const k=CK(currentUser.id);
+  try{
+    attCache    = JSON.parse(localStorage.getItem(k.att)   ||'{}');
+    wkDatesCache= JSON.parse(localStorage.getItem(k.wkd)   ||'{}');
+    bfcfCache   = JSON.parse(localStorage.getItem(k.bfcf)  ||'{}');
+    gradesCache = JSON.parse(localStorage.getItem(k.grades)||'{}');
+    behCache    = JSON.parse(localStorage.getItem(k.beh)   ||'{}');
+    mgrCache    = JSON.parse(localStorage.getItem(k.mgr)   ||'{}');
+    return localStorage.getItem(k.ts)!==null;
+  }catch(e){return false;}
+}
+
+function clearUserCache(){
+  if(!currentUser)return;
+  const k=CK(currentUser.id);
+  // Only clear the timestamp — all data stays in localStorage
+  // Supabase is the master copy; on next login, sync refreshes everything
+  // We never wipe week dates, fees, manager fields, or attendance on logout
+  [k.ts].forEach(key=>localStorage.removeItem(key));
+}
+
+// ── OFFLINE QUEUE ─────────────────────────────────────────────────────────
+const QUEUE_KEY='jb3_offline_queue';
+
+function getQueue(){
+  try{return JSON.parse(localStorage.getItem(QUEUE_KEY)||'[]');}
+  catch(e){return [];}
+}
+
+function addToQueue(item){
+  const q=getQueue();
+  // Remove any existing entry for same student/week/day to avoid duplicates
+  const filtered=q.filter(i=>!(i.student_id===item.student_id&&i.week===item.week&&i.day===item.day));
+  filtered.push({...item,queued_at:Date.now()});
+  localStorage.setItem(QUEUE_KEY,JSON.stringify(filtered));
+}
+
+function clearQueue(){
+  localStorage.removeItem(QUEUE_KEY);
+}
+
+function isOnline(){
+  return navigator.onLine;
+}
+
+// Show/hide offline banner
+function updateOnlineBanner(){
+  let banner=document.getElementById('offlineBanner');
+  if(!banner){
+    banner=document.createElement('div');
+    banner.id='offlineBanner';
+    banner.style.cssText='background:#b52b2b;color:#fff;padding:8px 14px;font-size:11px;font-weight:700;text-align:center;display:none;position:sticky;top:60px;z-index:98;';
+    banner.textContent='📵 Offline — marks are saved locally and will sync when connected';
+    document.querySelector('header').after(banner);
+  }
+  banner.style.display=isOnline()?'none':'block';
+}
+
+async function flushQueue(){
+  const q=getQueue();
+  if(!q.length)return;
+  if(!isOnline())return;
+  try{
+    const rows=q.map(item=>({
+      student_id:item.student_id,
+      student_name:item.student_name,
+      week:item.week,
+      day:item.day,
+      mark:item.mark,
+      recorded_by:currentUser?.id||item.recorded_by,
+      updated_at:new Date().toISOString()
+    }));
+    const {error}=await sb.from('attendance').upsert(rows,{onConflict:'user_id,student_id,week,day'});
+    if(!error){
+      clearQueue();
+      toast('Offline marks synced ✓');
+      saveCache();
+    }
+  }catch(e){
+    console.warn('Queue flush failed:',e);
+  }
+}
+
+// Listen for coming back online
+window.addEventListener('online',()=>{
+  updateOnlineBanner();
+  flushQueue();
+});
+window.addEventListener('offline',()=>{
+  updateOnlineBanner();
+});
+
+// Force sync attendance data directly — bypasses all guards
+async function forceSyncAttendance(){
+  if(!currentUser)return;
+  const uid=currentUser.id;
+  try{
+    const [attData,wkData,bfData,grData,bhData,mgrData]=await Promise.all([
+      safeQuery('attendance',  '*', uid),
+      safeQuery('week_dates',  '*', uid),
+      safeQuery('bfcf',        '*', uid),
+      safeQuery('grades',      '*', uid),
+      safeQuery('behaviour',   '*', uid),
+      safeQuery('fees',        '*', uid),
+    ]);
+    applyData(attData,wkData,bfData,grData,bhData,mgrData);
+    saveCache();
+    renderList();
+    loadWkDate();
+    loadBFCF();
+  }catch(e){console.warn('Force sync failed:',e);}
+}
+
+async function safeQuery(table,select='*',uid=null){
+  try{
+    let q=sb.from(table).select(select);
+    if(uid) q=q.eq('user_id',uid);
+    const {data,error}=await q;
+    if(error)console.warn(`Query failed [${table}]:`,error.message);
+    return data||[];
+  }catch(e){
+    console.warn(`Exception [${table}]:`,e.message);
+    return [];
+  }
+}
+
+function applyData(attData,wkData,bfData,grData,bhData,mgrData,wkMgrData=[]){
   attCache={};
-  (attData||[]).forEach(r=>{
+  attData.forEach(r=>{
     if(!attCache[r.week])attCache[r.week]={};
     if(!attCache[r.week][r.day])attCache[r.week][r.day]={};
     attCache[r.week][r.day][r.student_id]=r.mark;
   });
-
-  wkDatesCache={};
-  (wkData||[]).forEach(r=>wkDatesCache[r.week]=r.end_date);
-
-  bfcfCache={};
-  (bfData||[]).forEach(r=>bfcfCache[r.week]={bf_boys:r.bf_boys,bf_girls:r.bf_girls,cf_boys:r.cf_boys,cf_girls:r.cf_girls,school_open:r.school_open});
-
+  // Merge DB week dates with local — never wipe local entries not in DB
+  const newWkd={};
+  wkData.forEach(r=>newWkd[r.week]=r.end_date);
+  // Keep any local entries that DB doesn't have yet
+  Object.keys(wkDatesCache).forEach(w=>{
+    if(!newWkd[w]&&wkDatesCache[w]) newWkd[w]=wkDatesCache[w];
+  });
+  wkDatesCache=newWkd;
+  // Merge DB bfcf with local — never wipe local entries not in DB
+  const newBfcf={};
+  bfData.forEach(r=>newBfcf[r.week]={bf_boys:r.bf_boys,bf_girls:r.bf_girls,cf_boys:r.cf_boys,cf_girls:r.cf_girls,school_open:r.school_open});
+  Object.keys(bfcfCache).forEach(w=>{if(!newBfcf[w])newBfcf[w]=bfcfCache[w];});
+  bfcfCache=newBfcf;
   gradesCache={};
-  (grData||[]).forEach(r=>gradesCache[r.student_id]=r.scores||{});
-
+  grData.forEach(r=>gradesCache[r.student_id]=r.scores||{});
   behCache={};
-  (bhData||[]).forEach(r=>{
+  bhData.forEach(r=>{
     if(!behCache[r.student_id])behCache[r.student_id]=[];
     behCache[r.student_id][r.entry_index]={cats:r.cats||{},comment:r.comment||'',date:r.date||''};
   });
+  // Merge DB manager data with local
+  const newMgr={};
+  mgrData.forEach(r=>newMgr[r.student_id]={fees:r.amount||'',mgr:r.manager_name||'',date:r.date_checked||'',sig:r.signature||''});
+  Object.keys(mgrCache).forEach(sid=>{if(!newMgr[sid])newMgr[sid]=mgrCache[sid];});
+  mgrCache=newMgr;
+  wkMgrCache={};
+  wkMgrData.forEach(r=>wkMgrCache[r.week]={mgr:r.manager_name||'',date:r.date_checked||'',sig:r.signature||''});
+}
 
-  mgrCache={};
-  (mgrData||[]).forEach(r=>mgrCache[r.student_id]={fees:r.amount||'',mgr:r.manager_name||'',date:r.date_checked||'',sig:r.signature||''});
+async function loadAllData(){
+  // Never load admin's own data over a teacher they're currently viewing
+  if(adminViewingTeacher)return;
+  const k=CK(currentUser?.id);
+
+  // Step 1: Load from local cache immediately (fast)
+  const hasCachedCfg = localStorage.getItem(k.cfg);
+  if(hasCachedCfg){
+    try{
+      cfg      = Object.assign({...DEFAULT_CONFIG}, JSON.parse(hasCachedCfg));
+      const savedStu  = localStorage.getItem(k.stu);
+      const savedSubj = localStorage.getItem(k.subj);
+      students = savedStu  ? JSON.parse(savedStu)  : [];
+      SUBJECTS = savedSubj ? JSON.parse(savedSubj) : [];
+    }catch(e){ cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[]; }
+  } else {
+    // No local cache — load from Supabase synchronously before showing app
+    const loaded = await loadUserSettings();
+    if(!loaded){
+      cfg = {...DEFAULT_CONFIG};
+      students = [];
+      SUBJECTS = [];
+    }
+  }
+
+  // Step 2: Load attendance caches from localStorage
+  loadFromCache();
+
+  // Step 3: Background sync from Supabase — refreshes everything silently
+  syncFromSupabase().catch(e=>console.warn('Sync error:',e));
+}
+
+// Save cfg/students/subjects to Supabase
+async function saveUserSettings(){
+  if(!currentUser)return;
+  await sb.from('user_settings').upsert({
+    user_id: currentUser.id,
+    cfg: cfg,
+    students: students,
+    subjects: SUBJECTS,
+    updated_at: new Date().toISOString()
+  },{onConflict:'user_id'});
+}
+
+// Load cfg/students/subjects from Supabase
+async function loadUserSettings(){
+  if(!currentUser)return false;
+  try{
+    const {data,error}=await sb.from('user_settings').select('*').eq('user_id',currentUser.id).single();
+    if(error||!data)return false;
+    if(data.cfg)      cfg      = Object.assign({...DEFAULT_CONFIG}, data.cfg);
+    if(data.students) students = data.students;
+    if(data.subjects) SUBJECTS = data.subjects;
+    // Also save to local cache
+    saveCache();
+    return true;
+  }catch(e){
+    console.warn('loadUserSettings failed:',e);
+    return false;
+  }
+}
+
+async function syncFromSupabase(){
+  // Never overwrite teacher data admin is currently viewing
+  if(adminViewingTeacher)return;
+  const uid=currentUser?.id;
+  if(!uid)return;
+  // Refresh settings from DB too — keeps cfg/students/subjects in sync
+  await loadUserSettings().catch(()=>{});
+  const [attData,wkData,bfData,grData,bhData,mgrData,wkMgrData]=await Promise.all([
+    safeQuery('attendance',  '*', uid),
+    safeQuery('week_dates',  '*', uid),
+    safeQuery('bfcf',        '*', uid),
+    safeQuery('grades',      '*', uid),
+    safeQuery('behaviour',   '*', uid),
+    safeQuery('fees',        '*', uid),
+    safeQuery('week_manager','*', uid),
+  ]);
+  applyData(attData,wkData,bfData,grData,bhData,mgrData,wkMgrData);
+  saveCache();
+  // Quietly refresh UI with fresh server data
+  updateHeader();
+  buildNav();
+  renderList();
+  loadWkDate();
+  loadBFCF();
 }
 
 function getAtt(w,d,sid){return (attCache[w]&&attCache[w][d]&&attCache[w][d][sid])||'';}
@@ -594,29 +1117,66 @@ async function setAtt(w,d,sid,v){
   if(!attCache[w][d])attCache[w][d]={};
   attCache[w][d][sid]=v;
   renderList();updateClassTotals();
+  saveCache(); // always update local cache immediately
+
   const stu=students.find(s=>s.id===sid);
-  const {error}=await sb.from('attendance').upsert({student_id:sid,student_name:stu?.name||'',week:w,day:d,mark:v,recorded_by:currentUser.id,updated_at:new Date().toISOString()},{onConflict:'student_id,week,day'});
-  if(error){toast('Save failed');console.error(error);}else toast('Saved ✓');
+  const record={user_id:currentUser?.id,student_id:sid,student_name:stu?.name||'',week:w,day:d,mark:v,recorded_by:currentUser?.id,updated_at:new Date().toISOString()};
+
+  if(!isOnline()){
+    // Queue for later sync
+    addToQueue(record);
+    toast('Saved offline 📵');
+    return;
+  }
+
+  // Online — save to Supabase directly
+  const {error}=await sb.from('attendance').upsert(record,{onConflict:'user_id,student_id,week,day'});
+  if(error){
+    // Save failed — add to queue as fallback
+    addToQueue(record);
+    toast('Queued — will sync later');
+    console.error(error);
+  } else {
+    // Also flush any queued items while we're online
+    flushQueue();
+    toast('Saved ✓');
+  }
 }
 
 async function saveWkDate(){
   if(!isTeacher())return;
   const val=document.getElementById('wkEndDate').value;
   wkDatesCache[cWeek]=val;
-  await sb.from('week_dates').upsert({week:cWeek,end_date:val},{onConflict:'week'});
-  toast('Week date saved');
+  saveCache(); // persist locally first — always survives
+  // Save to Supabase — with error feedback
+  const {error}=await sb.from('week_dates').upsert(
+    {user_id:currentUser?.id,week:cWeek,end_date:val},
+    {onConflict:'user_id,week'}
+  );
+  if(error){
+    console.warn('Week date save failed:',error.message);
+    toast('Saved locally — will sync later');
+  } else {
+    toast('Week date saved ✓');
+  }
 }
 
 async function saveBFCF(){
   if(!isTeacher())return;
-  const bf_boys=parseInt(document.getElementById('bf_boys').value)||0;
-  const bf_girls=parseInt(document.getElementById('bf_girls').value)||0;
-  const cf_boys=parseInt(document.getElementById('cf_boys').value)||0;
-  const cf_girls=parseInt(document.getElementById('cf_girls').value)||0;
-  const school_open=parseInt(document.getElementById('school_open').value)||0;
+  const getVal=id=>{const el=document.getElementById(id);return el?parseInt(el.value)||0:0;};
+  const bf_boys=getVal('bf_boys');
+  const bf_girls=getVal('bf_girls');
+  const cf_boys=getVal('cf_boys');
+  const cf_girls=getVal('cf_girls');
+  const school_open=getVal('school_open');
   bfcfCache[cWeek]={bf_boys,bf_girls,cf_boys,cf_girls,school_open};
-  await sb.from('bfcf').upsert({week:cWeek,bf_boys,bf_girls,cf_boys,cf_girls,school_open},{onConflict:'week'});
-  toast('Saved');
+  saveCache(); // always persist locally first
+  const {error}=await sb.from('bfcf').upsert(
+    {user_id:currentUser?.id,week:cWeek,bf_boys,bf_girls,cf_boys,cf_girls,school_open},
+    {onConflict:'user_id,week'}
+  );
+  if(error){console.warn('BFCF save failed:',error.message);}
+  else toast('Saved ✓');
 }
 
 async function saveMgr(sid){
@@ -626,14 +1186,15 @@ async function saveMgr(sid){
   const date=document.getElementById(`mgrdate_${sid}`).value;
   const sig=document.getElementById(`sig_${sid}`).value;
   mgrCache[sid]={fees,mgr,date,sig};
-  await sb.from('fees').upsert({student_id:sid,amount:fees,manager_name:mgr,date_checked:date,signature:sig},{onConflict:'student_id'});
+  saveCache(); // persist to localStorage immediately so it survives logout
+  await sb.from('fees').upsert({user_id:currentUser?.id,student_id:sid,amount:fees,manager_name:mgr,date_checked:date,signature:sig},{onConflict:'user_id,student_id'});
 }
 
 async function saveGrade(sid,subject,val){
   if(!isTeacher())return;
   if(!gradesCache[sid])gradesCache[sid]={};
   gradesCache[sid][subject]=val;
-  await sb.from('grades').upsert({student_id:sid,scores:gradesCache[sid]},{onConflict:'student_id'});
+  await sb.from('grades').upsert({user_id:currentUser?.id,student_id:sid,scores:gradesCache[sid]},{onConflict:'user_id,student_id'});
   // update result display
   renderGradeResult(sid);
 }
@@ -646,12 +1207,164 @@ async function saveBehaviour(sid,entryIdx,field,val){
   else if(field==='date')behCache[sid][entryIdx].date=val;
   else behCache[sid][entryIdx].cats[field]=val;
   const entry=behCache[sid][entryIdx];
-  await sb.from('behaviour').upsert({student_id:sid,entry_index:entryIdx,cats:entry.cats,comment:entry.comment,date:entry.date},{onConflict:'student_id,entry_index'});
+  await sb.from('behaviour').upsert({user_id:currentUser?.id,student_id:sid,entry_index:entryIdx,cats:entry.cats,comment:entry.comment,date:entry.date},{onConflict:'user_id,student_id,entry_index'});
 }
 
 // ── APP INIT ──────────────────────────────────────────────────────────────
 function initApp(){
-  setDateChip();updateHeader();buildNav();renderList();loadWkDate();loadBFCF();applyRoleUI();
+  setDateChip();updateHeader();applyRoleUI();
+  updateOnlineBanner();
+  if(currentRole==='admin'){
+    // Admin goes straight to portal
+    showAdminPortal();
+  } else {
+    // Teacher normal flow
+    buildNav();renderList();loadWkDate();loadBFCF();
+    if(isOnline())flushQueue();
+    if(!cfg.class&&!cfg.teacher&&!students.length&&!SUBJECTS.length){
+      setTimeout(()=>{
+        toast('👋 Welcome! Please go to Settings ⚙️ to set up your class.');
+        setTimeout(()=>switchView(4),2500);
+      },800);
+    }
+  }
+}
+
+// ── ADMIN PORTAL ──────────────────────────────────────────────────────────
+async function showAdminPortal(){
+  // Hide all regular views, show portal
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('vAdminPortal').classList.add('on');
+  document.getElementById('weekNav').style.display='none';
+  document.getElementById('adminNotice').style.display='none';
+  document.getElementById('adminViewingBar').classList.remove('on');
+  adminViewingTeacher=null;
+  // Hide bottom nav for admin portal
+  document.querySelector('.bnav').style.display='none';
+  // Load teacher list
+  await loadTeacherList();
+}
+
+async function loadTeacherList(){
+  const list=document.getElementById('teacherList');
+  list.innerHTML='<div class="ap-empty">Loading teachers...</div>';
+  try{
+    // Try fetching all profiles where role is teacher
+    const {data,error}=await sb.from('profiles').select('*').eq('role','teacher').order('email');
+    if(error){
+      // RLS may be blocking — show helpful message
+      console.warn('Profiles query error:',error.message);
+      list.innerHTML=`<div class="ap-empty">
+        <p style="margin-bottom:8px">Could not load teachers.</p>
+        <p style="font-size:11px;color:#bbb">Run the admin RLS SQL in Supabase to fix this.</p>
+      </div>`;
+      return;
+    }
+    if(!data||!data.length){
+      list.innerHTML='<div class="ap-empty">No teachers registered yet.</div>';
+      return;
+    }
+    list.innerHTML='';
+    data.forEach(teacher=>{
+      const card=document.createElement('div');
+      card.className='ap-teacher-card';
+      const initials=teacher.email?teacher.email[0].toUpperCase():'T';
+      // Get class name from user_settings if available
+      card.innerHTML=`<div class="ap-teacher-inner">
+        <div class="ap-avatar">${initials}</div>
+        <div class="ap-info">
+          <div class="ap-email">${teacher.email}</div>
+          <div class="ap-meta" id="tmeta_${teacher.id}">Teacher · Loading class info...</div>
+        </div>
+        <div class="ap-arrow">›</div>
+      </div>`;
+      card.onclick=()=>adminViewTeacher(teacher);
+      list.appendChild(card);
+      // Load class name in background
+      sb.from('user_settings').select('cfg').eq('user_id',teacher.id).single()
+        .then(({data:s})=>{
+          const el=document.getElementById(`tmeta_${teacher.id}`);
+          if(el&&s?.cfg?.class) el.textContent=`${s.cfg.class} · ${s.cfg.teacher||''}`;
+          else if(el) el.textContent='Teacher · No class set up yet';
+        }).catch(()=>{});
+    });
+  }catch(e){
+    list.innerHTML='<div class="ap-empty">Failed to load teachers. Check connection.</div>';
+    console.warn('Load teachers failed:',e);
+  }
+}
+
+async function adminViewTeacher(teacher){
+  // Load that teacher's data
+  toast('Loading '+teacher.email+'...');
+  adminViewingTeacher=teacher;
+
+  try{
+    // Load teacher's settings
+    const {data:settings}=await sb.from('user_settings')
+      .select('*').eq('user_id',teacher.id).single();
+    if(settings){
+      cfg      = Object.assign({...DEFAULT_CONFIG}, settings.cfg||{});
+      students = settings.students||[];
+      SUBJECTS = settings.subjects||[];
+    } else {
+      cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
+    }
+
+    // Load teacher's attendance data
+    const [attData,wkData,bfData,grData,bhData,mgrData]=await Promise.all([
+      sb.from('attendance').select('*').eq('user_id',teacher.id),
+      sb.from('week_dates').select('*').eq('user_id',teacher.id),
+      sb.from('bfcf').select('*').eq('user_id',teacher.id),
+      sb.from('grades').select('*').eq('user_id',teacher.id),
+      sb.from('behaviour').select('*').eq('user_id',teacher.id),
+      sb.from('fees').select('*').eq('user_id',teacher.id),
+    ]);
+
+    applyData(
+      attData.data||[], wkData.data||[], bfData.data||[],
+      grData.data||[], bhData.data||[], mgrData.data||[]
+    );
+  }catch(e){
+    toast('Failed to load teacher data');
+    console.warn(e); return;
+  }
+
+  // Show register views
+  document.getElementById('vAdminPortal').classList.remove('on');
+  document.querySelector('.bnav').style.display='flex';
+  document.getElementById('weekNav').style.display='flex';
+  document.getElementById('adminNotice').style.display='block';
+  document.getElementById('adminViewingBar').classList.add('on');
+  document.getElementById('adminViewingLabel').textContent='Viewing: '+teacher.email;
+
+  // Show mark tab with teacher's data
+  updateHeader();
+  buildNav();
+  renderList();
+  loadWkDate();
+  loadBFCF();
+  switchView(0);
+  toast('Viewing '+teacher.email);
+}
+
+function adminBackToPortal(){
+  // Clear teacher's data from memory
+  adminViewingTeacher=null;
+  attCache={}; wkDatesCache={}; bfcfCache={};
+  gradesCache={}; behCache={}; mgrCache={};
+  cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
+  // Hide nav and viewing bar
+  document.getElementById('adminViewingBar').classList.remove('on');
+  document.getElementById('adminNotice').style.display='none';
+  document.getElementById('weekNav').style.display='none';
+  // Hide all regular views
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  // Show portal
+  document.getElementById('vAdminPortal').classList.add('on');
+  document.querySelector('.bnav').style.display='none';
+  updateHeader();
+  loadTeacherList();
 }
 
 function applyRoleUI(){
@@ -665,14 +1378,22 @@ function applyRoleUI(){
   if(isAdmin){
     document.getElementById('saveSettingsBtn').disabled=true;
     document.getElementById('addStuBtn').disabled=true;
+    document.getElementById('addSubjectBtn').disabled=true;
     ['bf_boys','bf_girls','cf_boys','cf_girls','school_open'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true;});
   }
 }
 
 function updateHeader(){
-  document.getElementById('hdrTitle').textContent=`${cfg.class} Register`;
-  document.getElementById('hdrSub').textContent=`${cfg.school} · ${cfg.teacher} · ${cfg.term} ${cfg.session}`;
-  document.title=`${cfg.class} · ${cfg.school}`;
+  const cls   = cfg.class   ||'';
+  const school= cfg.school  ||'Jewel Model Primary School';
+  const teacher=cfg.teacher ||'';
+  const term  = cfg.term    ||'';
+  const session=cfg.session ||'';
+  // Only append "Register" if class name doesn't already contain it
+  const titleSuffix = cls.toLowerCase().includes('register') ? '' : ' Register';
+  document.getElementById('hdrTitle').textContent=cls ? `${cls}${titleSuffix}` : 'Class Register';
+  document.getElementById('hdrSub').textContent=`${school}${teacher?' · '+teacher:''}${term?' · '+term:''}${session?' '+session:''}`;
+  document.title=cls ? `${cls}${titleSuffix}` : 'Class Register';
 }
 
 function setDateChip(){
@@ -783,71 +1504,234 @@ async function markAll(v){
   if(!attCache[cWeek][cDay])attCache[cWeek][cDay]={};
   students.forEach(s=>attCache[cWeek][cDay][s.id]=v);
   renderList();
-  const rows=students.map(s=>({student_id:s.id,student_name:s.name,week:cWeek,day:cDay,mark:v,recorded_by:currentUser.id,updated_at:new Date().toISOString()}));
-  await sb.from('attendance').upsert(rows,{onConflict:'student_id,week,day'});
-  toast('All marked ✓');
+  const rows=students.map(s=>({user_id:currentUser?.id,student_id:s.id,student_name:s.name,week:cWeek,day:cDay,mark:v,recorded_by:currentUser?.id,updated_at:new Date().toISOString()}));
+  saveCache(); // update local cache immediately
+
+  if(!isOnline()){
+    rows.forEach(r=>addToQueue(r));
+    toast('All marked offline 📵');
+    return;
+  }
+
+  const {error}=await sb.from('attendance').upsert(rows,{onConflict:'user_id,student_id,week,day'});
+  if(error){
+    rows.forEach(r=>addToQueue(r));
+    toast('Queued — will sync later');
+  } else {
+    flushQueue();
+    toast('All marked ✓');
+  }
 }
 
 // ── SUMMARY ───────────────────────────────────────────────────────────────
+function renderDaysTab(){
+  const isAdm=!isTeacher();
+  // Days grid — one input per week
+  const grid=document.getElementById('daysGrid');
+  if(grid){
+    grid.innerHTML='';
+    for(let w=1;w<=(cfg.weeks||13);w++){
+      const val=(bfcfCache[w]&&bfcfCache[w].school_open!==undefined)?bfcfCache[w].school_open:5;
+      const item=document.createElement('div');
+      item.innerHTML=`<div style="text-align:center">
+        <label style="font-size:9px;font-weight:700;color:var(--muted);display:block;margin-bottom:3px">Wk ${w}</label>
+        <input type="number" min="0" max="5" value="${val}"
+          style="width:100%;border:1.5px solid #ddd;border-radius:8px;padding:7px 4px;text-align:center;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:var(--navy);background:var(--paper);"
+          ${isAdm?'disabled':''}
+          onchange="updateSchoolOpen(${w},parseInt(this.value)||0)"/>
+      </div>`;
+      grid.appendChild(item);
+    }
+  }
+
+  // Term summary calculations
+  let totalOpen=0,totalP=0,totalAll=0,boysP=0,girlsP=0;
+  for(let w=1;w<=(cfg.weeks||13);w++){
+    totalOpen+=(bfcfCache[w]&&bfcfCache[w].school_open)||0;
+  }
+  students.forEach(s=>{
+    let p=0,marked=0;
+    for(let w=1;w<=(cfg.weeks||13);w++)for(let d=0;d<5;d++){
+      const v=getAtt(w,d,s.id);
+      if(v==='P'||v==='L')p++;
+      if(v)marked++;
+    }
+    totalP+=p; totalAll+=marked;
+    if(s.sex==='M')boysP+=p; else girlsP+=p;
+  });
+
+  const avgPct=totalAll>0?Math.round((totalP/totalAll)*100)+'%':'—';
+  const tsd=document.getElementById('totalSchoolDays');
+  const aap=document.getElementById('avgAttPct');
+  const tba=document.getElementById('totalBoysAtt');
+  const tga=document.getElementById('totalGirlsAtt');
+  if(tsd)tsd.textContent=totalOpen||'—';
+  if(aap)aap.textContent=avgPct;
+  if(tba)tba.textContent=boysP;
+  if(tga)tga.textContent=girlsP;
+
+  // Weekly attendance % grid
+  const wpg=document.getElementById('weeklyPctGrid');
+  if(wpg){
+    wpg.innerHTML='';
+    for(let w=1;w<=(cfg.weeks||13);w++){
+      let wP=0,wTotal=0;
+      students.forEach(s=>{
+        for(let d=0;d<5;d++){
+          const v=getAtt(w,d,s.id);
+          if(v==='P'||v==='L')wP++;
+          if(v)wTotal++;
+        }
+      });
+      const pct=wTotal>0?Math.round((wP/wTotal)*100)+'%':'—';
+      const item=document.createElement('div');
+      item.style.cssText='background:var(--lblue);border-radius:8px;padding:8px;text-align:center;';
+      item.innerHTML=`<div style="font-size:9px;font-weight:700;color:var(--muted);margin-bottom:2px">Week ${w}</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--navy)">${pct}</div>`;
+      wpg.appendChild(item);
+    }
+  }
+}
+
+async function updateSchoolOpen(week,val){
+  if(!isTeacher())return;
+  if(!bfcfCache[week])bfcfCache[week]={bf_boys:0,bf_girls:0,cf_boys:0,cf_girls:0,school_open:0};
+  bfcfCache[week].school_open=val;
+  saveCache();
+  const d=bfcfCache[week];
+  await sb.from('bfcf').upsert(
+    {user_id:currentUser?.id,week,bf_boys:d.bf_boys||0,bf_girls:d.bf_girls||0,cf_boys:d.cf_boys||0,cf_girls:d.cf_girls||0,school_open:val},
+    {onConflict:'user_id,week'}
+  ).catch(()=>{});
+}
+
 function renderSummary(){
-  let boysP=0,girlsP=0,openTotal=0;
-  for(let w=1;w<=cfg.weeks;w++){const d=bfcfCache[w];if(d)openTotal+=d.school_open||0;}
+  const weeks=cfg.weeks||13;
+  let boysP=0,girlsP=0,openTotal=0,termTotal=0,termMarked=0;
+  for(let w=1;w<=weeks;w++){const d=bfcfCache[w];if(d)openTotal+=d.school_open||0;}
   students.forEach(s=>{
     let p=0;
-    for(let w=1;w<=cfg.weeks;w++)for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==='P'||v==='L')p++;}
+    for(let w=1;w<=weeks;w++)for(let d=0;d<5;d++){
+      const v=getAtt(w,d,s.id);
+      if(v==='P'||v==='L'){p++;termTotal++;}
+      if(v)termMarked++;
+    }
     if(s.sex==='M')boysP+=p;else girlsP+=p;
   });
   document.getElementById('boysTotal').textContent=boysP;
   document.getElementById('girlsTotal').textContent=girlsP;
   document.getElementById('openDays').textContent=openTotal||'—';
-  const c=document.getElementById('sumCards');c.innerHTML='<h3>All Students — Term Totals</h3>';
+
+  const c=document.getElementById('sumCards');
+  c.innerHTML='';
+
+  // Term totals banner matching physical register
+  const avgPct=termMarked>0?Math.round((termTotal/termMarked)*100)+'%':'—';
+  const banner=document.createElement('div');
+  banner.style.cssText='background:var(--navy);border-radius:12px;padding:14px;margin-bottom:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;';
+  banner.innerHTML=`
+    <div><div style="font-family:'Playfair Display',serif;font-size:22px;color:#fff">${boysP+girlsP}</div><div style="font-size:9px;color:rgba(255,255,255,.55);text-transform:uppercase;font-weight:700;margin-top:2px">Total Present</div></div>
+    <div><div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--gold)">${openTotal||'—'}</div><div style="font-size:9px;color:rgba(255,255,255,.55);text-transform:uppercase;font-weight:700;margin-top:2px">Days Open</div></div>
+    <div><div style="font-family:'Playfair Display',serif;font-size:22px;color:#7ec8f7">${avgPct}</div><div style="font-size:9px;color:rgba(255,255,255,.55);text-transform:uppercase;font-weight:700;margin-top:2px">Avg Att.</div></div>`;
+  c.appendChild(banner);
+
+  // Per student totals
+  const card=document.createElement('div');card.className='sum-card';
+  card.innerHTML='<h3>All Students — Term Totals</h3>';
   students.forEach(s=>{
     let p=0,a=0,l=0;
-    for(let w=1;w<=cfg.weeks;w++)for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==='P')p++;else if(v==='A')a++;else if(v==='L')l++;}
+    for(let w=1;w<=weeks;w++)for(let d=0;d<5;d++){
+      const v=getAtt(w,d,s.id);
+      if(v==='P')p++;else if(v==='A')a++;else if(v==='L')l++;
+    }
     const total=p+a+l;
     const pct=total>0?Math.round(((p+l)/total)*100)+'%':'—';
     const row=document.createElement('div');row.className='sum-row';
     row.innerHTML=`<span class="sum-name${s.sex==='F'?' girl':''}">${s.name}</span>
       <div class="chips"><span class="chip cp">${p}P</span><span class="chip cl">${l}L</span><span class="chip ca">${a}A</span><span class="chip cpct">${pct}</span></div>`;
-    c.appendChild(row);
+    card.appendChild(row);
   });
+  c.appendChild(card);
 }
 
 // ── GRADES ────────────────────────────────────────────────────────────────
+// CA components: 10 marks each, Exam 60 marks
+const CA_COMPONENTS=[
+  {key:'ca1',  label:'1st CA',  max:10},
+  {key:'ca2',  label:'2nd CA',  max:10},
+  {key:'proj', label:'Project', max:10},
+  {key:'hw',   label:'H/Work',  max:10},
+  {key:'exam', label:'Exam',    max:60, highlight:true},
+];
+
+function getSubjScore(sid,sub){
+  const d=gradesCache[sid]||{};
+  return d[sub]||{};
+}
+
+function calcSubjTotal(sid,sub){
+  const d=getSubjScore(sid,sub);
+  return CA_COMPONENTS.reduce((sum,c)=>sum+(parseFloat(d[c.key])||0),0);
+}
+
 function renderGrades(){
   const c=document.getElementById('gradesCard');c.innerHTML='<h3>Grades Record</h3>';
   const isAdmin=currentRole==='admin';
+  if(!SUBJECTS.length){
+    c.innerHTML+='<p style="font-size:12px;color:#aaa;padding:10px 0">No subjects added yet. Go to Settings ⚙️ to add subjects.</p>';
+    return;
+  }
   students.forEach(s=>{
-    const scores=gradesCache[s.id]||{};
     const div=document.createElement('div');div.className='grade-student';
-    div.innerHTML=`<div class="grade-stu-name${s.sex==='F'?' girl':''}">${s.id}. ${s.name}</div>
-      <div class="grade-subjects">${SUBJECTS.map(sub=>`
-        <div class="grade-field">
-          <label>${sub}</label>
-          <input type="number" min="0" max="100" value="${scores[sub]||''}" placeholder="0-100"
-            ${isAdmin?'disabled':''}
-            onchange="saveGrade(${s.id},'${sub}',parseInt(this.value)||0)"
-            id="grade_${s.id}_${sub.replace(/ /g,'_')}"/>
-        </div>`).join('')}</div>
-      <div class="grade-result" id="grResult_${s.id}"></div>`;
+    let html=`<div class="grade-stu-name${s.sex==='F'?' girl':''}">${s.id}. ${s.name}</div>`;
+    SUBJECTS.forEach(sub=>{
+      const d=getSubjScore(s.id,sub);
+      const total=calcSubjTotal(s.id,sub);
+      html+=`<div class="subj-block">
+        <div class="subj-block-title">${sub}</div>
+        <div class="ca-grid">
+          ${CA_COMPONENTS.map(comp=>`
+            <div class="ca-field${comp.highlight?' exam':''}">
+              <label>${comp.label}<br/>(/${comp.max})</label>
+              <input type="number" min="0" max="${comp.max}"
+                value="${d[comp.key]||''}" placeholder="0"
+                ${isAdmin?'disabled':''}
+                onchange="saveGradeCA(${s.id},'${sub}','${comp.key}',this.value,${comp.max})"/>
+            </div>`).join('')}
+        </div>
+        <div class="subj-total-row">
+          <span>Subject Total</span>
+          <span class="subj-total-val" id="st_${s.id}_${sub.replace(/\s+/g,'_')}">${total}/100</span>
+        </div>
+      </div>`;
+    });
+    html+=`<div class="grade-result" id="grResult_${s.id}"></div>`;
+    div.innerHTML=html;
     c.appendChild(div);
     renderGradeResult(s.id);
   });
 }
 
 function renderGradeResult(sid){
-  const scores=gradesCache[sid]||{};
-  const vals=SUBJECTS.map(sub=>parseFloat(scores[sub])||0);
-  const filled=vals.filter(v=>v>0);
-  if(!filled.length){document.getElementById(`grResult_${sid}`).innerHTML='<span style="font-size:11px;color:#bbb;padding:4px;">Enter scores above</span>';return;}
-  const total=vals.reduce((a,b)=>a+b,0);
-  const avg=total/SUBJECTS.length;
+  const el=document.getElementById(`grResult_${sid}`);if(!el)return;
+  if(!SUBJECTS.length){el.innerHTML='';return;}
+  const totals=SUBJECTS.map(sub=>calcSubjTotal(sid,sub));
+  const hasAny=totals.some(t=>t>0);
+  if(!hasAny){el.innerHTML='<span style="font-size:11px;color:#bbb;padding:4px;">Enter scores above</span>';return;}
+  const grandTotal=totals.reduce((a,b)=>a+b,0);
+  const avg=grandTotal/SUBJECTS.length;
   const grade=avg>=80?'A':avg>=65?'B':avg>=50?'C':avg>=40?'D':'F';
   const remark={A:'Excellent',B:'Very Good',C:'Good',D:'Pass',F:'Fail'}[grade];
-  document.getElementById(`grResult_${sid}`).innerHTML=`
+  el.innerHTML=`
     <div class="gr-item avg"><div class="gr-n">${avg.toFixed(1)}</div><div class="gr-l">Average</div></div>
     <div class="gr-item grade"><div class="gr-n">${grade}</div><div class="gr-l">Grade</div></div>
     <div class="gr-item remark"><div class="gr-n">${remark}</div><div class="gr-l">Remark</div></div>`;
+}
+
+function updateSubjTotal(sid,sub){
+  const total=calcSubjTotal(sid,sub);
+  const el=document.getElementById(`st_${sid}_${sub.replace(/\s+/g,'_')}`);
+  if(el) el.textContent=`${total}/100`;
 }
 
 // ── BEHAVIOUR ─────────────────────────────────────────────────────────────
@@ -892,6 +1776,35 @@ function renderSettingsForm(){
   const disabled=!isTeacher();
   ['cfg_school','cfg_class','cfg_teacher','cfg_session','cfg_weeks','cfg_term'].forEach(id=>document.getElementById(id).disabled=disabled);
   renderStudentSettings();
+  renderSubjectSettings();
+}
+
+function renderSubjectSettings(){
+  const c=document.getElementById('subjectListSettings');c.innerHTML='';
+  const disabled=!isTeacher();
+  SUBJECTS.forEach((subj,i)=>{
+    const row=document.createElement('div');row.className='stu-item';
+    row.innerHTML=`<span class="stu-idx">${i+1}</span>
+      <input type="text" value="${subj}" placeholder="Subject name" ${disabled?'disabled':''}
+        onchange="SUBJECTS[${i}]=this.value.trim();"/>
+      ${!disabled?`<button class="stu-del" onclick="removeSubject(${i})" title="Remove subject">🗑</button>`:''}`;
+    c.appendChild(row);
+  });
+}
+
+function addSubject(){
+  if(!isTeacher())return;
+  SUBJECTS.push('');
+  renderSubjectSettings();
+}
+
+function removeSubject(idx){
+  if(!isTeacher())return;
+  if(SUBJECTS.length<=1){toast('Need at least 1 subject');return;}
+  if(confirm(`Remove "${SUBJECTS[idx]}"?`)){
+    SUBJECTS.splice(idx,1);
+    renderSubjectSettings();
+  }
 }
 
 function renderStudentSettings(){
@@ -933,8 +1846,13 @@ function saveSettings(){
   cfg.weeks=parseInt(document.getElementById('cfg_weeks').value)||13;
   students=students.filter(s=>s.name.trim()!=='');
   students.forEach((s,i)=>s.id=i+1);
-  localStorage.setItem('jb3_cfg',JSON.stringify(cfg));
-  localStorage.setItem('jb3_stu',JSON.stringify(students));
+  // Clean and save subjects
+  SUBJECTS=SUBJECTS.filter(s=>s.trim()!=='');
+  if(SUBJECTS.length===0)SUBJECTS=[];
+  // Save to local cache
+  saveCache();
+  // Save to Supabase for cross-device persistence
+  saveUserSettings().catch(e=>console.warn('Settings save to DB failed:',e));
   updateHeader();buildNav();renderList();
   toast('Settings saved ✓');
   setTimeout(()=>switchView(0),800);
