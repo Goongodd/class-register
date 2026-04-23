@@ -2097,127 +2097,152 @@ function exportRegisterPDF(){
   }
 
   // ══════════════════════════════════════════════════════════════════════
-  // PAGE — GRADES
-  // ══════════════════════════════════════════════════════════════════════
-  if(SUBJECTS.length>0){
-    pageNum++;
-    doc.addPage();
-    const yStart = pageHeader(doc, 'Grades Record', pageNum);
-    const CA_KEYS=[{key:'ca1',label:'1st CA',max:10},{key:'ca2',label:'2nd CA',max:10},{key:'proj',label:'Project',max:10},{key:'hw',label:'H/Work',max:10},{key:'exam',label:'Exam',max:60}];
-
-    const headRow = [
-      {content:'#', styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
-      {content:'Student', styles:{halign:'left',fillColor:COL_NAVY,textColor:COL_WHITE}},
-      ...SUBJECTS.flatMap(sub=>[
-        ...CA_KEYS.map(c=>({content:`${sub}\n${c.label}\n/${c.max}`, styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE,fontSize:6}})),
-        {content:`${sub}\nTotal`, styles:{halign:'center',fillColor:[40,61,95],textColor:COL_WHITE,fontStyle:'bold',fontSize:6}},
-      ]),
-      {content:'Avg', styles:{halign:'center',fillColor:COL_GOLD,textColor:COL_WHITE,fontStyle:'bold'}},
-      {content:'Grade', styles:{halign:'center',fillColor:COL_GREEN,textColor:COL_WHITE,fontStyle:'bold'}},
-      {content:'Remark', styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE,fontStyle:'bold'}},
-    ];
-
-    const gradeBody = students.map((s,idx)=>{
-      const girlStyle = s.sex==='F'?{textColor:COL_RED}:{};
-      const row = [
-        {content:s.id, styles:{halign:'center'}},
-        {content:s.name, styles:{halign:'left',...girlStyle}},
-      ];
-      let grandTotal=0;
-      SUBJECTS.forEach(sub=>{
-        const d=gradesCache[s.id]||{};const subD=d[sub]||{};
-        CA_KEYS.forEach(c=>{
-          const val=parseFloat(subD[c.key])||0;
-          row.push({content:val||'', styles:{halign:'center',fontSize:6.5}});
-        });
-        const total=CA_KEYS.reduce((sum,c)=>sum+(parseFloat(subD[c.key])||0),0);
-        grandTotal+=total;
-        row.push({content:total, styles:{halign:'center',fontStyle:'bold',fontSize:7}});
-      });
-      const avg = SUBJECTS.length>0?(grandTotal/SUBJECTS.length):0;
-      const hasAny = grandTotal>0;
-      const grade = !hasAny?'—':avg>=80?'A':avg>=65?'B':avg>=50?'C':avg>=40?'D':'F';
-      const remark = {A:'Excellent',B:'Very Good',C:'Good',D:'Pass',F:'Fail'}[grade]||'—';
-      row.push(
-        {content:hasAny?avg.toFixed(1):'—', styles:{halign:'center',fontStyle:'bold'}},
-        {content:grade, styles:{halign:'center',fontStyle:'bold',textColor:grade==='F'?COL_RED:COL_GREEN}},
-        {content:remark, styles:{halign:'center',fontSize:6.5,textColor:COL_GOLD}},
-      );
-      return row;
-    });
-
-    // Compute col widths: name wide, each CA narrow, total medium, avg/grade/remark
-    const numW=8, nameW=30, caW=10, totalW=12, avgW=11, gradeW=10, remarkW=16;
-    const colSt={0:{cellWidth:numW},1:{cellWidth:nameW}};
-    let ci=2;
-    SUBJECTS.forEach(()=>{CA_KEYS.forEach(()=>{colSt[ci++]={cellWidth:caW};});colSt[ci++]={cellWidth:totalW};});
-    colSt[ci]={cellWidth:avgW};colSt[ci+1]={cellWidth:gradeW};colSt[ci+2]={cellWidth:remarkW};
-
-    doc.autoTable({
-      head:[headRow], body:gradeBody,
-      startY:yStart,
-      margin:{left:7,right:7},
-      styles:{fontSize:7,cellPadding:1.5,overflow:'hidden',lineColor:[220,215,210],lineWidth:0.2},
-      headStyles:{fillColor:COL_NAVY,textColor:COL_WHITE,fontSize:6.5,cellPadding:1.5},
-      alternateRowStyles:{fillColor:COL_LGREY},
-      columnStyles:colSt,
-      theme:'grid',
-    });
-  }
-
-  // ══════════════════════════════════════════════════════════════════════
-  // PAGE — BEHAVIOUR
+  // PAGE — SUMMARY
   // ══════════════════════════════════════════════════════════════════════
   pageNum++;
   doc.addPage();
-  const yBeh = pageHeader(doc, 'Behaviour Log (E=Excellent · G=Good · S=Satisfactory · N=Needs Improvement)', pageNum);
-  const BEH_CATS_SHORT = ['Punctuality','Neatness','Participation','Respect','Teamwork','Homework','Overall'];
+  const ySum = pageHeader(doc, 'Term Summary', pageNum);
 
-  // One row per student×entry
-  const behHead = [
-    {content:'#', styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
-    {content:'Student', styles:{halign:'left',fillColor:COL_NAVY,textColor:COL_WHITE}},
-    {content:'Entry', styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
-    {content:'Date', styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
-    ...BEH_CATS_SHORT.map(c=>({content:c, styles:{halign:'center',fillColor:[90,60,140],textColor:COL_WHITE,fontSize:6}})),
-    {content:'Comment', styles:{halign:'left',fillColor:COL_NAVY,textColor:COL_WHITE}},
-  ];
-
-  const behBody=[];
+  // Compute summary data
+  let sumBoysP=0,sumGirlsP=0,sumTotalOpen=0,sumTermP=0,sumTermMarked=0;
+  for(let w=1;w<=weeks;w++) sumTotalOpen+=(bfcfCache[w]&&bfcfCache[w].school_open)||0;
   students.forEach(s=>{
-    const entries=behCache[s.id]||[];
+    let p=0,marked=0;
+    for(let w=1;w<=weeks;w++) for(let d=0;d<5;d++){
+      const v=getAtt(w,d,s.id);
+      if(v==='P'||v==='L')p++;
+      if(v)marked++;
+    }
+    sumTermP+=p; sumTermMarked+=marked;
+    if(s.sex==='M')sumBoysP+=p; else sumGirlsP+=p;
+  });
+  const sumAvgPct = sumTermMarked>0?Math.round((sumTermP/sumTermMarked)*100)+'%':'—';
+
+  // Term overview banner
+  let y=ySum;
+  doc.setFillColor(...COL_NAVY);
+  doc.roundedRect(7,y,196,22,3,3,'F');
+  const bannerItems=[
+    {label:'Total Present',value:sumBoysP+sumGirlsP,color:COL_WHITE},
+    {label:'Boys Present',value:sumBoysP,color:[126,200,247]},
+    {label:'Girls Present',value:sumGirlsP,color:[247,160,160]},
+    {label:'School Days Open',value:sumTotalOpen||'—',color:COL_GOLD},
+    {label:'Avg Attendance',value:sumAvgPct,color:[180,240,200]},
+  ];
+  const bw=196/bannerItems.length;
+  bannerItems.forEach((item,i)=>{
+    const bx=7+i*bw+bw/2;
+    doc.setTextColor(...item.color);
+    doc.setFontSize(14);doc.setFont('helvetica','bold');
+    doc.text(String(item.value),bx,y+11,{align:'center'});
+    doc.setFontSize(6);doc.setFont('helvetica','normal');
+    doc.setTextColor(180,190,200);
+    doc.text(item.label.toUpperCase(),bx,y+18,{align:'center'});
+  });
+  y+=28;
+
+  // Per-student summary table
+  const sumHead=[
+    {content:'#',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
+    {content:'Student Name',styles:{halign:'left',fillColor:COL_NAVY,textColor:COL_WHITE}},
+    {content:'Sex',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
+    {content:'Present',styles:{halign:'center',fillColor:COL_GREEN,textColor:COL_WHITE}},
+    {content:'Late',styles:{halign:'center',fillColor:[196,122,26],textColor:COL_WHITE}},
+    {content:'Absent',styles:{halign:'center',fillColor:COL_RED,textColor:COL_WHITE}},
+    {content:'Days Marked',styles:{halign:'center',fillColor:[40,61,95],textColor:COL_WHITE}},
+    {content:'Att. %',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
+  ];
+  const sumBody=students.map(s=>{
+    let p=0,a=0,l=0;
+    for(let w=1;w<=weeks;w++) for(let d=0;d<5;d++){
+      const v=getAtt(w,d,s.id);
+      if(v==='P')p++;else if(v==='A')a++;else if(v==='L')l++;
+    }
+    const total=p+a+l;
+    const pct=total>0?Math.round(((p+l)/total)*100)+'%':'—';
     const girlStyle=s.sex==='F'?{textColor:COL_RED}:{};
-    [0,1,2].forEach(idx=>{
-      const e=entries[idx]||{cats:{},comment:'',date:''};
-      const cats=e.cats||{};
-      const ratings=['Punctuality','Neatness','Participation','Respect','Teamwork','Homework','Overall Conduct'].map(c=>({
-        content:cats[c]||'', styles:{halign:'center',fontSize:7}
-      }));
-      behBody.push([
-        {content:s.id, styles:{halign:'center'}},
-        {content:idx===0?s.name:'', styles:{halign:'left',...girlStyle}},
-        {content:`Entry ${idx+1}`, styles:{halign:'center',fontSize:7,textColor:[130,100,180]}},
-        {content:e.date||'', styles:{halign:'center',fontSize:6.5}},
-        ...ratings,
-        {content:e.comment||'', styles:{halign:'left',fontSize:6.5,textColor:COL_MUTED}},
-      ]);
-    });
+    return [
+      {content:s.id,styles:{halign:'center'}},
+      {content:s.name,styles:{halign:'left',...girlStyle}},
+      {content:s.sex,styles:{halign:'center',...girlStyle}},
+      {content:p,styles:{halign:'center',textColor:COL_GREEN,fontStyle:'bold'}},
+      {content:l,styles:{halign:'center',textColor:COL_LATE,fontStyle:'bold'}},
+      {content:a,styles:{halign:'center',textColor:COL_RED,fontStyle:'bold'}},
+      {content:total,styles:{halign:'center'}},
+      {content:pct,styles:{halign:'center',fontStyle:'bold'}},
+    ];
+  });
+  doc.autoTable({
+    head:[sumHead],body:sumBody,
+    startY:y,
+    margin:{left:7,right:7},
+    styles:{fontSize:8,cellPadding:2,overflow:'hidden',lineColor:[220,215,210],lineWidth:0.2},
+    headStyles:{fillColor:COL_NAVY,textColor:COL_WHITE,fontStyle:'bold'},
+    alternateRowStyles:{fillColor:COL_LGREY},
+    columnStyles:{0:{cellWidth:10},1:{cellWidth:50},2:{cellWidth:12},3:{cellWidth:20},4:{cellWidth:14},5:{cellWidth:20},6:{cellWidth:24},7:{cellWidth:20}},
+    theme:'grid',
   });
 
-  const behColSt={0:{cellWidth:8},1:{cellWidth:32},2:{cellWidth:13},3:{cellWidth:15}};
-  BEH_CATS_SHORT.forEach((_,i)=>{behColSt[4+i]={cellWidth:12};});
-  behColSt[4+BEH_CATS_SHORT.length]={cellWidth:30};
+  // ══════════════════════════════════════════════════════════════════════
+  // PAGE — DAYS (School Days Open per Week)
+  // ══════════════════════════════════════════════════════════════════════
+  pageNum++;
+  doc.addPage();
+  const yDays = pageHeader(doc, 'School Days Open Per Week', pageNum);
+
+  const daysHead=[
+    {content:'Week',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
+    {content:'Week Ending',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
+    {content:'Days Open',styles:{halign:'center',fillColor:COL_GREEN,textColor:COL_WHITE}},
+    {content:'Boys BF',styles:{halign:'center',fillColor:[40,61,95],textColor:COL_WHITE}},
+    {content:'Girls BF',styles:{halign:'center',fillColor:[40,61,95],textColor:COL_WHITE}},
+    {content:'Boys CF',styles:{halign:'center',fillColor:[40,61,95],textColor:COL_WHITE}},
+    {content:'Girls CF',styles:{halign:'center',fillColor:[40,61,95],textColor:COL_WHITE}},
+    {content:'Weekly Att. %',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
+  ];
+  const daysBody=[];
+  let runningOpen=0;
+  for(let w=1;w<=weeks;w++){
+    const bf=bfcfCache[w]||{};
+    const open=bf.school_open||0;
+    runningOpen+=open;
+    const wkDate=wkDatesCache[w]||'';
+    const wkDateFmt=wkDate?new Date(wkDate).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';
+    let wP=0,wTotal=0;
+    students.forEach(s=>{for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==='P'||v==='L')wP++;if(v)wTotal++;}});
+    const wPct=wTotal>0?Math.round((wP/wTotal)*100)+'%':'—';
+    daysBody.push([
+      {content:`Week ${w}`,styles:{halign:'center',fontStyle:'bold'}},
+      {content:wkDateFmt,styles:{halign:'center'}},
+      {content:open,styles:{halign:'center',textColor:COL_GREEN,fontStyle:'bold'}},
+      {content:bf.bf_boys||'—',styles:{halign:'center'}},
+      {content:bf.bf_girls||'—',styles:{halign:'center'}},
+      {content:bf.cf_boys||'—',styles:{halign:'center'}},
+      {content:bf.cf_girls||'—',styles:{halign:'center'}},
+      {content:wPct,styles:{halign:'center',fontStyle:'bold'}},
+    ]);
+  }
+  // Totals row
+  daysBody.push([
+    {content:'TOTAL',styles:{halign:'center',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_WHITE}},
+    {content:'',styles:{fillColor:COL_NAVY}},
+    {content:runningOpen,styles:{halign:'center',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_GOLD}},
+    {content:'',styles:{fillColor:COL_NAVY}},
+    {content:'',styles:{fillColor:COL_NAVY}},
+    {content:'',styles:{fillColor:COL_NAVY}},
+    {content:'',styles:{fillColor:COL_NAVY}},
+    {content:sumAvgPct,styles:{halign:'center',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_WHITE}},
+  ]);
 
   doc.autoTable({
-    head:[behHead], body:behBody,
-    startY:yBeh,
+    head:[daysHead],body:daysBody,
+    startY:yDays,
     margin:{left:7,right:7},
-    styles:{fontSize:7,cellPadding:1.5,overflow:'hidden',lineColor:[220,215,210],lineWidth:0.2},
-    headStyles:{fillColor:COL_NAVY,textColor:COL_WHITE,fontSize:6.5,cellPadding:1.5},
+    styles:{fontSize:8.5,cellPadding:2.5,overflow:'hidden',lineColor:[220,215,210],lineWidth:0.2},
+    headStyles:{fillColor:COL_NAVY,textColor:COL_WHITE,fontStyle:'bold'},
     alternateRowStyles:{fillColor:COL_LGREY},
-    columnStyles:behColSt,
+    columnStyles:{0:{cellWidth:20},1:{cellWidth:36},2:{cellWidth:22},3:{cellWidth:18},4:{cellWidth:18},5:{cellWidth:18},6:{cellWidth:18},7:{cellWidth:26}},
     theme:'grid',
-    rowPageBreak:'avoid',
   });
 
   // ── Save ──────────────────────────────────────────────────────────────
