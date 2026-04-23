@@ -771,31 +771,44 @@ sb.auth.onAuthStateChange(async(event,session)=>{
       ]);
     }catch(e){console.warn('Role load failed:',e);}
 
-    // Always load user settings from Supabase first — ensures cross-device consistency
-    // This is fast (single row query) and guarantees students/subjects/cfg are correct
-    try{
-      await Promise.race([
-        loadUserSettings(),
-        new Promise(r=>setTimeout(r,5000)) // 5s timeout — proceed even if slow
-      ]);
-    }catch(e){console.warn('Settings load failed:',e);}
+    // Check if we have a local cache for this user
+    const k=CK(currentUser.id);
+    const hasCachedCfg=localStorage.getItem(k.cfg);
 
-    // Load local attendance cache (fast — from localStorage)
-    loadFromCache();
-
-    // Show dashboard immediately with whatever we have
-    initApp();
-    appInitialized=true;
-    clearTimeout(loadingTimeout);
-    hideLoading();
-
-    // Now sync attendance/grades/behaviour from Supabase in background
-    if(currentRole==='teacher'){
-      forceSyncAttendance().then(()=>{
-        renderList();
-        loadWkDate();
-        loadBFCF();
-      }).catch(e=>console.warn('Attendance sync failed:',e));
+    if(hasCachedCfg){
+      // Has local cache — show dashboard immediately, sync in background
+      await loadAllData();
+      initApp();
+      appInitialized=true;
+      clearTimeout(loadingTimeout);
+      hideLoading();
+      // Background sync for fresh data
+      if(currentRole==='teacher'){
+        forceSyncAttendance().then(()=>{
+          renderList();
+          loadWkDate();
+          loadBFCF();
+        }).catch(e=>console.warn('Background sync failed:',e));
+      }
+    } else {
+      // No local cache — new browser or cleared storage
+      // Must wait for Supabase data before showing dashboard
+      try{
+        await Promise.race([
+          loadAllData(),
+          new Promise((_,rej)=>setTimeout(()=>rej(new Error('data timeout')),12000))
+        ]);
+        if(currentRole==='teacher'){
+          await forceSyncAttendance();
+        }
+      }catch(e){
+        console.warn('Initial data load failed:',e);
+        // Still show dashboard even if data load fails — better than blank
+      }
+      initApp();
+      appInitialized=true;
+      clearTimeout(loadingTimeout);
+      hideLoading();
     }
   } else if(event==='SIGNED_OUT'){
     appInitialized=false;
