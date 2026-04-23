@@ -41,8 +41,21 @@
   --fs-2xl:clamp(20px,5vw,26px);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;}
-body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);min-height:100dvh;padding-bottom:clamp(90px,15vw,120px);-webkit-font-smoothing:antialiased;}
+html,body{height:100%;margin:0;padding:0;}
+body{
+  font-family:'Outfit',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+/* Scrollable content wrapper */
+#appScroll{
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  /* JS will set padding-bottom to bnav height + safe area */
+  padding-bottom:80px;
+}
 
 /* AUTH */
 .auth-screen{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(20px,5vw,40px) clamp(16px,5vw,32px);z-index:1000;transition:opacity .4s;overflow-y:auto;}
@@ -80,7 +93,7 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
 @media(max-width:360px){.date-chip{display:none;}}
 
 /* NAV */
-.nav-bar{background:var(--cream);border-bottom:1px solid var(--border);padding:clamp(5px,1.5vw,9px) clamp(8px,2.5vw,14px);display:flex;gap:clamp(4px,1.2vw,8px);align-items:center;overflow-x:auto;scrollbar-width:none;position:sticky;top:clamp(44px,10vw,62px);z-index:99;}
+.nav-bar{background:var(--cream);border-bottom:1px solid var(--border);padding:clamp(5px,1.5vw,9px) clamp(8px,2.5vw,14px);display:flex;gap:clamp(4px,1.2vw,8px);align-items:center;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:99;}
 .nav-bar::-webkit-scrollbar{display:none;}
 .nav-lbl{font-size:clamp(8px,2vw,10px);font-weight:700;color:var(--muted);white-space:nowrap;margin-right:2px;}
 .nav-btn{background:#fff;border:1.5px solid #ccc8be;border-radius:7px;padding:clamp(4px,1vw,6px) clamp(8px,2vw,12px);font-family:'Outfit',sans-serif;font-size:clamp(9px,2.2vw,11px);font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap;transition:all .15s;}
@@ -205,8 +218,18 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
 .leg-dot.L{background:var(--llate);color:var(--late);}
 .leg-dot.E{background:var(--lblue);color:var(--blue);}
 
-/* BOTTOM NAV */
-.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--border);display:flex;padding:clamp(6px,1.5vw,10px) 0 env(safe-area-inset-bottom,clamp(8px,2vw,14px));z-index:200;box-shadow:0 -4px 16px rgba(0,0,0,.10);min-height:clamp(54px,13vw,68px);}
+/* BOTTOM NAV — fixed, always visible regardless of browser quirks */
+.bnav{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:#fff;
+  border-top:2px solid var(--border);
+  display:flex;
+  padding-top:8px;
+  padding-bottom:calc(8px + env(safe-area-inset-bottom, 0px));
+  z-index:200;
+  box-shadow:0 -4px 16px rgba(0,0,0,.10);
+}
 .bb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:clamp(3px,0.8vw,5px) 0;background:none;border:none;font-family:'Outfit',sans-serif;font-size:clamp(8px,2vw,10px);font-weight:600;color:#bbb;cursor:pointer;transition:color .15s;}
 .bb .bi{font-size:clamp(18px,4.5vw,22px);}.bb.active{color:var(--navy);}
 
@@ -322,7 +345,7 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
 .ap-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:var(--fs-sm);}
 
 /* ADMIN VIEWING TEACHER */
-.admin-viewing-bar{background:var(--navy2);color:#fff;padding:clamp(8px,2vw,12px) clamp(10px,2.5vw,16px);display:none;align-items:center;gap:10px;position:sticky;top:clamp(44px,10vw,62px);z-index:94;}
+.admin-viewing-bar{background:var(--navy2);color:#fff;padding:clamp(8px,2vw,12px) clamp(10px,2.5vw,16px);display:none;align-items:center;gap:10px;position:sticky;top:0;z-index:94;}
 .admin-viewing-bar.on{display:flex;}
 .admin-viewing-bar span{flex:1;font-size:var(--fs-xs);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .admin-back-btn{background:rgba(255,255,255,.15);border:none;border-radius:8px;padding:clamp(5px,1.2vw,8px) clamp(10px,2.5vw,14px);font-family:'Outfit',sans-serif;font-size:var(--fs-xs);font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;}
@@ -339,7 +362,7 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* TOAST */
-.toast{position:fixed;bottom:clamp(64px,16vw,84px);left:50%;transform:translateX(-50%) translateY(14px);background:var(--ink);color:#fff;padding:clamp(6px,1.5vw,10px) clamp(14px,3.5vw,22px);border-radius:30px;font-size:var(--fs-xs);font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:400;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;}
+.toast{position:fixed;bottom:clamp(16px,4vw,24px);left:50%;transform:translateX(-50%) translateY(14px);background:var(--ink);color:#fff;padding:clamp(6px,1.5vw,10px) clamp(14px,3.5vw,22px);border-radius:30px;font-size:var(--fs-xs);font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:400;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
@@ -424,6 +447,7 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
 </header>
 
 <div class="nav-bar" id="weekNav"></div>
+<div id="appScroll">
 <div class="admin-notice" id="adminNotice">👁️ Admin view — read only</div>
 
 <!-- ATTENDANCE VIEW -->
@@ -587,6 +611,8 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
   <span id="adminViewingLabel">Viewing: —</span>
   <button class="admin-back-btn" onclick="adminBackToPortal()">← Back to Teachers</button>
 </div>
+
+</div><!-- end #appScroll -->
 
 <div class="bnav">
   <button class="bb active" id="bb0" onclick="switchView(0)"><span class="bi">📋</span>Mark</button>
@@ -2300,6 +2326,19 @@ function toast(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2000);
 }
+
+// ── ENSURE CONTENT NEVER HIDES UNDER BOTTOM NAV ──────────────────────────
+function fixNavClearance(){
+  const nav=document.querySelector('.bnav');
+  const scroll=document.getElementById('appScroll');
+  if(nav&&scroll){
+    const h=nav.getBoundingClientRect().height||70;
+    scroll.style.paddingBottom=(h+8)+'px';
+  }
+}
+window.addEventListener('load',fixNavClearance);
+window.addEventListener('resize',fixNavClearance);
+setTimeout(fixNavClearance,300); // fallback for slow renders
 </script>
 </body>
 </html>
