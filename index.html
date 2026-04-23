@@ -439,16 +439,6 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
       <div class="ct-item total"><div class="ct-n" id="ctTotalA">0</div><div class="ct-l">Total Absent</div></div>
     </div>
   </div>
-  <div class="bfcf-card" style="margin-bottom:24px;">
-    <h4>Brought Forward / Carried Forward — Week <span id="bfWeekLabel">1</span></h4>
-    <div class="bfcf-grid">
-      <div class="bfcf-item"><label>Boys — Brought Fwd</label><input type="number" id="bf_boys" min="0" placeholder="0" onchange="saveBFCF()"/></div>
-      <div class="bfcf-item"><label>Girls — Brought Fwd</label><input type="number" id="bf_girls" min="0" placeholder="0" onchange="saveBFCF()"/></div>
-      <div class="bfcf-item"><label>Boys — Carried Fwd</label><input type="number" id="cf_boys" min="0" placeholder="0" onchange="saveBFCF()"/></div>
-      <div class="bfcf-item"><label>Girls — Carried Fwd</label><input type="number" id="cf_girls" min="0" placeholder="0" onchange="saveBFCF()"/></div>
-      <!-- school_open moved to Days tab -->
-    </div>
-  </div>
 </div>
 
 <!-- SUMMARY VIEW -->
@@ -482,6 +472,16 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
     <h4>Times School Was Open Per Week</h4>
     <p style="font-size:11px;color:var(--muted);margin-bottom:10px">Enter how many days school was open each week. Adjust for public holidays and events.</p>
     <div id="daysGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
+  </div>
+  <div class="bfcf-card" style="margin:0 10px 8px">
+    <h4>Brought Forward / Carried Forward — Week <span id="bfWeekLabel">1</span></h4>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:10px">These update per week as you navigate weeks above.</p>
+    <div class="bfcf-grid">
+      <div class="bfcf-item"><label>Boys — Brought Fwd</label><input type="number" id="bf_boys" min="0" placeholder="0" onchange="saveBFCF()"/></div>
+      <div class="bfcf-item"><label>Girls — Brought Fwd</label><input type="number" id="bf_girls" min="0" placeholder="0" onchange="saveBFCF()"/></div>
+      <div class="bfcf-item"><label>Boys — Carried Fwd</label><input type="number" id="cf_boys" min="0" placeholder="0" onchange="saveBFCF()"/></div>
+      <div class="bfcf-item"><label>Girls — Carried Fwd</label><input type="number" id="cf_girls" min="0" placeholder="0" onchange="saveBFCF()"/></div>
+    </div>
   </div>
   <div class="bfcf-card" style="margin:0 10px 8px">
     <h4>Term Summary</h4>
