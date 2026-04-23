@@ -11,6 +11,8 @@
 <link id="pwa-manifest" rel="manifest" href=""/>
 <title>Class Register · Jewel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
@@ -534,6 +536,10 @@ header p{font-size:10px;opacity:.6;margin-top:1px;white-space:nowrap;overflow:hi
       <button class="add-stu-btn" id="addSubjectBtn" onclick="addSubject()" style="background:var(--lblue);color:var(--blue);">➕ Add Subject</button>
     </div>
     <button class="save-settings-btn" id="saveSettingsBtn" onclick="saveSettings()">💾 Save & Apply Settings</button>
+    <div style="height:10px;"></div>
+    <button class="save-settings-btn" id="exportPdfBtn" onclick="exportRegisterPDF()" style="background:var(--green);display:flex;align-items:center;justify-content:center;gap:7px;">
+      <span style="font-size:16px;">📄</span> Export Register as PDF
+    </button>
     <div style="height:12px;"></div>
     <div class="danger-zone">
       <div class="settings-section-title">⚠️ Danger Zone</div>
@@ -638,7 +644,6 @@ window.addEventListener('appinstalled',()=>{document.getElementById('installBann
 function triggerInstall(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;document.getElementById('installBanner').style.display='none';});}}
 
 // ── CONSTANTS ─────────────────────────────────────────────────────────────
-const ADMIN_CODE="###MR. UTULU###";
 const MARKS=["P","A","L","E"];
 const DAYS=["Mon","Tue","Wed","Thu","Fri"];
 let SUBJECTS=[];
@@ -708,7 +713,25 @@ async function doSignup(){
   info.style.display='none';
   if(!email||!pass){showErr(err,'Please fill in all fields.');return;}
   if(pass.length<6){showErr(err,'Password must be at least 6 characters.');return;}
-  if(role==='admin'){const code=document.getElementById('adminCode').value;if(code!==ADMIN_CODE){showErr(err,'Incorrect admin access code.');return;}}
+  if(role==='admin'){
+    const code=document.getElementById('adminCode').value;
+    btn.disabled=true;btn.textContent='Verifying...';
+    try{
+      const res=await fetch(`${SUPA_URL}/functions/v1/verify-admin-code`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${SUPA_KEY}`},
+        body:JSON.stringify({code})
+      });
+      const result=await res.json();
+      if(!res.ok||!result.valid){
+        btn.disabled=false;btn.textContent='Create Account';
+        showErr(err,'Incorrect admin access code.');return;
+      }
+    }catch(e){
+      btn.disabled=false;btn.textContent='Create Account';
+      showErr(err,'Could not verify admin code. Check your connection.');return;
+    }
+  }
   btn.disabled=true;btn.textContent='Checking...';
 
   // Check if email already registered
@@ -1213,12 +1236,36 @@ async function saveMgr(sid){
   await sb.from('fees').upsert({user_id:currentUser?.id,student_id:sid,amount:fees,manager_name:mgr,date_checked:date,signature:sig},{onConflict:'user_id,student_id'});
 }
 
+// Grade save debounce timers — one per student to avoid cross-student collisions
+const gradeDebounceTimers={};
+function saveGradeCA(sid,subject,key,val,max){
+  if(!isTeacher())return;
+  // Clamp value to allowed max
+  let n=parseFloat(val);
+  if(isNaN(n)||n<0)n=0;
+  if(n>max)n=max;
+  if(!gradesCache[sid])gradesCache[sid]={};
+  if(!gradesCache[sid][subject])gradesCache[sid][subject]={};
+  gradesCache[sid][subject][key]=n;
+  saveCache();
+  updateSubjTotal(sid,subject);
+  renderGradeResult(sid);
+  // Debounce the Supabase write — wait 800ms after last keystroke
+  clearTimeout(gradeDebounceTimers[sid]);
+  gradeDebounceTimers[sid]=setTimeout(async()=>{
+    await sb.from('grades').upsert(
+      {user_id:currentUser?.id,student_id:sid,scores:gradesCache[sid]},
+      {onConflict:'user_id,student_id'}
+    );
+  },800);
+}
+
 async function saveGrade(sid,subject,val){
   if(!isTeacher())return;
   if(!gradesCache[sid])gradesCache[sid]={};
   gradesCache[sid][subject]=val;
+  saveCache();
   await sb.from('grades').upsert({user_id:currentUser?.id,student_id:sid,scores:gradesCache[sid]},{onConflict:'user_id,student_id'});
-  // update result display
   renderGradeResult(sid);
 }
 
@@ -1887,6 +1934,296 @@ async function resetAllData(){
     await sb.from('attendance').delete().neq('id',0);
     attCache={};renderList();toast('Data cleared');
   }
+}
+
+// ── PDF EXPORT ────────────────────────────────────────────────────────────
+function exportRegisterPDF(){
+  const {jsPDF} = window.jspdf;
+  if(!jsPDF){toast('PDF library not loaded yet, try again');return;}
+  const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const weeks = cfg.weeks||13;
+  const school = cfg.school||'Jewel Model Primary School';
+  const cls    = cfg.class||'Class Register';
+  const teacher= cfg.teacher||'';
+  const term   = cfg.term||'';
+  const session= cfg.session||'';
+  const DAYS_SHORT = ['Mon','Tue','Wed','Thu','Fri'];
+
+  // ── Colour helpers ──────────────────────────────────────────────────────
+  const COL_NAVY   = [26,  46,  74];
+  const COL_GOLD   = [212,148, 58];
+  const COL_GREEN  = [30, 107, 74];
+  const COL_RED    = [181, 43, 43];
+  const COL_LATE   = [196,122, 26];
+  const COL_LGREY  = [247,243,238];
+  const COL_WHITE  = [255,255,255];
+  const COL_MUTED  = [138,154,176];
+
+  function pageHeader(doc, title, pageNum){
+    // Navy header bar
+    doc.setFillColor(...COL_NAVY);
+    doc.rect(0,0,210,22,'F');
+    doc.setTextColor(...COL_WHITE);
+    doc.setFontSize(13);doc.setFont('helvetica','bold');
+    doc.text(cls+(cls.toLowerCase().includes('register')?'':' Register'), 10, 9);
+    doc.setFontSize(7.5);doc.setFont('helvetica','normal');
+    doc.text(`${school}${teacher?' · '+teacher:''}${term?' · '+term:''}${session?' '+session:''}`, 10, 15.5);
+    // Gold title strip
+    doc.setFillColor(...COL_GOLD);
+    doc.rect(0,22,210,9,'F');
+    doc.setTextColor(...COL_WHITE);
+    doc.setFontSize(9);doc.setFont('helvetica','bold');
+    doc.text(title,10,28.5);
+    // Page number right
+    doc.setFontSize(7.5);doc.setFont('helvetica','normal');
+    doc.text('Page '+pageNum, 200, 28.5, {align:'right'});
+    doc.setTextColor(0,0,0);
+    return 36; // y cursor after header
+  }
+
+  let pageNum = 0;
+
+  // ══════════════════════════════════════════════════════════════════════
+  // PAGE(S) 1 — ATTENDANCE (all weeks, grouped 3 weeks per page)
+  // ══════════════════════════════════════════════════════════════════════
+  const weeksPerPage = 3;
+  for(let wStart=1; wStart<=weeks; wStart+=weeksPerPage){
+    const wEnd = Math.min(wStart+weeksPerPage-1, weeks);
+    pageNum++;
+    if(pageNum>1) doc.addPage();
+    const yStart = pageHeader(doc, `Attendance Register — Weeks ${wStart}–${wEnd}`, pageNum);
+
+    // Build headers: Name | Sex | Wk N Mon–Fri (×weeksPerPage) | Term P | Term A | Term L | %
+    const wkCols = [];
+    for(let w=wStart;w<=wEnd;w++){
+      const wkDate = wkDatesCache[w]||'';
+      const shortDate = wkDate ? new Date(wkDate).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : `Wk ${w}`;
+      DAYS_SHORT.forEach((d,di)=>wkCols.push({w,d:di,label:`${d}`}));
+    }
+
+    // Column widths
+    const nameW = 34, sexW = 8;
+    const dayW  = (weeks<=4) ? 6 : 5.2; // slightly smaller for more weeks
+    const termCols = 4; // P A L %
+    const termW = 8;
+    const totalDayCols = (wEnd-wStart+1)*5;
+    const tableW = 210-14; // page width minus margins
+    const usedW  = nameW + sexW + termCols*termW;
+    const actualDayW = Math.min(dayW, (tableW-usedW)/totalDayCols);
+
+    // Build rows
+    const head = [
+      [
+        {content:'Student Name', rowSpan:2, styles:{halign:'left',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_WHITE}},
+        {content:'Sex', rowSpan:2, styles:{halign:'center',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_WHITE}},
+        ...Array.from({length:wEnd-wStart+1},(_,i)=>{
+          const w=wStart+i;
+          return {content:`Week ${w}`, colSpan:5, styles:{halign:'center',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_WHITE}};
+        }),
+        {content:'P', rowSpan:2, styles:{halign:'center',fontStyle:'bold',fillColor:COL_GREEN,textColor:COL_WHITE}},
+        {content:'A', rowSpan:2, styles:{halign:'center',fontStyle:'bold',fillColor:COL_RED,textColor:COL_WHITE}},
+        {content:'L', rowSpan:2, styles:{halign:'center',fontStyle:'bold',fillColor:COL_LATE,textColor:COL_WHITE}},
+        {content:'%', rowSpan:2, styles:{halign:'center',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_WHITE}},
+      ],
+      [
+        ...Array.from({length:wEnd-wStart+1},()=>DAYS_SHORT).flat().map(d=>({
+          content:d, styles:{halign:'center',fontStyle:'bold',fillColor:[40,61,95],textColor:COL_WHITE,fontSize:6}
+        })),
+      ]
+    ];
+
+    const body = students.map((s,idx)=>{
+      // term-wide totals
+      let termP=0,termA=0,termL=0,termMarked=0;
+      for(let w=1;w<=weeks;w++) for(let d=0;d<5;d++){
+        const v=getAtt(w,d,s.id);
+        if(v==='P')termP++;else if(v==='A')termA++;else if(v==='L')termL++;
+        if(v)termMarked++;
+      }
+      const pct = termMarked>0?Math.round(((termP+termL)/termMarked)*100)+'%':'—';
+      const girlStyle = s.sex==='F'?{textColor:COL_RED}:{};
+      const rowCells = [
+        {content:s.name, styles:{halign:'left',...girlStyle}},
+        {content:s.sex,  styles:{halign:'center',...girlStyle}},
+      ];
+      for(let w=wStart;w<=wEnd;w++){
+        for(let d=0;d<5;d++){
+          const v=getAtt(w,d,s.id)||'';
+          let cellStyle={halign:'center',fontSize:6.5};
+          if(v==='P') cellStyle.textColor=COL_GREEN;
+          else if(v==='A') cellStyle.textColor=COL_RED;
+          else if(v==='L') cellStyle.textColor=COL_LATE;
+          else if(v==='E') cellStyle.textColor=[59,110,165];
+          rowCells.push({content:v, styles:cellStyle});
+        }
+      }
+      rowCells.push(
+        {content:termP,  styles:{halign:'center',textColor:COL_GREEN,fontStyle:'bold'}},
+        {content:termA,  styles:{halign:'center',textColor:COL_RED,fontStyle:'bold'}},
+        {content:termL,  styles:{halign:'center',textColor:COL_LATE,fontStyle:'bold'}},
+        {content:pct,    styles:{halign:'center',fontStyle:'bold'}},
+      );
+      return rowCells;
+    });
+
+    // Column styles
+    const colStyles = {0:{cellWidth:nameW},1:{cellWidth:sexW}};
+    let colIdx = 2;
+    for(let w=wStart;w<=wEnd;w++) for(let d=0;d<5;d++) colStyles[colIdx++]={cellWidth:actualDayW};
+    colStyles[colIdx]   = {cellWidth:termW};
+    colStyles[colIdx+1] = {cellWidth:termW};
+    colStyles[colIdx+2] = {cellWidth:termW};
+    colStyles[colIdx+3] = {cellWidth:termW};
+
+    doc.autoTable({
+      head, body,
+      startY: yStart,
+      margin: {left:7, right:7},
+      styles:{fontSize:7.5, cellPadding:1.8, overflow:'hidden', lineColor:[220,215,210], lineWidth:0.2},
+      headStyles:{fillColor:COL_NAVY, textColor:COL_WHITE, fontStyle:'bold', fontSize:7},
+      alternateRowStyles:{fillColor:COL_LGREY},
+      columnStyles: colStyles,
+      theme:'grid',
+    });
+
+    // Summary row below table
+    const finalY = doc.lastAutoTable.finalY + 5;
+    if(finalY < 280){
+      doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(...COL_MUTED);
+      let totalOpen=0;
+      for(let w=wStart;w<=wEnd;w++) totalOpen+=(bfcfCache[w]&&bfcfCache[w].school_open)||0;
+      doc.text(`Weeks ${wStart}–${wEnd}: ${totalOpen} school days open`, 7, finalY);
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  // PAGE — GRADES
+  // ══════════════════════════════════════════════════════════════════════
+  if(SUBJECTS.length>0){
+    pageNum++;
+    doc.addPage();
+    const yStart = pageHeader(doc, 'Grades Record', pageNum);
+    const CA_KEYS=[{key:'ca1',label:'1st CA',max:10},{key:'ca2',label:'2nd CA',max:10},{key:'proj',label:'Project',max:10},{key:'hw',label:'H/Work',max:10},{key:'exam',label:'Exam',max:60}];
+
+    const headRow = [
+      {content:'#', styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
+      {content:'Student', styles:{halign:'left',fillColor:COL_NAVY,textColor:COL_WHITE}},
+      ...SUBJECTS.flatMap(sub=>[
+        ...CA_KEYS.map(c=>({content:`${sub}\n${c.label}\n/${c.max}`, styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE,fontSize:6}})),
+        {content:`${sub}\nTotal`, styles:{halign:'center',fillColor:[40,61,95],textColor:COL_WHITE,fontStyle:'bold',fontSize:6}},
+      ]),
+      {content:'Avg', styles:{halign:'center',fillColor:COL_GOLD,textColor:COL_WHITE,fontStyle:'bold'}},
+      {content:'Grade', styles:{halign:'center',fillColor:COL_GREEN,textColor:COL_WHITE,fontStyle:'bold'}},
+      {content:'Remark', styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE,fontStyle:'bold'}},
+    ];
+
+    const gradeBody = students.map((s,idx)=>{
+      const girlStyle = s.sex==='F'?{textColor:COL_RED}:{};
+      const row = [
+        {content:s.id, styles:{halign:'center'}},
+        {content:s.name, styles:{halign:'left',...girlStyle}},
+      ];
+      let grandTotal=0;
+      SUBJECTS.forEach(sub=>{
+        const d=gradesCache[s.id]||{};const subD=d[sub]||{};
+        CA_KEYS.forEach(c=>{
+          const val=parseFloat(subD[c.key])||0;
+          row.push({content:val||'', styles:{halign:'center',fontSize:6.5}});
+        });
+        const total=CA_KEYS.reduce((sum,c)=>sum+(parseFloat(subD[c.key])||0),0);
+        grandTotal+=total;
+        row.push({content:total, styles:{halign:'center',fontStyle:'bold',fontSize:7}});
+      });
+      const avg = SUBJECTS.length>0?(grandTotal/SUBJECTS.length):0;
+      const hasAny = grandTotal>0;
+      const grade = !hasAny?'—':avg>=80?'A':avg>=65?'B':avg>=50?'C':avg>=40?'D':'F';
+      const remark = {A:'Excellent',B:'Very Good',C:'Good',D:'Pass',F:'Fail'}[grade]||'—';
+      row.push(
+        {content:hasAny?avg.toFixed(1):'—', styles:{halign:'center',fontStyle:'bold'}},
+        {content:grade, styles:{halign:'center',fontStyle:'bold',textColor:grade==='F'?COL_RED:COL_GREEN}},
+        {content:remark, styles:{halign:'center',fontSize:6.5,textColor:COL_GOLD}},
+      );
+      return row;
+    });
+
+    // Compute col widths: name wide, each CA narrow, total medium, avg/grade/remark
+    const numW=8, nameW=30, caW=10, totalW=12, avgW=11, gradeW=10, remarkW=16;
+    const colSt={0:{cellWidth:numW},1:{cellWidth:nameW}};
+    let ci=2;
+    SUBJECTS.forEach(()=>{CA_KEYS.forEach(()=>{colSt[ci++]={cellWidth:caW};});colSt[ci++]={cellWidth:totalW};});
+    colSt[ci]={cellWidth:avgW};colSt[ci+1]={cellWidth:gradeW};colSt[ci+2]={cellWidth:remarkW};
+
+    doc.autoTable({
+      head:[headRow], body:gradeBody,
+      startY:yStart,
+      margin:{left:7,right:7},
+      styles:{fontSize:7,cellPadding:1.5,overflow:'hidden',lineColor:[220,215,210],lineWidth:0.2},
+      headStyles:{fillColor:COL_NAVY,textColor:COL_WHITE,fontSize:6.5,cellPadding:1.5},
+      alternateRowStyles:{fillColor:COL_LGREY},
+      columnStyles:colSt,
+      theme:'grid',
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  // PAGE — BEHAVIOUR
+  // ══════════════════════════════════════════════════════════════════════
+  pageNum++;
+  doc.addPage();
+  const yBeh = pageHeader(doc, 'Behaviour Log (E=Excellent · G=Good · S=Satisfactory · N=Needs Improvement)', pageNum);
+  const BEH_CATS_SHORT = ['Punctuality','Neatness','Participation','Respect','Teamwork','Homework','Overall'];
+
+  // One row per student×entry
+  const behHead = [
+    {content:'#', styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
+    {content:'Student', styles:{halign:'left',fillColor:COL_NAVY,textColor:COL_WHITE}},
+    {content:'Entry', styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
+    {content:'Date', styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},
+    ...BEH_CATS_SHORT.map(c=>({content:c, styles:{halign:'center',fillColor:[90,60,140],textColor:COL_WHITE,fontSize:6}})),
+    {content:'Comment', styles:{halign:'left',fillColor:COL_NAVY,textColor:COL_WHITE}},
+  ];
+
+  const behBody=[];
+  students.forEach(s=>{
+    const entries=behCache[s.id]||[];
+    const girlStyle=s.sex==='F'?{textColor:COL_RED}:{};
+    [0,1,2].forEach(idx=>{
+      const e=entries[idx]||{cats:{},comment:'',date:''};
+      const cats=e.cats||{};
+      const ratings=['Punctuality','Neatness','Participation','Respect','Teamwork','Homework','Overall Conduct'].map(c=>({
+        content:cats[c]||'', styles:{halign:'center',fontSize:7}
+      }));
+      behBody.push([
+        {content:s.id, styles:{halign:'center'}},
+        {content:idx===0?s.name:'', styles:{halign:'left',...girlStyle}},
+        {content:`Entry ${idx+1}`, styles:{halign:'center',fontSize:7,textColor:[130,100,180]}},
+        {content:e.date||'', styles:{halign:'center',fontSize:6.5}},
+        ...ratings,
+        {content:e.comment||'', styles:{halign:'left',fontSize:6.5,textColor:COL_MUTED}},
+      ]);
+    });
+  });
+
+  const behColSt={0:{cellWidth:8},1:{cellWidth:32},2:{cellWidth:13},3:{cellWidth:15}};
+  BEH_CATS_SHORT.forEach((_,i)=>{behColSt[4+i]={cellWidth:12};});
+  behColSt[4+BEH_CATS_SHORT.length]={cellWidth:30};
+
+  doc.autoTable({
+    head:[behHead], body:behBody,
+    startY:yBeh,
+    margin:{left:7,right:7},
+    styles:{fontSize:7,cellPadding:1.5,overflow:'hidden',lineColor:[220,215,210],lineWidth:0.2},
+    headStyles:{fillColor:COL_NAVY,textColor:COL_WHITE,fontSize:6.5,cellPadding:1.5},
+    alternateRowStyles:{fillColor:COL_LGREY},
+    columnStyles:behColSt,
+    theme:'grid',
+    rowPageBreak:'avoid',
+  });
+
+  // ── Save ──────────────────────────────────────────────────────────────
+  const filename = `${cls.replace(/\s+/g,'_')}_Register_${term.replace(/\s+/g,'_')}_${session||''}.pdf`.replace(/_{2,}/g,'_');
+  doc.save(filename);
+  toast('PDF exported ✓');
 }
 
 // ── VIEW SWITCHING ────────────────────────────────────────────────────────
