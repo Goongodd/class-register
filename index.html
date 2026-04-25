@@ -956,49 +956,67 @@ function hideLoading(){document.getElementById('loading').classList.add('hidden'
 
 // ── SESSION ───────────────────────────────────────────────────────────────
 let appInitialized=false;
-const loadingTimeout=setTimeout(()=>{if(!appInitialized){hideLoading();showAuthScreen();}},8000);
+const loadingTimeout=setTimeout(()=>{if(!appInitialized){hideLoading();showAuthScreen();}},20000);
 
 sb.auth.onAuthStateChange(async(event,session)=>{
   // Ignore token refresh events — only act on real sign-in/sign-out
   if(event==='TOKEN_REFRESHED')return;
   if(event==='SIGNED_IN'||event==='INITIAL_SESSION'){
     if(!session?.user){
+      // INITIAL_SESSION with no user = not logged in
       if(!appInitialized&&!isParentViewActive){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}
       return;
     }
     if(appInitialized)return; // already loaded
     currentUser=session.user;
     showLoading();hideAuthScreen();
-
-    // Mark initialized immediately so the outer loadingTimeout never fires mid-load
-    appInitialized=true;
-    clearTimeout(loadingTimeout);
-
-    // Load role — best effort, 3s max
+    // Load role with 3s timeout max — don't block on it
     try{
       await Promise.race([
         loadUserRole(),
         new Promise(r=>setTimeout(r,3000))
       ]);
-    }catch(e){}
+    }catch(e){console.warn('Role load failed:',e);}
 
-    // Load all data — best effort, 8s max, ALWAYS continues after
-    try{
-      await Promise.race([
-        loadAllData(),
-        new Promise(r=>setTimeout(r,8000))
-      ]);
-    }catch(e){}
+    // Check if we have a local cache for this user
+    const k=CK(currentUser.id);
+    const hasCachedCfg=localStorage.getItem(k.cfg);
 
-    // Always show the dashboard no matter what happened above
-    initApp();
-    hideLoading();
-
-    // Background sync to fill in anything that didn't load in time
-    if(currentRole==='teacher'){
-      syncFromSupabase().catch(()=>{});
+    if(hasCachedCfg){
+      // Has local cache — show dashboard immediately, sync in background
+      await loadAllData();
+      initApp();
+      appInitialized=true;
+      clearTimeout(loadingTimeout);
+      hideLoading();
+      // Background sync for fresh data
+      if(currentRole==='teacher'){
+        forceSyncAttendance().then(()=>{
+          renderList();
+          loadWkDate();
+          loadBFCF();
+        }).catch(e=>console.warn('Background sync failed:',e));
+      }
+    } else {
+      // No local cache — new browser or cleared storage
+      // Must wait for Supabase data before showing dashboard
+      try{
+        await Promise.race([
+          loadAllData(),
+          new Promise((_,rej)=>setTimeout(()=>rej(new Error('data timeout')),12000))
+        ]);
+        if(currentRole==='teacher'){
+          await forceSyncAttendance();
+        }
+      }catch(e){
+        console.warn('Initial data load failed:',e);
+        // Still show dashboard even if data load fails — better than blank
+      }
+      initApp();
+      appInitialized=true;
+      clearTimeout(loadingTimeout);
+      hideLoading();
     }
-
   } else if(event==='SIGNED_OUT'){
     appInitialized=false;
     clearTimeout(loadingTimeout);
@@ -1253,41 +1271,37 @@ function applyData(attData,wkData,bfData,grData,bhData,mgrData,wkMgrData=[]){
 }
 
 async function loadAllData(){
+  // Never load admin's own data over a teacher they're currently viewing
   if(adminViewingTeacher)return;
   const k=CK(currentUser?.id);
 
-  // Load from localStorage first (instant)
-  const hasCachedCfg=localStorage.getItem(k.cfg);
+  // Step 1: Load from local cache immediately (fast)
+  const hasCachedCfg = localStorage.getItem(k.cfg);
   if(hasCachedCfg){
     try{
-      cfg            = normalizeCfg(JSON.parse(hasCachedCfg));
-      const savedStu = localStorage.getItem(k.stu);
-      const savedSubj= localStorage.getItem(k.subj);
-      const savedGStu= localStorage.getItem('jb3_'+(currentUser?.id||'anon')+'_gstu');
-      students       = savedStu  ? JSON.parse(savedStu)  : [];
-      SUBJECTS       = savedSubj ? JSON.parse(savedSubj) : [];
+      cfg      = Object.assign({...DEFAULT_CONFIG}, JSON.parse(hasCachedCfg));
+      const savedStu  = localStorage.getItem(k.stu);
+      const savedSubj = localStorage.getItem(k.subj);
+      const savedGStu = localStorage.getItem('jb3_'+(currentUser?.id||'anon')+'_gstu');
+      students = savedStu  ? JSON.parse(savedStu)  : [];
+      SUBJECTS = savedSubj ? JSON.parse(savedSubj) : [];
       gradesStudents = savedGStu ? JSON.parse(savedGStu) : [];
-    }catch(e){ cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[]; gradesStudents=[]; }
-    loadFromCache();
+    }catch(e){ cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[]; }
+  } else {
+    // No local cache — load from Supabase synchronously before showing app
+    const loaded = await loadUserSettings();
+    if(!loaded){
+      cfg = {...DEFAULT_CONFIG};
+      students = [];
+      SUBJECTS = [];
+    }
   }
 
-  // Always fetch fresh from Supabase
-  await loadUserSettings().catch(()=>{});
-  const uid=currentUser?.id;
-  if(uid){
-    const [attData,wkData,bfData,grData,bhData,mgrData,wkMgrData]=await Promise.all([
-      safeQuery('attendance',  '*', uid),
-      safeQuery('week_dates',  '*', uid),
-      safeQuery('bfcf',        '*', uid),
-      safeQuery('grades',      '*', uid),
-      safeQuery('behaviour',   '*', uid),
-      safeQuery('fees',        '*', uid),
-      safeQuery('week_manager','*', uid),
-    ]);
-    applyData(attData,wkData,bfData,grData,bhData,mgrData,wkMgrData);
-    await loadStars().catch(()=>{});
-    saveCache();
-  }
+  // Step 2: Load attendance caches from localStorage
+  loadFromCache();
+
+  // Step 3: Background sync from Supabase — refreshes everything silently
+  syncFromSupabase().catch(e=>console.warn('Sync error:',e));
 }
 
 // Save cfg/students/subjects to Supabase
@@ -1304,35 +1318,16 @@ async function saveUserSettings(){
 }
 
 // Load cfg/students/subjects from Supabase
-function normalizeCfg(raw){
-  // Defensive: handle any key naming variant that may have been stored
-  if(!raw||typeof raw!=='object') return {...DEFAULT_CONFIG};
-  return {
-    school:  raw.school  || raw.schoolName  || raw.school_name  || DEFAULT_CONFIG.school,
-    class:   raw.class   || raw.className   || raw.class_name   || raw.cls || '',
-    teacher: raw.teacher || raw.teacherName || raw.teacher_name || '',
-    term:    raw.term    || '',
-    session: raw.session || raw.academicSession || '',
-    weeks:   parseInt(raw.weeks || raw.numWeeks || raw.num_weeks || 13) || 13,
-  };
-}
-
 async function loadUserSettings(){
   if(!currentUser)return false;
   try{
-    // maybeSingle() returns null instead of throwing when no row exists
-    const {data,error}=await sb.from('user_settings').select('*').eq('user_id',currentUser.id).maybeSingle();
-    if(error){console.warn('loadUserSettings error:',error.message);return false;}
-    if(!data)return false;
-    // DEBUG toast — shows raw structure on screen
-    const rawKeys = data.cfg ? Object.keys(data.cfg).join(', ') : 'cfg empty';
-    const stuCount = Array.isArray(data.students) ? data.students.length : 'not array';
-    setTimeout(()=>toast(`DB: [${rawKeys}] stu=${stuCount}`), 1500);
-    if(data.cfg)             cfg            = normalizeCfg(data.cfg);
-    if(Array.isArray(data.students)) students = data.students.filter(s=>s&&(s.name||s.id));
-    if(Array.isArray(data.subjects)) SUBJECTS = data.subjects.filter(Boolean);
-    if(Array.isArray(data.grades_students)) gradesStudents = data.grades_students.filter(s=>s&&s.name);
-    // Save to local cache
+    const {data,error}=await sb.from('user_settings').select('*').eq('user_id',currentUser.id).single();
+    if(error||!data)return false;
+    if(data.cfg)      cfg      = Object.assign({...DEFAULT_CONFIG}, data.cfg);
+    if(data.students) students = data.students;
+    if(data.subjects) SUBJECTS = data.subjects;
+    if(data.grades_students) gradesStudents = data.grades_students;
+    // Also save to local cache
     saveCache();
     return true;
   }catch(e){
@@ -1359,26 +1354,16 @@ async function syncFromSupabase(){
   ]);
   applyData(attData,wkData,bfData,grData,bhData,mgrData,wkMgrData);
   saveCache();
-  await loadStars().catch(()=>{});
-  // Full UI repaint — covers every tab that may already be visible
-  fullUIRefresh();
-}
-
-function fullUIRefresh(){
-  // Repaint every part of the UI that could be stale after a data load
+  // Quietly refresh UI with fresh server data
   updateHeader();
   buildNav();
   renderList();
   loadWkDate();
   loadBFCF();
-  // Re-render whichever tab is currently active
-  const activeView=VIEWS.findIndex(v=>document.getElementById(v)?.classList.contains('on'));
-  if(activeView===1) renderSummary();
-  if(activeView===2) renderGrades();
-  if(activeView===3) renderBehaviour();
-  if(activeView===4) renderDaysTab();
-  if(activeView===5) renderSettingsForm();
+  await loadStars().catch(()=>{});
 }
+
+function getAtt(w,d,sid){return (attCache[w]&&attCache[w][d]&&attCache[w][d][sid])||'';}
 
 async function setAtt(w,d,sid,v){
   if(!isTeacher()){toast('Admins cannot mark attendance');return;}
@@ -1604,10 +1589,10 @@ async function adminViewTeacher(teacher){
     const {data:settings}=await sb.from('user_settings')
       .select('*').eq('user_id',teacher.id).single();
     if(settings){
-      cfg      = normalizeCfg(settings.cfg||{});
-      students = (settings.students||[]).filter(s=>s&&(s.name||s.id));
-      SUBJECTS = (settings.subjects||[]).filter(Boolean);
-      gradesStudents = (settings.grades_students||[]).filter(s=>s&&s.name);
+      cfg      = Object.assign({...DEFAULT_CONFIG}, settings.cfg||{});
+      students = settings.students||[];
+      SUBJECTS = settings.subjects||[];
+      gradesStudents = settings.grades_students||[];
     } else {
       cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[]; gradesStudents=[];
     }
