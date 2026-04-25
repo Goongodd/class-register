@@ -989,33 +989,49 @@ sb.auth.onAuthStateChange(async(event,session)=>{
       appInitialized=true;
       clearTimeout(loadingTimeout);
       hideLoading();
-      // Background sync for fresh data
+      // Background sync — full UI repaint after fresh data arrives
       if(currentRole==='teacher'){
-        forceSyncAttendance().then(()=>{
-          renderList();
-          loadWkDate();
-          loadBFCF();
-        }).catch(e=>console.warn('Background sync failed:',e));
+        syncFromSupabase().catch(e=>console.warn('Background sync failed:',e));
       }
     } else {
       // No local cache — new browser or cleared storage
       // Must wait for Supabase data before showing dashboard
+      const LOAD_TIMEOUT = 12000; // 12s max before we show dashboard anyway
       try{
         await Promise.race([
-          loadAllData(),
-          new Promise((_,rej)=>setTimeout(()=>rej(new Error('data timeout')),12000))
+          (async()=>{
+            // Load settings first (students, subjects, cfg)
+            await loadUserSettings();
+            // Then load all attendance/grade data in parallel
+            const [attData,wkData,bfData,grData,bhData,mgrData,wkMgrData]=await Promise.all([
+              safeQuery('attendance',  '*', currentUser.id),
+              safeQuery('week_dates',  '*', currentUser.id),
+              safeQuery('bfcf',        '*', currentUser.id),
+              safeQuery('grades',      '*', currentUser.id),
+              safeQuery('behaviour',   '*', currentUser.id),
+              safeQuery('fees',        '*', currentUser.id),
+              safeQuery('week_manager','*', currentUser.id),
+            ]);
+            applyData(attData,wkData,bfData,grData,bhData,mgrData,wkMgrData);
+            await loadStars().catch(()=>{});
+            saveCache();
+          })(),
+          new Promise((_,rej)=>setTimeout(()=>rej(new Error('data timeout')),LOAD_TIMEOUT))
         ]);
-        if(currentRole==='teacher'){
-          await forceSyncAttendance();
-        }
       }catch(e){
-        console.warn('Initial data load failed:',e);
-        // Still show dashboard even if data load fails — better than blank
+        console.warn('Initial data load failed or timed out:',e.message);
+        // Still show dashboard — better than spinner forever
+        // If it was a timeout, syncFromSupabase will retry in the background below
       }
       initApp();
       appInitialized=true;
       clearTimeout(loadingTimeout);
       hideLoading();
+      // If we timed out or partially loaded, keep syncing in background
+      // so data appears as soon as Supabase responds
+      if(currentRole==='teacher'){
+        syncFromSupabase().catch(e=>console.warn('Post-init sync failed:',e));
+      }
     }
   } else if(event==='SIGNED_OUT'){
     appInitialized=false;
@@ -1299,9 +1315,7 @@ async function loadAllData(){
 
   // Step 2: Load attendance caches from localStorage
   loadFromCache();
-
-  // Step 3: Background sync from Supabase — refreshes everything silently
-  syncFromSupabase().catch(e=>console.warn('Sync error:',e));
+  // (Sync is handled by the caller — no stray background fire here)
 }
 
 // Save cfg/students/subjects to Supabase
@@ -1354,16 +1368,26 @@ async function syncFromSupabase(){
   ]);
   applyData(attData,wkData,bfData,grData,bhData,mgrData,wkMgrData);
   saveCache();
-  // Quietly refresh UI with fresh server data
+  await loadStars().catch(()=>{});
+  // Full UI repaint — covers every tab that may already be visible
+  fullUIRefresh();
+}
+
+function fullUIRefresh(){
+  // Repaint every part of the UI that could be stale after a data load
   updateHeader();
   buildNav();
   renderList();
   loadWkDate();
   loadBFCF();
-  await loadStars().catch(()=>{});
+  // Re-render whichever tab is currently active
+  const activeView=VIEWS.findIndex(v=>document.getElementById(v)?.classList.contains('on'));
+  if(activeView===1) renderSummary();
+  if(activeView===2) renderGrades();
+  if(activeView===3) renderBehaviour();
+  if(activeView===4) renderDaysTab();
+  if(activeView===5) renderSettingsForm();
 }
-
-function getAtt(w,d,sid){return (attCache[w]&&attCache[w][d]&&attCache[w][d][sid])||'';}
 
 async function setAtt(w,d,sid,v){
   if(!isTeacher()){toast('Admins cannot mark attendance');return;}
