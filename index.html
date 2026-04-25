@@ -316,6 +316,23 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
 .gr-item.grade .gr-n{color:var(--green);}
 .gr-item.remark .gr-n{font-size:clamp(9px,2.3vw,12px);color:var(--gold);}
 
+/* GRADES MANAGEMENT */
+.grades-mgr-card{background:#fff;border-radius:var(--radius);margin:0 clamp(6px,2vw,12px) clamp(6px,1.5vw,10px);padding:clamp(10px,2.5vw,14px);box-shadow:var(--shadow-sm);}
+.grades-mgr-card h4{font-size:var(--fs-2xs);font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.7px;margin-bottom:clamp(6px,1.5vw,10px);}
+.gstu-item{padding:clamp(7px,1.8vw,11px) clamp(10px,2.5vw,14px);border-bottom:1px solid var(--cream);display:flex;gap:clamp(4px,1.2vw,8px);align-items:center;flex-wrap:wrap;}
+.gstu-item:last-child{border-bottom:none;}
+.gstu-idx{font-size:var(--fs-xs);font-weight:700;color:#ccc;width:18px;flex-shrink:0;}
+.gstu-name-input{flex:1;min-width:100px;border:1.5px solid #ddd;border-radius:8px;padding:clamp(6px,1.5vw,9px) clamp(7px,1.8vw,11px);font-family:'Outfit',sans-serif;font-size:var(--fs-sm);color:var(--ink);background:var(--paper);}
+.gstu-subj-wrap{width:100%;margin-top:5px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
+.gstu-subj-label{font-size:clamp(8px,2vw,10px);font-weight:700;color:var(--muted);text-transform:uppercase;width:100%;margin-bottom:2px;}
+.gstu-subj-pill{display:flex;align-items:center;gap:3px;background:var(--lblue);border-radius:20px;padding:3px 8px 3px 10px;font-size:var(--fs-xs);font-weight:600;color:var(--blue);}
+.gstu-subj-pill button{background:none;border:none;cursor:pointer;color:var(--blue);font-size:12px;line-height:1;padding:0 0 0 2px;opacity:.7;}
+.gstu-subj-pill button:hover{opacity:1;}
+.gstu-add-subj-btn{background:var(--lgreen);border:1.5px dashed var(--green);border-radius:20px;padding:3px 10px;font-family:'Outfit',sans-serif;font-size:var(--fs-xs);font-weight:700;color:var(--green);cursor:pointer;}
+.gstu-del-btn{background:var(--lred);border:none;border-radius:7px;width:clamp(28px,7vw,34px);height:clamp(28px,7vw,34px);font-size:clamp(12px,3.2vw,16px);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.add-gstu-btn{width:100%;padding:clamp(9px,2.2vw,13px);background:var(--lgreen);border:none;font-family:'Outfit',sans-serif;font-size:var(--fs-sm);font-weight:700;color:var(--green);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+.grades-mgr-toggle{display:flex;align-items:center;justify-content:space-between;margin:0 clamp(6px,2vw,12px) clamp(6px,1.5vw,10px);}
+.grades-mgr-toggle button{background:var(--navy);border:none;border-radius:8px;padding:clamp(6px,1.5vw,9px) clamp(12px,3vw,18px);font-family:'Outfit',sans-serif;font-size:var(--fs-xs);font-weight:700;color:#fff;cursor:pointer;}
 /* PULSE */
 .pulse-flags-card{background:#fff;border-radius:var(--radius);margin:0 clamp(6px,2vw,12px) clamp(6px,1.5vw,10px);padding:clamp(10px,2.5vw,14px);box-shadow:var(--shadow-sm);}
 .pulse-flags-card h3{font-family:'Playfair Display',serif;font-size:var(--fs-lg);color:var(--red);margin-bottom:4px;}
@@ -555,7 +572,22 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
 
 <!-- GRADES VIEW -->
 <div class="view" id="vGrades">
-  <div style="padding:8px 4px 4px;"><div class="sec">Grades — 3rd Term 2025/2026</div></div>
+  <div style="padding:8px 4px 4px;"><div class="sec" id="gradesSec">Grades</div></div>
+  <div class="grades-mgr-toggle">
+    <span style="font-size:var(--fs-xs);color:var(--muted);font-weight:600;">Manage grades students &amp; subjects independently</span>
+    <button onclick="toggleGradesMgr()">⚙️ Manage</button>
+  </div>
+  <!-- Grades Management Panel -->
+  <div id="gradesMgrPanel" style="display:none;">
+    <div class="grades-mgr-card">
+      <h4>📋 Grades Students &amp; Their Subjects</h4>
+      <p style="font-size:var(--fs-xs);color:var(--muted);margin-bottom:10px;line-height:1.5;">These students are <strong>independent</strong> from Attendance. Edit names, add or remove subjects per student (e.g. Muslims can skip CRS).</p>
+      <div id="gradesStuMgrList"></div>
+      <button class="add-gstu-btn" id="addGStuBtn" onclick="addGradeStudent()">➕ Add Student to Grades</button>
+      <div style="height:8px;"></div>
+      <button onclick="saveGradesMgr()" style="width:100%;padding:clamp(9px,2.2vw,13px);background:var(--navy);border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:var(--fs-sm);font-weight:700;color:#fff;cursor:pointer;">💾 Save Grades Students</button>
+    </div>
+  </div>
   <div class="grades-card" id="gradesCard"></div>
 </div>
 
@@ -807,6 +839,7 @@ const DEFAULT_STUDENTS=[];
 // ── STATE ─────────────────────────────────────────────────────────────────
 let cfg={},students=[];
 let attCache={},wkDatesCache={},bfcfCache={},gradesCache={},behCache={},mgrCache={},wkMgrCache={};
+let gradesStudents=[]; // independent from attendance students
 let cWeek=1,cDay=0,currentUser=null,currentRole='teacher';
 let adminViewingTeacher=null; // when admin is viewing a specific teacher
 const isTeacher=()=>currentRole==='teacher'&&!adminViewingTeacher;
@@ -989,7 +1022,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     clearTimeout(loadingTimeout);
     // Reset all state
     currentUser=null; currentRole='teacher'; adminViewingTeacher=null;
-    attCache={}; wkDatesCache={}; bfcfCache={}; gradesCache={}; behCache={}; mgrCache={}; wkMgrCache={}; starsCache={};
+    attCache={}; wkDatesCache={}; bfcfCache={}; gradesCache={}; behCache={}; mgrCache={}; wkMgrCache={}; starsCache={}; gradesStudents=[];
     cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
     // Full UI reset — make sure nothing from admin session bleeds through
     document.getElementById('vAdminPortal').classList.remove('on');
@@ -1068,6 +1101,8 @@ function saveCache(){
     localStorage.setItem(k.mgr,   JSON.stringify(mgrCache));
     localStorage.setItem(k.wkmgr, JSON.stringify(wkMgrCache));
     localStorage.setItem(k.ts,    Date.now().toString());
+    // Save grades students separately
+    try{localStorage.setItem('jb3_'+(currentUser?.id||'anon')+'_gstu', JSON.stringify(gradesStudents));}catch(e){}
   }catch(e){console.warn('Cache save failed:',e);}
 }
 
@@ -1247,8 +1282,10 @@ async function loadAllData(){
       cfg      = Object.assign({...DEFAULT_CONFIG}, JSON.parse(hasCachedCfg));
       const savedStu  = localStorage.getItem(k.stu);
       const savedSubj = localStorage.getItem(k.subj);
+      const savedGStu = localStorage.getItem('jb3_'+(currentUser?.id||'anon')+'_gstu');
       students = savedStu  ? JSON.parse(savedStu)  : [];
       SUBJECTS = savedSubj ? JSON.parse(savedSubj) : [];
+      gradesStudents = savedGStu ? JSON.parse(savedGStu) : [];
     }catch(e){ cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[]; }
   } else {
     // No local cache — load from Supabase synchronously before showing app
@@ -1275,6 +1312,7 @@ async function saveUserSettings(){
     cfg: cfg,
     students: students,
     subjects: SUBJECTS,
+    grades_students: gradesStudents,
     updated_at: new Date().toISOString()
   },{onConflict:'user_id'});
 }
@@ -1288,6 +1326,7 @@ async function loadUserSettings(){
     if(data.cfg)      cfg      = Object.assign({...DEFAULT_CONFIG}, data.cfg);
     if(data.students) students = data.students;
     if(data.subjects) SUBJECTS = data.subjects;
+    if(data.grades_students) gradesStudents = data.grades_students;
     // Also save to local cache
     saveCache();
     return true;
@@ -1418,12 +1457,19 @@ function saveGradeCA(sid,subject,key,val,max){
   gradesCache[sid][subject][key]=n;
   saveCache();
   updateSubjTotal(sid,subject);
-  renderGradeResult(sid);
+  // For grades students (sid starts with 'g_'), find their subject list
+  let subjList = undefined;
+  if(typeof sid === 'string' && sid.startsWith('g_')){
+    const gid = parseInt(sid.slice(2));
+    const gs = gradesStudents.find(s=>s.gid===gid);
+    if(gs) subjList = gs.subjects||[];
+  }
+  renderGradeResult(sid, subjList);
   // Debounce the Supabase write — wait 800ms after last keystroke
   clearTimeout(gradeDebounceTimers[sid]);
   gradeDebounceTimers[sid]=setTimeout(async()=>{
     await sb.from('grades').upsert(
-      {user_id:currentUser?.id,student_id:sid,scores:gradesCache[sid]},
+      {user_id:currentUser?.id,student_id:String(sid),scores:gradesCache[sid]},
       {onConflict:'user_id,student_id'}
     );
   },800);
@@ -1546,8 +1592,9 @@ async function adminViewTeacher(teacher){
       cfg      = Object.assign({...DEFAULT_CONFIG}, settings.cfg||{});
       students = settings.students||[];
       SUBJECTS = settings.subjects||[];
+      gradesStudents = settings.grades_students||[];
     } else {
-      cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
+      cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[]; gradesStudents=[];
     }
 
     // Load teacher's attendance data
@@ -1592,7 +1639,7 @@ function adminBackToPortal(){
   adminViewingTeacher=null;
   attCache={}; wkDatesCache={}; bfcfCache={};
   gradesCache={}; behCache={}; mgrCache={};
-  cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
+  cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[]; gradesStudents=[];
   // Hide nav and viewing bar
   document.getElementById('adminViewingBar').classList.remove('on');
   document.getElementById('adminNotice').style.display='none';
@@ -1893,6 +1940,105 @@ function renderSummary(){
   c.appendChild(card);
 }
 
+// ── GRADES MANAGEMENT ─────────────────────────────────────────────────────
+let gradesMgrOpen = false;
+
+function toggleGradesMgr(){
+  gradesMgrOpen = !gradesMgrOpen;
+  const panel = document.getElementById('gradesMgrPanel');
+  if(panel) panel.style.display = gradesMgrOpen ? 'block' : 'none';
+  if(gradesMgrOpen) renderGradesMgr();
+}
+
+function renderGradesMgr(){
+  const c = document.getElementById('gradesStuMgrList');
+  if(!c) return;
+  c.innerHTML = '';
+  const disabled = !isTeacher();
+  const btn = document.getElementById('addGStuBtn');
+  if(btn) btn.style.display = disabled ? 'none' : 'flex';
+
+  gradesStudents.forEach((gs, i) => {
+    const row = document.createElement('div');
+    row.className = 'gstu-item';
+
+    // Build subject pills
+    const pillsHTML = (gs.subjects||[]).map((sub,si) =>
+      `<span class="gstu-subj-pill">${sub}${!disabled?`<button onclick="removeGStudentSubject(${i},${si})" title="Remove subject">✕</button>`:''}</span>`
+    ).join('');
+
+    // Build add-subject dropdown
+    const availableSubjs = SUBJECTS.filter(s => !(gs.subjects||[]).includes(s));
+    const addSubjHTML = (!disabled && availableSubjs.length > 0)
+      ? `<select onchange="addGStudentSubject(${i},this.value);this.value=''"
+           style="border:1.5px dashed var(--green);border-radius:20px;padding:3px 8px;font-family:'Outfit',sans-serif;font-size:var(--fs-xs);color:var(--green);background:var(--lgreen);cursor:pointer;max-width:140px;">
+           <option value="">+ Add subject…</option>
+           ${availableSubjs.map(s=>`<option value="${s}">${s}</option>`).join('')}
+         </select>`
+      : (!disabled && SUBJECTS.length === 0
+          ? `<span style="font-size:var(--fs-xs);color:var(--muted);">Add subjects in Settings ⚙️ first</span>`
+          : '');
+
+    row.innerHTML = `
+      <span class="gstu-idx">${i+1}</span>
+      <input class="gstu-name-input" type="text" value="${gs.name||''}" placeholder="Student name"
+        ${disabled?'disabled':''}
+        onchange="gradesStudents[${i}].name=this.value.trim()"/>
+      ${!disabled?`<button class="gstu-del-btn" onclick="removeGradeStudent(${i})" title="Remove">🗑</button>`:''}
+      <div class="gstu-subj-wrap">
+        <div class="gstu-subj-label">Subjects:</div>
+        ${pillsHTML}
+        ${addSubjHTML}
+      </div>`;
+    c.appendChild(row);
+  });
+
+  if(gradesStudents.length === 0){
+    c.innerHTML = '<div style="padding:12px;font-size:var(--fs-xs);color:var(--muted);text-align:center;">No students yet. Click ➕ Add Student below.</div>';
+  }
+}
+
+function addGradeStudent(){
+  if(!isTeacher()) return;
+  const newId = gradesStudents.length > 0 ? Math.max(...gradesStudents.map(s=>s.gid||0)) + 1 : 1;
+  gradesStudents.push({gid: newId, name: '', subjects: [...SUBJECTS]}); // default: all subjects
+  renderGradesMgr();
+}
+
+function removeGradeStudent(idx){
+  if(!isTeacher()) return;
+  if(!confirm(`Remove "${gradesStudents[idx].name||'this student'}" from Grades?`)) return;
+  gradesStudents.splice(idx, 1);
+  renderGradesMgr();
+}
+
+function addGStudentSubject(stuIdx, subj){
+  if(!isTeacher() || !subj) return;
+  if(!gradesStudents[stuIdx].subjects) gradesStudents[stuIdx].subjects = [];
+  if(!gradesStudents[stuIdx].subjects.includes(subj)){
+    gradesStudents[stuIdx].subjects.push(subj);
+  }
+  renderGradesMgr();
+}
+
+function removeGStudentSubject(stuIdx, subjIdx){
+  if(!isTeacher()) return;
+  gradesStudents[stuIdx].subjects.splice(subjIdx, 1);
+  renderGradesMgr();
+}
+
+function saveGradesMgr(){
+  if(!isTeacher()) return;
+  // Clean up empty names
+  gradesStudents = gradesStudents.filter(s => s.name && s.name.trim() !== '');
+  gradesStudents.forEach((s,i) => { s.gid = i+1; if(!s.subjects) s.subjects = []; });
+  saveCache();
+  saveUserSettings().catch(e=>console.warn('Grades students save failed:',e));
+  toast('Grades students saved ✓');
+  renderGradesMgr();
+  renderGrades();
+}
+
 // ── GRADES ────────────────────────────────────────────────────────────────
 // CA components: 10 marks each, Exam 60 marks
 const CA_COMPONENTS=[
@@ -1914,51 +2060,75 @@ function calcSubjTotal(sid,sub){
 }
 
 function renderGrades(){
-  const c=document.getElementById('gradesCard');c.innerHTML='<h3>Grades Record</h3>';
+  const termLabel = `${cfg.term||'3rd Term'}${cfg.session?' '+cfg.session:''}`;
+  const secEl = document.getElementById('gradesSec');
+  if(secEl) secEl.textContent = `Grades — ${termLabel}`;
+
+  const c=document.getElementById('gradesCard');
+  c.innerHTML='<h3>Grades Record</h3>';
   const isAdmin=currentRole==='admin';
-  if(!SUBJECTS.length){
-    c.innerHTML+='<p style="font-size:12px;color:#aaa;padding:10px 0">No subjects added yet. Go to Settings ⚙️ to add subjects.</p>';
+
+  if(!gradesStudents.length){
+    c.innerHTML+=`<div style="padding:14px 0;text-align:center;">
+      <p style="font-size:var(--fs-sm);color:var(--muted);margin-bottom:10px;">No grades students set up yet.</p>
+      <p style="font-size:var(--fs-xs);color:var(--muted);">Tap <strong>⚙️ Manage</strong> above to add students and assign their subjects.<br/>Students here are independent from the Attendance register.</p>
+    </div>`;
     return;
   }
-  students.forEach(s=>{
+
+  gradesStudents.forEach(gs=>{
+    const subjList = gs.subjects||[];
+    const cacheKey = 'g_'+gs.gid;
+
     const div=document.createElement('div');div.className='grade-student';
-    let html=`<div class="grade-stu-name${s.sex==='F'?' girl':''}">${s.id}. ${s.name}</div>`;
-    SUBJECTS.forEach(sub=>{
-      const d=getSubjScore(s.id,sub);
-      const total=calcSubjTotal(s.id,sub);
-      html+=`<div class="subj-block">
-        <div class="subj-block-title">${sub}</div>
-        <div class="ca-grid">
-          ${CA_COMPONENTS.map(comp=>`
-            <div class="ca-field${comp.highlight?' exam':''}">
-              <label>${comp.label}<br/>(/${comp.max})</label>
-              <input type="number" min="0" max="${comp.max}"
-                value="${d[comp.key]||''}" placeholder="0"
-                ${isAdmin?'disabled':''}
-                onchange="saveGradeCA(${s.id},'${sub}','${comp.key}',this.value,${comp.max})"/>
-            </div>`).join('')}
-        </div>
-        <div class="subj-total-row">
-          <span>Subject Total</span>
-          <span class="subj-total-val" id="st_${s.id}_${sub.replace(/\s+/g,'_')}">${total}/100</span>
-        </div>
-      </div>`;
-    });
-    html+=`<div class="grade-result" id="grResult_${s.id}"></div>`;
+    let html=`<div class="grade-stu-name" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>${gs.gid}. ${gs.name}</span>
+      <span style="font-size:var(--fs-xs);color:var(--muted);font-weight:500;">${subjList.length} subject${subjList.length!==1?'s':''}</span>
+    </div>`;
+
+    if(!subjList.length){
+      html+=`<p style="font-size:var(--fs-xs);color:var(--muted);padding:8px 0;">No subjects assigned. Tap ⚙️ Manage to add subjects.</p>`;
+    } else {
+      subjList.forEach(sub=>{
+        const d=getSubjScore(cacheKey,sub);
+        const total=calcSubjTotal(cacheKey,sub);
+        html+=`<div class="subj-block">
+          <div class="subj-block-title">${sub}</div>
+          <div class="ca-grid">
+            ${CA_COMPONENTS.map(comp=>`
+              <div class="ca-field${comp.highlight?' exam':''}">
+                <label>${comp.label}<br/>(/${comp.max})</label>
+                <input type="number" min="0" max="${comp.max}"
+                  value="${d[comp.key]||''}" placeholder="0"
+                  ${isAdmin?'disabled':''}
+                  onchange="saveGradeCA('${cacheKey}','${sub}','${comp.key}',this.value,${comp.max})"/>
+              </div>`).join('')}
+          </div>
+          <div class="subj-total-row">
+            <span>Subject Total</span>
+            <span class="subj-total-val" id="st_${cacheKey}_${sub.replace(/\s+/g,'_')}">${total}/100</span>
+          </div>
+        </div>`;
+      });
+    }
+
+    html+=`<div class="grade-result" id="grResult_${cacheKey}"></div>`;
     div.innerHTML=html;
     c.appendChild(div);
-    renderGradeResult(s.id);
+    renderGradeResult(cacheKey, subjList);
   });
 }
 
-function renderGradeResult(sid){
+function renderGradeResult(sid, subjList){
   const el=document.getElementById(`grResult_${sid}`);if(!el)return;
-  if(!SUBJECTS.length){el.innerHTML='';return;}
-  const totals=SUBJECTS.map(sub=>calcSubjTotal(sid,sub));
+  // subjList can be passed directly (for grades students) or fall back to SUBJECTS
+  const subs = subjList || SUBJECTS;
+  if(!subs.length){el.innerHTML='';return;}
+  const totals=subs.map(sub=>calcSubjTotal(sid,sub));
   const hasAny=totals.some(t=>t>0);
   if(!hasAny){el.innerHTML='<span style="font-size:11px;color:#bbb;padding:4px;">Enter scores above</span>';return;}
   const grandTotal=totals.reduce((a,b)=>a+b,0);
-  const avg=grandTotal/SUBJECTS.length;
+  const avg=grandTotal/subs.length;
   const grade=avg>=80?'A':avg>=65?'B':avg>=50?'C':avg>=40?'D':'F';
   const remark={A:'Excellent',B:'Very Good',C:'Good',D:'Pass',F:'Fail'}[grade];
   el.innerHTML=`
