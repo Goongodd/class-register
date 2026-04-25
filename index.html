@@ -956,7 +956,7 @@ function hideLoading(){document.getElementById('loading').classList.add('hidden'
 
 // ── SESSION ───────────────────────────────────────────────────────────────
 let appInitialized=false;
-const loadingTimeout=setTimeout(()=>{if(!appInitialized){hideLoading();showAuthScreen();}},20000);
+const loadingTimeout=setTimeout(()=>{if(!appInitialized){hideLoading();showAuthScreen();}},8000);
 
 sb.auth.onAuthStateChange(async(event,session)=>{
   // Ignore token refresh events — only act on real sign-in/sign-out
@@ -996,7 +996,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     } else {
       // No local cache — new browser or cleared storage
       // Must wait for Supabase data before showing dashboard
-      const LOAD_TIMEOUT = 12000; // 12s max before we show dashboard anyway
+      const LOAD_TIMEOUT = 8000; // 8s max before we show dashboard anyway
       try{
         await Promise.race([
           (async()=>{
@@ -1348,17 +1348,19 @@ function normalizeCfg(raw){
 async function loadUserSettings(){
   if(!currentUser)return false;
   try{
-    const {data,error}=await sb.from('user_settings').select('*').eq('user_id',currentUser.id).single();
-    if(error||!data)return false;
-    // DEBUG: show raw cfg keys on screen so we can see what Supabase returns
-    const rawKeys = data.cfg ? Object.keys(data.cfg).join(', ') : 'cfg is empty/null';
-    const stuCount = data.students ? data.students.length : 'null';
-    setTimeout(()=>toast(`DB: cfg keys=[${rawKeys}] students=${stuCount}`), 2000);
-    if(data.cfg)      cfg      = normalizeCfg(data.cfg);
-    if(data.students) students = data.students.filter(s=>s&&(s.name||s.id));
-    if(data.subjects) SUBJECTS = data.subjects.filter(Boolean);
-    if(data.grades_students) gradesStudents = data.grades_students.filter(s=>s&&s.name);
-    // Also save to local cache
+    // maybeSingle() returns null instead of throwing when no row exists
+    const {data,error}=await sb.from('user_settings').select('*').eq('user_id',currentUser.id).maybeSingle();
+    if(error){console.warn('loadUserSettings error:',error.message);return false;}
+    if(!data)return false;
+    // DEBUG toast — shows raw structure on screen
+    const rawKeys = data.cfg ? Object.keys(data.cfg).join(', ') : 'cfg empty';
+    const stuCount = Array.isArray(data.students) ? data.students.length : 'not array';
+    setTimeout(()=>toast(`DB: [${rawKeys}] stu=${stuCount}`), 1500);
+    if(data.cfg)             cfg            = normalizeCfg(data.cfg);
+    if(Array.isArray(data.students)) students = data.students.filter(s=>s&&(s.name||s.id));
+    if(Array.isArray(data.subjects)) SUBJECTS = data.subjects.filter(Boolean);
+    if(Array.isArray(data.grades_students)) gradesStudents = data.grades_students.filter(s=>s&&s.name);
+    // Save to local cache
     saveCache();
     return true;
   }catch(e){
