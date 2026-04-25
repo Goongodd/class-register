@@ -1536,6 +1536,9 @@ async function loadAllData(){
       students = [];
       SUBJECTS = [];
     }
+    // Also wait for full Supabase sync so students load immediately
+    await syncFromSupabase().catch(e=>console.warn('Sync error:',e));
+    return; // syncFromSupabase already calls renderList/buildNav/etc — no need to continue
   }
 
   // Step 2: Load attendance caches from localStorage
