@@ -963,76 +963,42 @@ sb.auth.onAuthStateChange(async(event,session)=>{
   if(event==='TOKEN_REFRESHED')return;
   if(event==='SIGNED_IN'||event==='INITIAL_SESSION'){
     if(!session?.user){
-      // INITIAL_SESSION with no user = not logged in
       if(!appInitialized&&!isParentViewActive){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}
       return;
     }
     if(appInitialized)return; // already loaded
     currentUser=session.user;
     showLoading();hideAuthScreen();
-    // Load role with 3s timeout max — don't block on it
+
+    // Mark initialized immediately so the outer loadingTimeout never fires mid-load
+    appInitialized=true;
+    clearTimeout(loadingTimeout);
+
+    // Load role — best effort, 3s max
     try{
       await Promise.race([
         loadUserRole(),
         new Promise(r=>setTimeout(r,3000))
       ]);
-    }catch(e){console.warn('Role load failed:',e);}
+    }catch(e){}
 
-    // Check if we have a local cache for this user
-    const k=CK(currentUser.id);
-    const hasCachedCfg=localStorage.getItem(k.cfg);
+    // Load all data — best effort, 8s max, ALWAYS continues after
+    try{
+      await Promise.race([
+        loadAllData(),
+        new Promise(r=>setTimeout(r,8000))
+      ]);
+    }catch(e){}
 
-    if(hasCachedCfg){
-      // Has local cache — show dashboard immediately, sync in background
-      await loadAllData();
-      initApp();
-      appInitialized=true;
-      clearTimeout(loadingTimeout);
-      hideLoading();
-      // Background sync — full UI repaint after fresh data arrives
-      if(currentRole==='teacher'){
-        syncFromSupabase().catch(e=>console.warn('Background sync failed:',e));
-      }
-    } else {
-      // No local cache — new browser or cleared storage
-      // Must wait for Supabase data before showing dashboard
-      const LOAD_TIMEOUT = 8000; // 8s max before we show dashboard anyway
-      try{
-        await Promise.race([
-          (async()=>{
-            // Load settings first (students, subjects, cfg)
-            await loadUserSettings();
-            // Then load all attendance/grade data in parallel
-            const [attData,wkData,bfData,grData,bhData,mgrData,wkMgrData]=await Promise.all([
-              safeQuery('attendance',  '*', currentUser.id),
-              safeQuery('week_dates',  '*', currentUser.id),
-              safeQuery('bfcf',        '*', currentUser.id),
-              safeQuery('grades',      '*', currentUser.id),
-              safeQuery('behaviour',   '*', currentUser.id),
-              safeQuery('fees',        '*', currentUser.id),
-              safeQuery('week_manager','*', currentUser.id),
-            ]);
-            applyData(attData,wkData,bfData,grData,bhData,mgrData,wkMgrData);
-            await loadStars().catch(()=>{});
-            saveCache();
-          })(),
-          new Promise((_,rej)=>setTimeout(()=>rej(new Error('data timeout')),LOAD_TIMEOUT))
-        ]);
-      }catch(e){
-        console.warn('Initial data load failed or timed out:',e.message);
-        // Still show dashboard — better than spinner forever
-        // If it was a timeout, syncFromSupabase will retry in the background below
-      }
-      initApp();
-      appInitialized=true;
-      clearTimeout(loadingTimeout);
-      hideLoading();
-      // If we timed out or partially loaded, keep syncing in background
-      // so data appears as soon as Supabase responds
-      if(currentRole==='teacher'){
-        syncFromSupabase().catch(e=>console.warn('Post-init sync failed:',e));
-      }
+    // Always show the dashboard no matter what happened above
+    initApp();
+    hideLoading();
+
+    // Background sync to fill in anything that didn't load in time
+    if(currentRole==='teacher'){
+      syncFromSupabase().catch(()=>{});
     }
+
   } else if(event==='SIGNED_OUT'){
     appInitialized=false;
     clearTimeout(loadingTimeout);
@@ -1287,35 +1253,41 @@ function applyData(attData,wkData,bfData,grData,bhData,mgrData,wkMgrData=[]){
 }
 
 async function loadAllData(){
-  // Never load admin's own data over a teacher they're currently viewing
   if(adminViewingTeacher)return;
   const k=CK(currentUser?.id);
 
-  // Step 1: Load from local cache immediately (fast)
-  const hasCachedCfg = localStorage.getItem(k.cfg);
+  // Load from localStorage first (instant)
+  const hasCachedCfg=localStorage.getItem(k.cfg);
   if(hasCachedCfg){
     try{
-      cfg      = normalizeCfg(JSON.parse(hasCachedCfg));
-      const savedStu  = localStorage.getItem(k.stu);
-      const savedSubj = localStorage.getItem(k.subj);
-      const savedGStu = localStorage.getItem('jb3_'+(currentUser?.id||'anon')+'_gstu');
-      students = savedStu  ? JSON.parse(savedStu)  : [];
-      SUBJECTS = savedSubj ? JSON.parse(savedSubj) : [];
+      cfg            = normalizeCfg(JSON.parse(hasCachedCfg));
+      const savedStu = localStorage.getItem(k.stu);
+      const savedSubj= localStorage.getItem(k.subj);
+      const savedGStu= localStorage.getItem('jb3_'+(currentUser?.id||'anon')+'_gstu');
+      students       = savedStu  ? JSON.parse(savedStu)  : [];
+      SUBJECTS       = savedSubj ? JSON.parse(savedSubj) : [];
       gradesStudents = savedGStu ? JSON.parse(savedGStu) : [];
-    }catch(e){ cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[]; }
-  } else {
-    // No local cache — load from Supabase synchronously before showing app
-    const loaded = await loadUserSettings();
-    if(!loaded){
-      cfg = {...DEFAULT_CONFIG};
-      students = [];
-      SUBJECTS = [];
-    }
+    }catch(e){ cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[]; gradesStudents=[]; }
+    loadFromCache();
   }
 
-  // Step 2: Load attendance caches from localStorage
-  loadFromCache();
-  // (Sync is handled by the caller — no stray background fire here)
+  // Always fetch fresh from Supabase
+  await loadUserSettings().catch(()=>{});
+  const uid=currentUser?.id;
+  if(uid){
+    const [attData,wkData,bfData,grData,bhData,mgrData,wkMgrData]=await Promise.all([
+      safeQuery('attendance',  '*', uid),
+      safeQuery('week_dates',  '*', uid),
+      safeQuery('bfcf',        '*', uid),
+      safeQuery('grades',      '*', uid),
+      safeQuery('behaviour',   '*', uid),
+      safeQuery('fees',        '*', uid),
+      safeQuery('week_manager','*', uid),
+    ]);
+    applyData(attData,wkData,bfData,grData,bhData,mgrData,wkMgrData);
+    await loadStars().catch(()=>{});
+    saveCache();
+  }
 }
 
 // Save cfg/students/subjects to Supabase
