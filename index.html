@@ -40,6 +40,38 @@
   --fs-xl:clamp(18px,4.5vw,22px);
   --fs-2xl:clamp(20px,5vw,26px);
 }
+/* DARK MODE */
+body.dark{
+  --ink:#e8edf2;--paper:#0f1923;--cream:#1a2535;
+  --navy:#1e3a5f;--navy2:#243d5f;--blue:#5c9fd4;--lblue:#1a2f45;
+  --gold:#d4943a;--lgold:#2a2010;
+  --green:#2a9d6f;--lgreen:#0d2b1e;
+  --red:#d45555;--lred:#2b1010;
+  --late:#c47a1a;--llate:#2b1f0a;
+  --purple:#9b6fd4;--lpurple:#1e1030;
+  --muted:#6a7f96;--border:#1e2d3d;
+  --shadow:0 4px 32px rgba(0,0,0,.4);--shadow-sm:0 2px 10px rgba(0,0,0,.3);
+}
+body.dark .auth-screen{background:#0a1520;}
+body.dark header{background:#0d1e30;}
+body.dark .scard{background:#141f2e;}
+body.dark .scard.girl{background:#1e1525;}
+body.dark .auth-field input,body.dark .auth-field select{color:#e8edf2;}
+body.dark .settings-field input,body.dark .settings-field select{background:#141f2e;color:#e8edf2;border-color:#2a3a4a;}
+body.dark .stu-item input,body.dark .stu-item select{background:#141f2e;color:#e8edf2;border-color:#2a3a4a;}
+body.dark .bfcf-item input,body.dark .wk-mgr-grid input,body.dark .days-item input{background:#141f2e;color:#e8edf2;border-color:#2a3a4a;}
+body.dark .wkdate-strip input{background:#141f2e;color:#e8edf2;border-color:#2a3a4a;}
+body.dark .scard-extra input{background:#141f2e;color:#e8edf2;border-color:#2a3a4a;}
+body.dark .bfcf-card,body.dark .wk-mgr-card,body.dark .days-card,body.dark .settings-section,body.dark .danger-zone{background:#141f2e;}
+body.dark .pulse-flags-card,body.dark .star-card{background:#141f2e;}
+body.dark .grade-student{background:#141f2e;}
+body.dark .sum-row{border-color:#1e2d3d;}
+body.dark .mbtn{background:#1a2535;color:#4a6080;}
+body.dark .nav-btn{background:#141f2e;border-color:#2a3a4a;color:#e8edf2;}
+body.dark .legend{background:#141f2e;}
+body.dark .wkdate-strip,body.dark .legend,body.dark .class-totals-card{background:#141f2e;}
+body.dark #importModal .modal-inner,body.dark #shareModal .modal-inner{background:#141f2e;}
+body.dark textarea{background:#0f1923;color:#e8edf2;border-color:#2a3a4a;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;margin:0;padding:0;}
 body{
@@ -284,24 +316,45 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
 .gr-item.grade .gr-n{color:var(--green);}
 .gr-item.remark .gr-n{font-size:clamp(9px,2.3vw,12px);color:var(--gold);}
 
-/* BEHAVIOUR */
-.beh-card{background:#fff;border-radius:var(--radius);margin:0 clamp(6px,2vw,12px) clamp(6px,1.5vw,10px);padding:clamp(10px,2.5vw,14px);box-shadow:var(--shadow-sm);}
-.beh-card h3{font-family:'Playfair Display',serif;font-size:var(--fs-lg);color:var(--purple);margin-bottom:4px;}
-.beh-card .beh-scale{font-size:var(--fs-xs);color:var(--muted);margin-bottom:clamp(7px,2vw,12px);}
-.beh-student{border-bottom:1px solid var(--cream);padding:clamp(8px,2vw,12px) 0;}
-.beh-student:last-child{border-bottom:none;}
-.beh-stu-name{font-size:var(--fs-sm);font-weight:700;margin-bottom:clamp(4px,1.2vw,8px);}
-.beh-stu-name.girl{color:var(--red);}
-.beh-entries{display:flex;flex-direction:column;gap:clamp(4px,1.2vw,8px);}
-.beh-entry{background:var(--lpurple);border-radius:8px;padding:clamp(6px,1.8vw,10px);}
-.beh-entry-label{font-size:clamp(8px,2vw,10px);font-weight:700;color:var(--purple);margin-bottom:5px;text-transform:uppercase;}
-.beh-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:3px;margin-bottom:5px;}
-.beh-field label{font-size:8px;font-weight:700;color:var(--muted);display:block;margin-bottom:2px;}
-.beh-field select{width:100%;border:1.5px solid #ddd;border-radius:6px;padding:clamp(3px,0.9vw,6px) 6px;font-family:'Outfit',sans-serif;font-size:var(--fs-xs);background:var(--paper);}
-.beh-field select:disabled{opacity:.5;}
-.beh-comment input{width:100%;border:1.5px solid #ddd;border-radius:6px;padding:clamp(4px,1vw,7px) clamp(6px,1.5vw,10px);font-family:'Outfit',sans-serif;font-size:var(--fs-xs);background:var(--paper);}
-.beh-comment input:disabled{opacity:.5;}
-.beh-comment label{font-size:clamp(7px,1.8vw,9px);font-weight:700;color:var(--muted);display:block;margin-bottom:2px;}
+/* PULSE */
+.pulse-flags-card{background:#fff;border-radius:var(--radius);margin:0 clamp(6px,2vw,12px) clamp(6px,1.5vw,10px);padding:clamp(10px,2.5vw,14px);box-shadow:var(--shadow-sm);}
+.pulse-flags-card h3{font-family:'Playfair Display',serif;font-size:var(--fs-lg);color:var(--red);margin-bottom:4px;}
+.pulse-flags-card .pulse-sub{font-size:var(--fs-xs);color:var(--muted);margin-bottom:clamp(8px,2vw,12px);}
+.pulse-empty{font-size:var(--fs-sm);color:var(--green);font-weight:600;padding:clamp(8px,2vw,14px) 0;text-align:center;}
+.flag-row{border-bottom:1px solid var(--cream);padding:clamp(7px,1.8vw,11px) 0;}
+.flag-row:last-child{border-bottom:none;}
+.flag-name{font-size:var(--fs-sm);font-weight:700;margin-bottom:4px;}
+.flag-name.girl{color:var(--red);}
+.flag-tags{display:flex;flex-wrap:wrap;gap:clamp(3px,0.8vw,5px);}
+.flag-tag{font-size:clamp(8px,2vw,10px);font-weight:700;padding:clamp(2px,0.6vw,4px) clamp(6px,1.5vw,9px);border-radius:20px;}
+.flag-tag.monFri{background:var(--llate);color:var(--late);}
+.flag-tag.weekly{background:var(--lred);color:var(--red);}
+.flag-tag.term{background:var(--lpurple);color:var(--purple);}
+.flag-detail{font-size:clamp(8px,2vw,10px);color:var(--muted);margin-top:3px;line-height:1.5;}
+
+/* STARS */
+.star-card{background:#fff;border-radius:var(--radius);padding:clamp(10px,2.5vw,14px);box-shadow:var(--shadow-sm);margin-bottom:clamp(4px,1.2vw,8px);}
+.star-top{display:flex;align-items:center;gap:clamp(6px,2vw,10px);}
+.star-name{flex:1;font-size:var(--fs-sm);font-weight:700;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.star-name.girl{color:var(--red);}
+.star-count{font-family:'Playfair Display',serif;font-size:clamp(16px,4.5vw,22px);color:var(--gold);min-width:28px;text-align:center;}
+.star-btn{background:var(--lgold);border:none;border-radius:8px;width:clamp(34px,8.5vw,42px);height:clamp(34px,8.5vw,42px);font-size:clamp(14px,3.5vw,18px);cursor:pointer;transition:transform .1s;flex-shrink:0;}
+.star-btn:active{transform:scale(.88);}
+.star-btn:disabled{opacity:.35;cursor:not-allowed;}
+.star-bar-wrap{margin-top:clamp(5px,1.5vw,8px);}
+.star-bar-bg{background:var(--cream);border-radius:20px;height:clamp(5px,1.5vw,8px);overflow:hidden;}
+.star-bar-fill{background:var(--gold);height:100%;border-radius:20px;transition:width .4s ease;}
+.star-leaderboard{background:var(--navy);border-radius:var(--radius);margin:0 clamp(6px,2vw,12px) clamp(12px,3vw,20px);padding:clamp(10px,2.5vw,14px);box-shadow:var(--shadow);}
+.star-leaderboard h4{font-size:var(--fs-2xs);font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.7px;margin-bottom:clamp(8px,2vw,12px);}
+.lb-row{display:flex;align-items:center;gap:clamp(6px,2vw,10px);padding:clamp(4px,1.2vw,7px) 0;border-bottom:1px solid rgba(255,255,255,.07);}
+.lb-row:last-child{border-bottom:none;}
+.lb-rank{font-family:'Playfair Display',serif;font-size:clamp(14px,3.5vw,18px);color:rgba(255,255,255,.3);width:22px;text-align:center;flex-shrink:0;}
+.lb-rank.gold{color:var(--gold);}
+.lb-rank.silver{color:#b0bec5;}
+.lb-rank.bronze{color:#c8956c;}
+.lb-name{flex:1;font-size:var(--fs-sm);font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lb-stars{font-size:var(--fs-sm);font-weight:700;color:var(--gold);}
+.lb-empty{text-align:center;padding:20px 0;font-size:var(--fs-sm);color:rgba(255,255,255,.35);}
 
 /* SETTINGS */
 .settings-wrap{padding:clamp(8px,2vw,12px) clamp(8px,2.5vw,12px) 40px;}
@@ -441,6 +494,7 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
     <div class="hright">
       <div class="date-chip" id="datechip"></div>
       <span class="role-badge" id="roleBadge"></span>
+      <button class="logout-btn" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
       <button class="logout-btn" onclick="doLogout()">Sign out</button>
     </div>
   </div>
@@ -505,10 +559,14 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
   <div class="grades-card" id="gradesCard"></div>
 </div>
 
-<!-- BEHAVIOUR VIEW -->
+<!-- PULSE VIEW -->
 <div class="view" id="vBehaviour">
-  <div style="padding:8px 4px 4px;"><div class="sec">Behaviour Log</div></div>
-  <div class="beh-card" id="behCard"></div>
+  <div style="padding:8px 4px 4px;"><div class="sec">Class Pulse</div></div>
+  <div id="pulseFlags"></div>
+  <div style="padding:0 clamp(6px,2vw,12px) clamp(6px,1.5vw,10px);">
+    <div class="sec" style="padding:0 0 clamp(4px,1vw,8px);">⭐ Stars this Term</div>
+    <div id="pulseStars"></div>
+  </div>
 </div>
 
 <!-- SETTINGS VIEW -->
@@ -576,6 +634,7 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
       <div class="settings-section-title">👨‍👩‍👧‍👦 Student List</div>
       <div id="stuListSettings"></div>
       <button class="add-stu-btn" id="addStuBtn" onclick="addStudent()">➕ Add Student</button>
+      <button class="add-stu-btn" id="importCsvBtn" onclick="openImportModal()" style="background:var(--lblue);color:var(--blue);margin-top:4px;">📥 Import from CSV</button>
     </div>
     <div class="settings-section" id="subjectsSection">
       <div class="settings-section-title">📚 Subjects</div>
@@ -586,6 +645,14 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
     <div style="height:10px;"></div>
     <button class="save-settings-btn" id="exportPdfBtn" onclick="exportRegisterPDF()" style="background:var(--green);display:flex;align-items:center;justify-content:center;gap:7px;">
       <span style="font-size:16px;">📄</span> Export Register as PDF
+    </button>
+    <div style="height:10px;"></div>
+    <button class="save-settings-btn" onclick="openShareModal()" style="background:var(--blue);display:flex;align-items:center;justify-content:center;gap:7px;">
+      <span style="font-size:16px;">👨‍👩‍👧</span> Generate Parent View Links
+    </button>
+    <div style="height:10px;"></div>
+    <button class="save-settings-btn" id="notifBtn" onclick="requestNotifPermission()" style="background:var(--purple);display:flex;align-items:center;justify-content:center;gap:7px;">
+      <span style="font-size:16px;">🔔</span> Enable Attendance Reminders
     </button>
     <div style="height:12px;"></div>
     <div class="danger-zone">
@@ -614,11 +681,46 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
 
 </div><!-- end #appScroll -->
 
+<!-- CSV IMPORT MODAL -->
+<div id="importModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;padding:clamp(16px,5vw,28px);">
+  <div class="modal-inner" style="background:#fff;border-radius:20px;padding:clamp(18px,4vw,28px);max-width:420px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.25);">
+    <h3 style="font-family:'Playfair Display',serif;font-size:var(--fs-lg);color:var(--navy);margin-bottom:6px;">📥 Import Students from CSV</h3>
+    <p style="font-size:var(--fs-xs);color:var(--muted);margin-bottom:14px;line-height:1.6;">Paste your CSV below. Expected format:<br/><code style="background:var(--cream);padding:2px 6px;border-radius:4px;font-size:11px;">Name,Sex</code><br/>e.g. <code style="background:var(--cream);padding:2px 6px;border-radius:4px;font-size:11px;">Amaka Obi,F</code></p>
+    <textarea id="csvInput" rows="8" placeholder="John Doe,M&#10;Jane Smith,F&#10;..." style="width:100%;border:1.5px solid #ddd;border-radius:10px;padding:10px 12px;font-family:'Outfit',sans-serif;font-size:var(--fs-sm);resize:vertical;outline:none;"></textarea>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button onclick="processCSV()" style="flex:1;padding:clamp(10px,2.5vw,14px);background:var(--navy);border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:var(--fs-sm);font-weight:700;color:#fff;cursor:pointer;">Import</button>
+      <button onclick="document.getElementById('importModal').style.display='none'" style="flex:1;padding:clamp(10px,2.5vw,14px);background:var(--cream);border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:var(--fs-sm);font-weight:700;color:var(--muted);cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE LINK MODAL -->
+<div id="shareModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;padding:clamp(16px,5vw,28px);">
+  <div class="modal-inner" style="background:#fff;border-radius:20px;padding:clamp(18px,4vw,28px);max-width:420px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.25);">
+    <h3 style="font-family:'Playfair Display',serif;font-size:var(--fs-lg);color:var(--navy);margin-bottom:6px;">👨‍👩‍👧 Parent View Link</h3>
+    <p style="font-size:var(--fs-xs);color:var(--muted);margin-bottom:14px;line-height:1.6;">Share a read-only link with parents to view their child's attendance and stars. No login required.</p>
+    <div id="shareStudentList" style="max-height:260px;overflow-y:auto;border:1.5px solid #ddd;border-radius:10px;margin-bottom:12px;"></div>
+    <button onclick="document.getElementById('shareModal').style.display='none'" style="width:100%;padding:clamp(10px,2.5vw,14px);background:var(--cream);border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:var(--fs-sm);font-weight:700;color:var(--muted);cursor:pointer;">Close</button>
+  </div>
+</div>
+
+<!-- PARENT VIEW (full screen, token-gated) -->
+<div id="parentView" style="display:none;position:fixed;inset:0;background:var(--paper);z-index:3000;overflow-y:auto;padding:clamp(16px,5vw,28px);">
+  <div style="max-width:480px;margin:0 auto;">
+    <div style="background:var(--navy);border-radius:16px;padding:clamp(16px,4vw,24px);margin-bottom:16px;text-align:center;">
+      <div style="font-size:clamp(32px,8vw,44px);margin-bottom:8px;">📋</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:var(--fs-xl);color:#fff;" id="pvTitle">Attendance Report</h2>
+      <p style="font-size:var(--fs-xs);color:rgba(255,255,255,.55);" id="pvMeta"></p>
+    </div>
+    <div id="pvContent"></div>
+  </div>
+</div>
+
 <div class="bnav">
   <button class="bb active" id="bb0" onclick="switchView(0)"><span class="bi">📋</span>Mark</button>
   <button class="bb" id="bb1" onclick="switchView(1)"><span class="bi">📊</span>Summary</button>
   <button class="bb" id="bb2" onclick="switchView(2)"><span class="bi">📝</span>Grades</button>
-  <button class="bb" id="bb3" onclick="switchView(3)"><span class="bi">🧠</span>Behaviour</button>
+  <button class="bb" id="bb3" onclick="switchView(3)"><span class="bi">📡</span>Pulse</button>
   <button class="bb" id="bb4" onclick="switchView(4)"><span class="bi">🏫</span>Days</button>
   <button class="bb" id="bb5" onclick="switchView(5)"><span class="bi">⚙️</span>Settings</button>
 </div>
@@ -887,7 +989,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     clearTimeout(loadingTimeout);
     // Reset all state
     currentUser=null; currentRole='teacher'; adminViewingTeacher=null;
-    attCache={}; wkDatesCache={}; bfcfCache={}; gradesCache={}; behCache={}; mgrCache={}; wkMgrCache={};
+    attCache={}; wkDatesCache={}; bfcfCache={}; gradesCache={}; behCache={}; mgrCache={}; wkMgrCache={}; starsCache={};
     cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[];
     // Full UI reset — make sure nothing from admin session bleeds through
     document.getElementById('vAdminPortal').classList.remove('on');
@@ -904,7 +1006,16 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 });
 // Fast check — if no session at all, stop spinner immediately
 sb.auth.getSession().then(({data:{session}})=>{
-  if(!session&&!appInitialized){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}
+  if(!session&&!appInitialized){
+    // Check for parent view token before showing auth
+    checkParentView().then(isParent=>{
+      if(!isParent){clearTimeout(loadingTimeout);hideLoading();showAuthScreen();}
+      else{clearTimeout(loadingTimeout);hideLoading();}
+    }).catch(()=>{
+      // Any error — just show login
+      clearTimeout(loadingTimeout);hideLoading();showAuthScreen();
+    });
+  }
 });
 
 async function loadUserRole(){
@@ -1202,6 +1313,7 @@ async function syncFromSupabase(){
   renderList();
   loadWkDate();
   loadBFCF();
+  await loadStars().catch(()=>{});
 }
 
 function getAtt(w,d,sid){return (attCache[w]&&attCache[w][d]&&attCache[w][d][sid])||'';}
@@ -1340,6 +1452,7 @@ function initApp(){
     // Teacher normal flow
     buildNav();renderList();loadWkDate();loadBFCF();
     if(isOnline())flushQueue();
+    initNotifications();
     if(!cfg.class&&!cfg.teacher&&!students.length&&!SUBJECTS.length){
       setTimeout(()=>{
         toast('👋 Welcome! Please go to Settings ⚙️ to set up your class.');
@@ -1853,35 +1966,147 @@ function updateSubjTotal(sid,sub){
   if(el) el.textContent=`${total}/100`;
 }
 
-// ── BEHAVIOUR ─────────────────────────────────────────────────────────────
-function renderBehaviour(){
-  const c=document.getElementById('behCard');
-  c.innerHTML=`<h3>Behaviour Log</h3><div class="beh-scale">E = Excellent · G = Good · S = Satisfactory · N = Needs Improvement</div>`;
-  const isAdmin=currentRole==='admin';
+// ── PULSE ─────────────────────────────────────────────────────────────────
+// starsCache: { [studentId]: count }
+if(!window.starsCache) window.starsCache={};
+
+const DAY_NAMES=['Mon','Tue','Wed','Thu','Fri'];
+
+function computeFlags(){
+  const weeks=cfg.weeks||13;
+  const flagged=[];
   students.forEach(s=>{
-    const entries=behCache[s.id]||[];
-    const div=document.createElement('div');div.className='beh-student';
-    div.innerHTML=`<div class="beh-stu-name${s.sex==='F'?' girl':''}">${s.id}. ${s.name}</div>
-      <div class="beh-entries">${[0,1,2].map(idx=>{
-        const e=entries[idx]||{cats:{},comment:'',date:''};
-        return `<div class="beh-entry">
-          <div class="beh-entry-label">Entry ${idx+1}</div>
-          <div class="beh-cats">${BEH_CATS.map(cat=>`
-            <div class="beh-field">
-              <label>${cat}</label>
-              <select ${isAdmin?'disabled':''} onchange="saveBehaviour(${s.id},${idx},'${cat}',this.value)">
-                ${BEH_RATINGS.map(r=>`<option value="${r}"${(e.cats[cat]||''===r)||e.cats[cat]===r?' selected':''}>${r||'—'}</option>`).join('')}
-              </select>
-            </div>`).join('')}</div>
-          <div class="beh-comment">
-            <label>Teacher's Comment</label>
-            <input type="text" placeholder="Comment..." value="${e.comment||''}" ${isAdmin?'disabled':''}
-              onchange="saveBehaviour(${s.id},${idx},'comment',this.value)"/>
-          </div>
-        </div>`;
-      }).join('')}</div>`;
-    c.appendChild(div);
+    const reasons=[];
+    const details=[];
+    let termAbsences=0;
+    const termAbsDays=[];
+
+    for(let w=1;w<=weeks;w++){
+      let weekAbsCount=0;
+      const weekAbsDays=[];
+      for(let d=0;d<5;d++){
+        const v=getAtt(w,d,s.id);
+        if(v==='A'){
+          termAbsences++;
+          termAbsDays.push({w,d});
+          weekAbsCount++;
+          weekAbsDays.push({w,d});
+          // Mon = d0, Fri = d4
+          if(d===0||d===4){
+            reasons.push('monFri');
+            details.push(`Absent ${DAY_NAMES[d]}, Wk ${w}`);
+          }
+        }
+      }
+      if(weekAbsCount>=2){
+        reasons.push('weekly');
+        details.push(`${weekAbsCount} absences in Wk ${w}: ${weekAbsDays.map(x=>DAY_NAMES[x.d]).join(', ')}`);
+      }
+    }
+    if(termAbsences>=3){
+      reasons.push('term');
+      details.push(`${termAbsences} absences this term`);
+    }
+    if(reasons.length>0){
+      flagged.push({s, reasons:[...new Set(reasons)], details});
+    }
   });
+  return flagged;
+}
+
+function renderBehaviour(){
+  const flagsEl=document.getElementById('pulseFlags');
+  const starsEl=document.getElementById('pulseStars');
+  flagsEl.innerHTML='';
+  starsEl.innerHTML='';
+
+  // ── FLAGS ──
+  const flagCard=document.createElement('div');
+  flagCard.className='pulse-flags-card';
+  const flagged=computeFlags();
+
+  if(flagged.length===0){
+    flagCard.innerHTML=`<h3>🚩 Attendance Flags</h3>
+      <div class="pulse-sub">Auto-flagged students based on absence patterns</div>
+      <div class="pulse-empty">✅ No flags — great attendance across the class!</div>`;
+  } else {
+    flagCard.innerHTML=`<h3>🚩 Attendance Flags</h3>
+      <div class="pulse-sub">${flagged.length} student${flagged.length>1?'s':''} flagged — tap to review</div>`;
+    flagged.forEach(({s,reasons,details})=>{
+      const row=document.createElement('div');row.className='flag-row';
+      const tagHTML=reasons.map(r=>{
+        if(r==='monFri') return `<span class="flag-tag monFri">Mon/Fri Absence</span>`;
+        if(r==='weekly') return `<span class="flag-tag weekly">2+ in a Week</span>`;
+        if(r==='term')   return `<span class="flag-tag term">3+ This Term</span>`;
+        return '';
+      }).join('');
+      const detailHTML=details.map(d=>`• ${d}`).join('<br/>');
+      row.innerHTML=`<div class="flag-name${s.sex==='F'?' girl':''}">${s.id}. ${s.name}</div>
+        <div class="flag-tags">${tagHTML}</div>
+        <div class="flag-detail">${detailHTML}</div>`;
+      flagCard.appendChild(row);
+    });
+  }
+  flagsEl.appendChild(flagCard);
+
+  // ── STARS ──
+  const isAdmin=currentRole==='admin';
+  const maxStars=Math.max(1,...students.map(s=>starsCache[s.id]||0));
+
+  students.forEach(s=>{
+    const count=starsCache[s.id]||0;
+    const card=document.createElement('div');card.className='star-card';
+    const pct=maxStars>0?Math.round((count/maxStars)*100):0;
+    card.innerHTML=`
+      <div class="star-top">
+        <span class="star-name${s.sex==='F'?' girl':''}">${s.id}. ${s.name}</span>
+        <span class="star-count">⭐ ${count}</span>
+        <button class="star-btn" ${isAdmin?'disabled':''} onclick="awardStar(${s.id})" title="Award star">+⭐</button>
+      </div>
+      <div class="star-bar-wrap">
+        <div class="star-bar-bg"><div class="star-bar-fill" style="width:${pct}%"></div></div>
+      </div>`;
+    starsEl.appendChild(card);
+  });
+
+  // Leaderboard
+  const sorted=[...students].map(s=>({s,c:starsCache[s.id]||0})).filter(x=>x.c>0).sort((a,b)=>b.c-a.c);
+  const lb=document.createElement('div');lb.className='star-leaderboard';
+  lb.innerHTML=`<h4>🏆 Term Leaderboard</h4>`;
+  if(sorted.length===0){
+    lb.innerHTML+=`<div class="lb-empty">No stars awarded yet</div>`;
+  } else {
+    sorted.slice(0,10).forEach(({s,c},i)=>{
+      const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1;
+      lb.innerHTML+=`<div class="lb-row">
+        <span class="lb-rank ${rankClass}">${medal}</span>
+        <span class="lb-name">${s.name}</span>
+        <span class="lb-stars">⭐ ${c}</span>
+      </div>`;
+    });
+  }
+  starsEl.appendChild(lb);
+}
+
+async function awardStar(sid){
+  if(!isTeacher())return;
+  starsCache[sid]=(starsCache[sid]||0)+1;
+  saveCache();
+  await sb.from('stars').upsert(
+    {user_id:currentUser?.id,student_id:sid,count:starsCache[sid]},
+    {onConflict:'user_id,student_id'}
+  ).catch(()=>{});
+  renderBehaviour();
+  toast('⭐ Star awarded!');
+}
+
+async function loadStars(){
+  if(!currentUser)return;
+  const uid=adminViewingTeacher?.id||currentUser.id;
+  const {data}=await sb.from('stars').select('student_id,count').eq('user_id',uid).catch(()=>({data:[]}));
+  starsCache={};
+  (data||[]).forEach(r=>{starsCache[r.student_id]=r.count;});
 }
 
 // ── SETTINGS ──────────────────────────────────────────────────────────────
@@ -1985,8 +2210,8 @@ async function resetAllData(){
   }
 }
 
-// ── PDF EXPORT ────────────────────────────────────────────────────────────
-function exportRegisterPDF(){
+// ── PDF EXPORT (legacy stub — full implementation in exportRegisterPDFFull above) ──
+function _exportRegisterPDF_legacy(){
   const {jsPDF} = window.jspdf;
   if(!jsPDF){toast('PDF library not loaded yet, try again');return;}
   const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
@@ -2298,9 +2523,342 @@ function exportRegisterPDF(){
   const filename = `${cls.replace(/\s+/g,'_')}_Register_${term.replace(/\s+/g,'_')}_${session||''}.pdf`.replace(/_{2,}/g,'_');
   doc.save(filename);
   toast('PDF exported ✓');
+} // end legacy stub — not called
+
+// ── DARK MODE ─────────────────────────────────────────────────────────────
+function toggleDark(){
+  const isDark=document.body.classList.toggle('dark');
+  localStorage.setItem('jb3_dark', isDark?'1':'0');
+  document.getElementById('darkToggle').textContent=isDark?'☀️':'🌙';
+}
+function initDark(){
+  const pref=localStorage.getItem('jb3_dark');
+  const sysDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  if(pref==='1'||(pref===null&&sysDark)){
+    document.body.classList.add('dark');
+    const btn=document.getElementById('darkToggle');
+    if(btn)btn.textContent='☀️';
+  }
+}
+initDark();
+
+// ── CSV IMPORT ─────────────────────────────────────────────────────────────
+function openImportModal(){
+  if(!isTeacher()){toast('Only teachers can import students');return;}
+  document.getElementById('csvInput').value='';
+  document.getElementById('importModal').style.display='flex';
 }
 
-// ── VIEW SWITCHING ────────────────────────────────────────────────────────
+function processCSV(){
+  const raw=document.getElementById('csvInput').value.trim();
+  if(!raw){toast('Paste some CSV first');return;}
+  const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  let added=0, skipped=0;
+  lines.forEach(line=>{
+    // Support both comma and tab delimiters
+    const parts=line.includes('\t')?line.split('\t'):line.split(',');
+    const name=(parts[0]||'').trim();
+    const sex=(parts[1]||'M').trim().toUpperCase();
+    if(!name){skipped++;return;}
+    // Skip header row
+    if(name.toLowerCase()==='name'){skipped++;return;}
+    const validSex=['M','F'].includes(sex)?sex:'M';
+    const newId=students.length>0?Math.max(...students.map(s=>s.id))+1:1;
+    students.push({id:newId,name,sex:validSex});
+    added++;
+  });
+  document.getElementById('importModal').style.display='none';
+  renderStudentSettings();
+  toast(`✓ Imported ${added} student${added!==1?'s':''}${skipped?`, ${skipped} skipped`:''}`);
+}
+
+// ── PARENT VIEW ────────────────────────────────────────────────────────────
+function openShareModal(){
+  if(!currentUser)return;
+  const list=document.getElementById('shareStudentList');
+  list.innerHTML='';
+  students.forEach(s=>{
+    const token=btoa(`${currentUser.id}:${s.id}:${Date.now()}`).replace(/=/g,'');
+    const url=`${location.href.split('?')[0]}?pv=${token}&uid=${currentUser.id}&sid=${s.id}`;
+    const row=document.createElement('div');
+    row.style.cssText='padding:clamp(8px,2vw,12px) clamp(10px,2.5vw,14px);border-bottom:1px solid var(--cream);';
+    row.innerHTML=`
+      <div style="font-size:var(--fs-sm);font-weight:700;color:${s.sex==='F'?'var(--red)':'var(--navy)'};margin-bottom:6px;">${s.id}. ${s.name}</div>
+      <div style="display:flex;gap:6px;">
+        <input readonly value="${url}" style="flex:1;border:1.5px solid #ddd;border-radius:8px;padding:6px 10px;font-size:clamp(9px,2.2vw,11px);color:var(--muted);background:var(--cream);min-width:0;"/>
+        <button onclick="copyShareLink('${url}',this)" style="background:var(--navy);border:none;border-radius:8px;padding:6px 12px;font-family:'Outfit',sans-serif;font-size:var(--fs-xs);font-weight:700;color:#fff;cursor:pointer;white-space:nowrap;">Copy</button>
+      </div>`;
+    list.appendChild(row);
+  });
+  document.getElementById('shareModal').style.display='flex';
+}
+
+function copyShareLink(url,btn){
+  navigator.clipboard.writeText(url).then(()=>{
+    btn.textContent='✓ Copied';
+    setTimeout(()=>btn.textContent='Copy',2000);
+  }).catch(()=>{toast('Copy failed — try manually selecting');});
+}
+
+async function checkParentView(){
+  const params=new URLSearchParams(location.search);
+  const pv=params.get('pv');
+  const uid=params.get('uid');
+  const sid=parseInt(params.get('sid'));
+  // No parent view params — return immediately, don't touch Supabase
+  if(!pv||!uid||!sid) return false;
+
+  // Load teacher data for this uid
+  const [settData,attData,starsData]=await Promise.all([
+    sb.from('user_settings').select('*').eq('user_id',uid).single().catch(()=>({data:null})),
+    sb.from('attendance').select('*').eq('user_id',uid).catch(()=>({data:[]})),
+    sb.from('stars').select('*').eq('user_id',uid).eq('student_id',sid).single().catch(()=>({data:null})),
+  ]);
+
+  const pvCfg=Object.assign({},{school:'',class:'',teacher:'',term:'',session:'',weeks:13},settData.data?.cfg||{});
+  const pvStudents=settData.data?.students||[];
+  const student=pvStudents.find(s=>s.id===sid);
+  if(!student){
+    document.getElementById('parentView').style.display='block';
+    document.getElementById('pvContent').innerHTML='<p style="text-align:center;color:var(--muted);padding:40px 0;">Student not found.</p>';
+    document.getElementById('pvTitle').textContent='Not Found';
+    return true;
+  }
+
+  // Build attendance map
+  const pvAtt={};
+  (attData.data||[]).forEach(r=>{
+    if(!pvAtt[r.week])pvAtt[r.week]={};
+    if(!pvAtt[r.week][r.day])pvAtt[r.week][r.day]={};
+    pvAtt[r.week][r.day][r.student_id]=r.mark;
+  });
+
+  const weeks=pvCfg.weeks||13;
+  let p=0,a=0,l=0,marked=0;
+  const flagWeeks=[];
+  for(let w=1;w<=weeks;w++){
+    let wA=0;
+    for(let d=0;d<5;d++){
+      const v=(pvAtt[w]&&pvAtt[w][d]&&pvAtt[w][d][sid])||'';
+      if(v==='P')p++;else if(v==='A'){a++;wA++;}else if(v==='L')l++;
+      if(v)marked++;
+    }
+    if(wA>=2)flagWeeks.push(`Week ${w}`);
+  }
+  const pct=marked>0?Math.round(((p+l)/marked)*100)+'%':'—';
+  const stars=starsData.data?.count||0;
+
+  const pvEl=document.getElementById('parentView');
+  document.getElementById('pvTitle').textContent=student.name;
+  document.getElementById('pvMeta').textContent=`${pvCfg.class} · ${pvCfg.term} ${pvCfg.session} · ${pvCfg.school}`;
+
+  document.getElementById('pvContent').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(6px,2vw,10px);margin-bottom:16px;">
+      <div style="background:#fff;border-radius:14px;padding:clamp(12px,3vw,18px);text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.07);">
+        <div style="font-family:'Playfair Display',serif;font-size:clamp(26px,7vw,34px);color:var(--green);">${p+l}</div>
+        <div style="font-size:var(--fs-xs);color:var(--muted);font-weight:700;text-transform:uppercase;margin-top:4px;">Days Present</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:clamp(12px,3vw,18px);text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.07);">
+        <div style="font-family:'Playfair Display',serif;font-size:clamp(26px,7vw,34px);color:var(--navy);">${pct}</div>
+        <div style="font-size:var(--fs-xs);color:var(--muted);font-weight:700;text-transform:uppercase;margin-top:4px;">Attendance</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:clamp(12px,3vw,18px);text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.07);">
+        <div style="font-family:'Playfair Display',serif;font-size:clamp(26px,7vw,34px);color:var(--red);">${a}</div>
+        <div style="font-size:var(--fs-xs);color:var(--muted);font-weight:700;text-transform:uppercase;margin-top:4px;">Days Absent</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:clamp(12px,3vw,18px);text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.07);">
+        <div style="font-family:'Playfair Display',serif;font-size:clamp(26px,7vw,34px);color:var(--gold);">⭐ ${stars}</div>
+        <div style="font-size:var(--fs-xs);color:var(--muted);font-weight:700;text-transform:uppercase;margin-top:4px;">Stars Earned</div>
+      </div>
+    </div>
+    ${flagWeeks.length?`<div style="background:var(--lred);border-radius:14px;padding:clamp(10px,2.5vw,14px);margin-bottom:16px;">
+      <div style="font-size:var(--fs-sm);font-weight:700;color:var(--red);margin-bottom:4px;">⚠️ Attendance Alert</div>
+      <div style="font-size:var(--fs-xs);color:var(--red);">Multiple absences in: ${flagWeeks.join(', ')}</div>
+    </div>`:''}
+    <div style="background:var(--lgreen);border-radius:14px;padding:clamp(10px,2.5vw,14px);text-align:center;">
+      <div style="font-size:var(--fs-xs);color:var(--green);font-weight:700;">Powered by Class Register · ${pvCfg.school}</div>
+    </div>`;
+
+  pvEl.style.display='block';
+  return true;
+}
+
+// ── PUSH NOTIFICATIONS ─────────────────────────────────────────────────────
+async function requestNotifPermission(){
+  if(!('Notification' in window)){toast('Notifications not supported on this device');return;}
+  if(Notification.permission==='granted'){
+    scheduleAttendanceReminders();
+    toast('Reminders already enabled ✓');
+    return;
+  }
+  const perm=await Notification.requestPermission();
+  if(perm==='granted'){
+    scheduleAttendanceReminders();
+    localStorage.setItem('jb3_notif','1');
+    toast('🔔 Reminders enabled!');
+    document.getElementById('notifBtn').textContent='✅ Reminders On';
+    document.getElementById('notifBtn').style.background='var(--green)';
+  } else {
+    toast('Permission denied — enable in browser settings');
+  }
+}
+
+function scheduleAttendanceReminders(){
+  // Fire a daily check — if it's a weekday and attendance hasn't been marked for current week, remind
+  const NOTIF_KEY='jb3_last_reminded';
+  const today=new Date();
+  const dow=today.getDay(); // 0=Sun,6=Sat
+  if(dow===0||dow===6)return; // skip weekends
+  const lastKey=today.toDateString();
+  if(localStorage.getItem(NOTIF_KEY)===lastKey)return; // already reminded today
+  // Check if current week has any marks
+  const hasMarks=students.some(s=>
+    [0,1,2,3,4].some(d=>getAtt(cWeek,d,s.id)!=='')
+  );
+  if(!hasMarks){
+    new Notification('📋 Class Register Reminder',{
+      body:`You haven't marked attendance for Week ${cWeek} yet. Tap to open.`,
+      icon:"data:image/svg+xml,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%231a2e4a'/><text x='96' y='130' font-size='100' text-anchor='middle'>📋</text></svg>`),
+      tag:'attendance-reminder'
+    });
+    localStorage.setItem(NOTIF_KEY,lastKey);
+  }
+}
+
+function initNotifications(){
+  if(localStorage.getItem('jb3_notif')==='1'&&Notification.permission==='granted'){
+    scheduleAttendanceReminders();
+    const btn=document.getElementById('notifBtn');
+    if(btn){btn.textContent='✅ Reminders On';btn.style.background='var(--green)';}
+  }
+}
+
+// ── PDF EXPORT (full implementation) ──────────────────────────────────────
+function exportRegisterPDF(){
+  exportRegisterPDFFull();
+}
+
+function exportRegisterPDFFull(){
+  const {jsPDF} = window.jspdf;
+  if(!jsPDF){toast('PDF library not loaded yet, try again');return;}
+  const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const weeks = cfg.weeks||13;
+  const school = cfg.school||'Jewel Model Primary School';
+  const cls    = cfg.class||'Class Register';
+  const teacher= cfg.teacher||'';
+  const term   = cfg.term||'';
+  const session= cfg.session||'';
+  const DAYS_SHORT = ['Mon','Tue','Wed','Thu','Fri'];
+  const COL_NAVY=[26,46,74],COL_GOLD=[212,148,58],COL_GREEN=[30,107,74],COL_RED=[181,43,43];
+  const COL_LATE=[196,122,26],COL_LGREY=[247,243,238],COL_WHITE=[255,255,255],COL_MUTED=[138,154,176];
+
+  function pageHeader(doc,title,pageNum){
+    doc.setFillColor(...COL_NAVY);doc.rect(0,0,210,22,'F');
+    doc.setTextColor(...COL_WHITE);doc.setFontSize(13);doc.setFont('helvetica','bold');
+    doc.text(cls+(cls.toLowerCase().includes('register')?'':' Register'),10,9);
+    doc.setFontSize(7.5);doc.setFont('helvetica','normal');
+    doc.text(`${school}${teacher?' · '+teacher:''}${term?' · '+term:''}${session?' '+session:''}`,10,15.5);
+    doc.setFillColor(...COL_GOLD);doc.rect(0,22,210,9,'F');
+    doc.setTextColor(...COL_WHITE);doc.setFontSize(9);doc.setFont('helvetica','bold');
+    doc.text(title,10,28.5);
+    doc.setFontSize(7.5);doc.setFont('helvetica','normal');
+    doc.text('Page '+pageNum,200,28.5,{align:'right'});
+    doc.setTextColor(0,0,0);return 36;
+  }
+
+  let pageNum=0;
+  const weeksPerPage=3;
+  for(let wStart=1;wStart<=weeks;wStart+=weeksPerPage){
+    const wEnd=Math.min(wStart+weeksPerPage-1,weeks);
+    pageNum++;if(pageNum>1)doc.addPage();
+    const yStart=pageHeader(doc,`Attendance Register — Weeks ${wStart}–${wEnd}`,pageNum);
+    const wkCols=[];
+    for(let w=wStart;w<=wEnd;w++) DAYS_SHORT.forEach((_,di)=>wkCols.push({w,d:di}));
+    const nameW=34,sexW=8,termW=8;
+    const totalDayCols=(wEnd-wStart+1)*5;
+    const tableW=210-14,usedW=nameW+sexW+4*termW;
+    const actualDayW=Math.min(5.2,(tableW-usedW)/totalDayCols);
+    const head=[[
+      {content:'Student Name',rowSpan:2,styles:{halign:'left',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_WHITE}},
+      {content:'Sex',rowSpan:2,styles:{halign:'center',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_WHITE}},
+      ...Array.from({length:wEnd-wStart+1},(_,i)=>({content:`Week ${wStart+i}`,colSpan:5,styles:{halign:'center',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_WHITE}})),
+      {content:'P',rowSpan:2,styles:{halign:'center',fontStyle:'bold',fillColor:COL_GREEN,textColor:COL_WHITE}},
+      {content:'A',rowSpan:2,styles:{halign:'center',fontStyle:'bold',fillColor:COL_RED,textColor:COL_WHITE}},
+      {content:'L',rowSpan:2,styles:{halign:'center',fontStyle:'bold',fillColor:COL_LATE,textColor:COL_WHITE}},
+      {content:'%',rowSpan:2,styles:{halign:'center',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_WHITE}},
+    ],[...Array.from({length:wEnd-wStart+1},()=>DAYS_SHORT).flat().map(d=>({content:d,styles:{halign:'center',fontStyle:'bold',fillColor:[40,61,95],textColor:COL_WHITE,fontSize:6}}))]];
+    const body=students.map(s=>{
+      let termP=0,termA=0,termL=0,termMarked=0;
+      for(let w=1;w<=weeks;w++) for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==='P')termP++;else if(v==='A')termA++;else if(v==='L')termL++;if(v)termMarked++;}
+      const pct=termMarked>0?Math.round(((termP+termL)/termMarked)*100)+'%':'—';
+      const g=s.sex==='F'?{textColor:COL_RED}:{};
+      const cells=[{content:s.name,styles:{halign:'left',...g}},{content:s.sex,styles:{halign:'center',...g}}];
+      for(let w=wStart;w<=wEnd;w++) for(let d=0;d<5;d++){const v=getAtt(w,d,s.id)||'';const cs={halign:'center',fontSize:6.5};if(v==='P')cs.textColor=COL_GREEN;else if(v==='A')cs.textColor=COL_RED;else if(v==='L')cs.textColor=COL_LATE;else if(v==='E')cs.textColor=[59,110,165];cells.push({content:v,styles:cs});}
+      cells.push({content:termP,styles:{halign:'center',textColor:COL_GREEN,fontStyle:'bold'}},{content:termA,styles:{halign:'center',textColor:COL_RED,fontStyle:'bold'}},{content:termL,styles:{halign:'center',textColor:COL_LATE,fontStyle:'bold'}},{content:pct,styles:{halign:'center',fontStyle:'bold'}});
+      return cells;
+    });
+    const colStyles={0:{cellWidth:nameW},1:{cellWidth:sexW}};
+    let ci=2;for(let w=wStart;w<=wEnd;w++) for(let d=0;d<5;d++) colStyles[ci++]={cellWidth:actualDayW};
+    colStyles[ci]=colStyles[ci+1]=colStyles[ci+2]=colStyles[ci+3]={cellWidth:termW};
+    doc.autoTable({head,body,startY:yStart,margin:{left:7,right:7},styles:{fontSize:7.5,cellPadding:1.8,overflow:'hidden',lineColor:[220,215,210],lineWidth:0.2},headStyles:{fillColor:COL_NAVY,textColor:COL_WHITE,fontStyle:'bold',fontSize:7},alternateRowStyles:{fillColor:COL_LGREY},columnStyles:colStyles,theme:'grid'});
+    const finalY=doc.lastAutoTable.finalY+5;
+    if(finalY<280){doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(...COL_MUTED);let totalOpen=0;for(let w=wStart;w<=wEnd;w++) totalOpen+=(bfcfCache[w]&&bfcfCache[w].school_open)||0;doc.text(`Weeks ${wStart}–${wEnd}: ${totalOpen} school days open`,7,finalY);}
+  }
+
+  // SUMMARY PAGE
+  pageNum++;doc.addPage();
+  const ySum=pageHeader(doc,'Term Summary',pageNum);
+  let sumBoysP=0,sumGirlsP=0,sumTotalOpen=0,sumTermP=0,sumTermMarked=0;
+  for(let w=1;w<=weeks;w++) sumTotalOpen+=(bfcfCache[w]&&bfcfCache[w].school_open)||0;
+  students.forEach(s=>{let p=0,marked=0;for(let w=1;w<=weeks;w++) for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==='P'||v==='L')p++;if(v)marked++;}sumTermP+=p;sumTermMarked+=marked;if(s.sex==='M')sumBoysP+=p;else sumGirlsP+=p;});
+  const sumAvgPct=sumTermMarked>0?Math.round((sumTermP/sumTermMarked)*100)+'%':'—';
+  let y=ySum;
+  doc.setFillColor(...COL_NAVY);doc.roundedRect(7,y,196,22,3,3,'F');
+  [{label:'Total Present',value:sumBoysP+sumGirlsP,color:COL_WHITE},{label:'Boys Present',value:sumBoysP,color:[126,200,247]},{label:'Girls Present',value:sumGirlsP,color:[247,160,160]},{label:'School Days Open',value:sumTotalOpen||'—',color:COL_GOLD},{label:'Avg Attendance',value:sumAvgPct,color:[180,240,200]}].forEach((item,i,arr)=>{const bx=7+i*(196/arr.length)+(196/arr.length)/2;doc.setTextColor(...item.color);doc.setFontSize(14);doc.setFont('helvetica','bold');doc.text(String(item.value),bx,y+11,{align:'center'});doc.setFontSize(6);doc.setFont('helvetica','normal');doc.setTextColor(180,190,200);doc.text(item.label.toUpperCase(),bx,y+18,{align:'center'});});
+  y+=28;
+  const sumHead=[{content:'#',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Student Name',styles:{halign:'left',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Sex',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Present',styles:{halign:'center',fillColor:COL_GREEN,textColor:COL_WHITE}},{content:'Late',styles:{halign:'center',fillColor:[196,122,26],textColor:COL_WHITE}},{content:'Absent',styles:{halign:'center',fillColor:COL_RED,textColor:COL_WHITE}},{content:'Days Marked',styles:{halign:'center',fillColor:[40,61,95],textColor:COL_WHITE}},{content:'Att. %',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}}];
+  const sumBody=students.map(s=>{let p=0,a=0,l=0;for(let w=1;w<=weeks;w++) for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==='P')p++;else if(v==='A')a++;else if(v==='L')l++;}const total=p+a+l;const pct=total>0?Math.round(((p+l)/total)*100)+'%':'—';const g=s.sex==='F'?{textColor:COL_RED}:{};return [{content:s.id,styles:{halign:'center'}},{content:s.name,styles:{halign:'left',...g}},{content:s.sex,styles:{halign:'center',...g}},{content:p,styles:{halign:'center',textColor:COL_GREEN,fontStyle:'bold'}},{content:l,styles:{halign:'center',textColor:COL_LATE,fontStyle:'bold'}},{content:a,styles:{halign:'center',textColor:COL_RED,fontStyle:'bold'}},{content:total,styles:{halign:'center'}},{content:pct,styles:{halign:'center',fontStyle:'bold'}}];});
+  doc.autoTable({head:[sumHead],body:sumBody,startY:y,margin:{left:7,right:7},styles:{fontSize:8,cellPadding:2,overflow:'hidden',lineColor:[220,215,210],lineWidth:0.2},headStyles:{fillColor:COL_NAVY,textColor:COL_WHITE,fontStyle:'bold'},alternateRowStyles:{fillColor:COL_LGREY},columnStyles:{0:{cellWidth:10},1:{cellWidth:50},2:{cellWidth:12},3:{cellWidth:20},4:{cellWidth:14},5:{cellWidth:20},6:{cellWidth:24},7:{cellWidth:20}},theme:'grid'});
+
+  // DAYS PAGE
+  pageNum++;doc.addPage();
+  const yDays=pageHeader(doc,'School Days Open Per Week',pageNum);
+  const daysHead=[{content:'Week',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Week Ending',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Days Open',styles:{halign:'center',fillColor:COL_GREEN,textColor:COL_WHITE}},{content:'Boys BF',styles:{halign:'center',fillColor:[40,61,95],textColor:COL_WHITE}},{content:'Girls BF',styles:{halign:'center',fillColor:[40,61,95],textColor:COL_WHITE}},{content:'Boys CF',styles:{halign:'center',fillColor:[40,61,95],textColor:COL_WHITE}},{content:'Girls CF',styles:{halign:'center',fillColor:[40,61,95],textColor:COL_WHITE}},{content:'Weekly Att. %',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}}];
+  const daysBody=[];let runningOpen=0;
+  for(let w=1;w<=weeks;w++){const bf=bfcfCache[w]||{};const open=bf.school_open||0;runningOpen+=open;const wkDate=wkDatesCache[w]||'';const wkDateFmt=wkDate?new Date(wkDate).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';let wP=0,wTotal=0;students.forEach(s=>{for(let d=0;d<5;d++){const v=getAtt(w,d,s.id);if(v==='P'||v==='L')wP++;if(v)wTotal++;}});const wPct=wTotal>0?Math.round((wP/wTotal)*100)+'%':'—';daysBody.push([{content:`Week ${w}`,styles:{halign:'center',fontStyle:'bold'}},{content:wkDateFmt,styles:{halign:'center'}},{content:open,styles:{halign:'center',textColor:COL_GREEN,fontStyle:'bold'}},{content:bf.bf_boys||'—',styles:{halign:'center'}},{content:bf.bf_girls||'—',styles:{halign:'center'}},{content:bf.cf_boys||'—',styles:{halign:'center'}},{content:bf.cf_girls||'—',styles:{halign:'center'}},{content:wPct,styles:{halign:'center',fontStyle:'bold'}}]);}
+  daysBody.push([{content:'TOTAL',styles:{halign:'center',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'',styles:{fillColor:COL_NAVY}},{content:runningOpen,styles:{halign:'center',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_GOLD}},{content:'',styles:{fillColor:COL_NAVY}},{content:'',styles:{fillColor:COL_NAVY}},{content:'',styles:{fillColor:COL_NAVY}},{content:'',styles:{fillColor:COL_NAVY}},{content:sumAvgPct,styles:{halign:'center',fontStyle:'bold',fillColor:COL_NAVY,textColor:COL_WHITE}}]);
+  doc.autoTable({head:[daysHead],body:daysBody,startY:yDays,margin:{left:7,right:7},styles:{fontSize:8.5,cellPadding:2.5,overflow:'hidden',lineColor:[220,215,210],lineWidth:0.2},headStyles:{fillColor:COL_NAVY,textColor:COL_WHITE,fontStyle:'bold'},alternateRowStyles:{fillColor:COL_LGREY},columnStyles:{0:{cellWidth:20},1:{cellWidth:36},2:{cellWidth:22},3:{cellWidth:18},4:{cellWidth:18},5:{cellWidth:18},6:{cellWidth:18},7:{cellWidth:26}},theme:'grid'});
+
+  // ATTENDANCE FLAGS PAGE
+  pageNum++;doc.addPage();
+  const yFlags=pageHeader(doc,'Attendance Flags — Pulse Report',pageNum);
+  const flagged=computeFlags();
+  if(flagged.length===0){
+    doc.setFontSize(11);doc.setFont('helvetica','normal');doc.setTextColor(...COL_GREEN);
+    doc.text('✓ No attendance flags — excellent class attendance this term!',105,yFlags+20,{align:'center'});
+  } else {
+    const flagHead=[{content:'Student',styles:{halign:'left',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Sex',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Flag Type',styles:{halign:'left',fillColor:[181,43,43],textColor:COL_WHITE}},{content:'Details',styles:{halign:'left',fillColor:[40,61,95],textColor:COL_WHITE}}];
+    const flagBody=flagged.map(({s,reasons,details})=>{
+      const g=s.sex==='F'?{textColor:COL_RED}:{};
+      const reasonLabels=reasons.map(r=>r==='monFri'?'Mon/Fri Absence':r==='weekly'?'2+ in a Week':'3+ This Term').join(', ');
+      return [{content:s.name,styles:{halign:'left',...g}},{content:s.sex,styles:{halign:'center',...g}},{content:reasonLabels,styles:{halign:'left',textColor:COL_RED,fontStyle:'bold'}},{content:details.join(' | '),styles:{halign:'left',fontSize:6.5,textColor:[80,80,80]}}];
+    });
+    doc.autoTable({head:[flagHead],body:flagBody,startY:yFlags,margin:{left:7,right:7},styles:{fontSize:8,cellPadding:2.5,overflow:'hidden',lineColor:[220,215,210],lineWidth:0.2},headStyles:{fillColor:COL_NAVY,textColor:COL_WHITE,fontStyle:'bold'},alternateRowStyles:{fillColor:COL_LGREY},columnStyles:{0:{cellWidth:46},1:{cellWidth:12},2:{cellWidth:46},3:{cellWidth:86}},theme:'grid'});
+  }
+
+  // STARS / LEADERBOARD PAGE
+  pageNum++;doc.addPage();
+  const yStars=pageHeader(doc,'Stars Leaderboard',pageNum);
+  const sorted=[...students].map(s=>({s,c:starsCache[s.id]||0})).sort((a,b)=>b.c-a.c);
+  const starsHead=[{content:'Rank',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Student',styles:{halign:'left',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Sex',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Stars ⭐',styles:{halign:'center',fillColor:COL_GOLD,textColor:COL_WHITE}}];
+  const starsBody=sorted.map(({s,c},i)=>{const g=s.sex==='F'?{textColor:COL_RED}:{};return [{content:i+1,styles:{halign:'center',fontStyle:'bold'}},{content:s.name,styles:{halign:'left',...g}},{content:s.sex,styles:{halign:'center',...g}},{content:c,styles:{halign:'center',textColor:COL_GOLD,fontStyle:'bold'}}];});
+  doc.autoTable({head:[starsHead],body:starsBody,startY:yStars,margin:{left:7,right:7},styles:{fontSize:9,cellPadding:3,overflow:'hidden',lineColor:[220,215,210],lineWidth:0.2},headStyles:{fillColor:COL_NAVY,textColor:COL_WHITE,fontStyle:'bold'},alternateRowStyles:{fillColor:COL_LGREY},columnStyles:{0:{cellWidth:20},1:{cellWidth:80},2:{cellWidth:20},3:{cellWidth:40}},theme:'grid'});
+
+  const filename=`${cls.replace(/\s+/g,'_')}_Register_${term.replace(/\s+/g,'_')}_${session||''}.pdf`.replace(/_{2,}/g,'_');
+  doc.save(filename);
+  toast('PDF exported ✓');
+}
+
 // Views: 0=Mark 1=Summary 2=Grades 3=Behaviour 4=Days 5=Settings
 const VIEWS=['vAttend','vSummary','vGrades','vBehaviour','vDays','vSettings'];
 function switchView(idx){
