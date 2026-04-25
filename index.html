@@ -2154,39 +2154,24 @@ function computeFlags(){
   const weeks=cfg.weeks||13;
   const flagged=[];
   students.forEach(s=>{
-    const reasons=[];
     const details=[];
     let termAbsences=0;
-    const termAbsDays=[];
 
     for(let w=1;w<=weeks;w++){
-      let weekAbsCount=0;
       const weekAbsDays=[];
       for(let d=0;d<5;d++){
         const v=getAtt(w,d,s.id);
         if(v==='A'){
           termAbsences++;
-          termAbsDays.push({w,d});
-          weekAbsCount++;
-          weekAbsDays.push({w,d});
-          // Mon = d0, Fri = d4
-          if(d===0||d===4){
-            reasons.push('monFri');
-            details.push(`Absent ${DAY_NAMES[d]}, Wk ${w}`);
-          }
+          weekAbsDays.push(DAY_NAMES[d]);
         }
       }
-      if(weekAbsCount>=2){
-        reasons.push('weekly');
-        details.push(`${weekAbsCount} absences in Wk ${w}: ${weekAbsDays.map(x=>DAY_NAMES[x.d]).join(', ')}`);
+      if(weekAbsDays.length>0){
+        details.push({week:w, days:weekAbsDays});
       }
     }
-    if(termAbsences>=3){
-      reasons.push('term');
-      details.push(`${termAbsences} absences this term`);
-    }
-    if(reasons.length>0){
-      flagged.push({s, reasons:[...new Set(reasons)], details});
+    if(termAbsences>0){
+      flagged.push({s, termAbsences, details});
     }
   });
   return flagged;
@@ -2209,19 +2194,25 @@ function renderBehaviour(){
       <div class="pulse-empty">✅ No flags — great attendance across the class!</div>`;
   } else {
     flagCard.innerHTML=`<h3>🚩 Attendance Flags</h3>
-      <div class="pulse-sub">${flagged.length} student${flagged.length>1?'s':''} flagged — tap to review</div>`;
-    flagged.forEach(({s,reasons,details})=>{
+      <div class="pulse-sub">${flagged.length} student${flagged.length>1?'s':''} flagged — tap a name to review</div>`;
+    flagged.forEach(({s, termAbsences, details})=>{
+      const detailId=`flagdetail_${s.id}`;
+      const arrowId=`flagarrow_${s.id}`;
+      const badgeClass=termAbsences>=3?'term':'weekly';
+      const badgeLabel=`${termAbsences} Absence${termAbsences!==1?'s':''} this term`;
+      const detailHTML=details.map(({week,days})=>`• Wk ${week}: Absent ${days.join(', ')}`).join('<br/>');
       const row=document.createElement('div');row.className='flag-row';
-      const tagHTML=reasons.map(r=>{
-        if(r==='monFri') return `<span class="flag-tag monFri">Mon/Fri Absence</span>`;
-        if(r==='weekly') return `<span class="flag-tag weekly">2+ in a Week</span>`;
-        if(r==='term')   return `<span class="flag-tag term">3+ This Term</span>`;
-        return '';
-      }).join('');
-      const detailHTML=details.map(d=>`• ${d}`).join('<br/>');
-      row.innerHTML=`<div class="flag-name${s.sex==='F'?' girl':''}">${s.id}. ${s.name}</div>
-        <div class="flag-tags">${tagHTML}</div>
-        <div class="flag-detail">${detailHTML}</div>`;
+      row.innerHTML=`
+        <div class="flag-name${s.sex==='F'?' girl':''}"
+          style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;"
+          onclick="toggleFlagDetail('${detailId}','${arrowId}')">
+          <span>${s.id}. ${s.name}</span>
+          <span id="${arrowId}" style="font-size:10px;color:var(--muted);white-space:nowrap;margin-left:8px;">▼ Review</span>
+        </div>
+        <div class="flag-tags" style="margin-top:5px;">
+          <span class="flag-tag ${badgeClass}">${badgeLabel}</span>
+        </div>
+        <div id="${detailId}" style="display:none;margin-top:6px;padding:8px 10px;background:var(--lred);border-radius:8px;line-height:2;font-size:var(--fs-xs);color:var(--red);">${detailHTML}</div>`;
       flagCard.appendChild(row);
     });
   }
@@ -2741,6 +2732,15 @@ function _exportRegisterPDF_legacy(){
   toast('PDF exported ✓');
 } // end legacy stub — not called
 
+function toggleFlagDetail(detailId, arrowId){
+  const detail=document.getElementById(detailId);
+  const arrow=document.getElementById(arrowId);
+  if(!detail) return;
+  const isOpen = detail.style.display !== 'none';
+  detail.style.display = isOpen ? 'none' : 'block';
+  if(arrow) arrow.textContent = isOpen ? '▼ Review' : '▲ Close';
+}
+
 // ── DARK MODE ─────────────────────────────────────────────────────────────
 function toggleDark(){
   const isDark=document.body.classList.toggle('dark');
@@ -3089,11 +3089,11 @@ function exportRegisterPDFFull(){
     doc.setFontSize(11);doc.setFont('helvetica','normal');doc.setTextColor(...COL_GREEN);
     doc.text('✓ No attendance flags — excellent class attendance this term!',105,yFlags+20,{align:'center'});
   } else {
-    const flagHead=[{content:'Student',styles:{halign:'left',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Sex',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Flag Type',styles:{halign:'left',fillColor:[181,43,43],textColor:COL_WHITE}},{content:'Details',styles:{halign:'left',fillColor:[40,61,95],textColor:COL_WHITE}}];
-    const flagBody=flagged.map(({s,reasons,details})=>{
+    const flagHead=[{content:'Student',styles:{halign:'left',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Sex',styles:{halign:'center',fillColor:COL_NAVY,textColor:COL_WHITE}},{content:'Total Absences',styles:{halign:'center',fillColor:[181,43,43],textColor:COL_WHITE}},{content:'Breakdown by Week',styles:{halign:'left',fillColor:[40,61,95],textColor:COL_WHITE}}];
+    const flagBody=flagged.map(({s,termAbsences,details})=>{
       const g=s.sex==='F'?{textColor:COL_RED}:{};
-      const reasonLabels=reasons.map(r=>r==='monFri'?'Mon/Fri Absence':r==='weekly'?'2+ in a Week':'3+ This Term').join(', ');
-      return [{content:s.name,styles:{halign:'left',...g}},{content:s.sex,styles:{halign:'center',...g}},{content:reasonLabels,styles:{halign:'left',textColor:COL_RED,fontStyle:'bold'}},{content:details.join(' | '),styles:{halign:'left',fontSize:6.5,textColor:[80,80,80]}}];
+      const breakdown=details.map(({week,days})=>`Wk ${week}: ${days.join(', ')}`).join(' | ');
+      return [{content:s.name,styles:{halign:'left',...g}},{content:s.sex,styles:{halign:'center',...g}},{content:termAbsences,styles:{halign:'center',textColor:COL_RED,fontStyle:'bold'}},{content:breakdown,styles:{halign:'left',fontSize:6.5,textColor:[80,80,80]}}];
     });
     doc.autoTable({head:[flagHead],body:flagBody,startY:yFlags,margin:{left:7,right:7},styles:{fontSize:8,cellPadding:2.5,overflow:'hidden',lineColor:[220,215,210],lineWidth:0.2},headStyles:{fillColor:COL_NAVY,textColor:COL_WHITE,fontStyle:'bold'},alternateRowStyles:{fillColor:COL_LGREY},columnStyles:{0:{cellWidth:46},1:{cellWidth:12},2:{cellWidth:46},3:{cellWidth:86}},theme:'grid'});
   }
