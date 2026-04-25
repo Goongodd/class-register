@@ -625,6 +625,41 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
 .admin-viewing-bar span{flex:1;font-size:var(--fs-xs);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .admin-back-btn{background:rgba(255,255,255,.15);border:none;border-radius:8px;padding:clamp(5px,1.2vw,8px) clamp(10px,2.5vw,14px);font-family:'Outfit',sans-serif;font-size:var(--fs-xs);font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;}
 
+/* INVITE MODAL */
+#inviteModal{position:fixed;inset:0;background:rgba(10,22,50,.75);backdrop-filter:blur(4px);z-index:3000;display:none;align-items:center;justify-content:center;padding:clamp(16px,5vw,28px);}
+#inviteModal.open{display:flex;}
+.invite-card{background:#fff;width:100%;max-width:440px;position:relative;box-shadow:0 24px 80px rgba(10,22,50,.4);animation:authFadeUp .35s ease both;}
+.invite-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#c9a44a,#e8c97a,#c9a44a);}
+.invite-header{background:var(--navy);padding:clamp(16px,4vw,22px) clamp(18px,4.5vw,26px);display:flex;align-items:center;gap:10px;}
+.invite-header h3{font-family:'Playfair Display',serif;font-size:clamp(15px,4vw,18px);color:#fff;flex:1;}
+.invite-close{background:rgba(255,255,255,.12);border:none;border-radius:8px;width:32px;height:32px;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;}
+.invite-body{padding:clamp(18px,4.5vw,26px);}
+.invite-generate-btn{width:100%;padding:clamp(13px,3.2vw,16px);background:var(--navy);border:none;font-family:'Outfit',sans-serif;font-size:var(--fs-sm);font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;cursor:pointer;position:relative;overflow:hidden;transition:background .2s;}
+.invite-generate-btn:hover{background:#152d58;}
+.invite-generate-btn:disabled{opacity:.4;cursor:not-allowed;}
+.invite-generate-btn::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:linear-gradient(90deg,#c9a44a,#e8c97a);transition:width .35s ease;}
+.invite-generate-btn:hover::after{width:100%;}
+.invite-link-wrap{margin-top:16px;display:none;}
+.invite-link-wrap.visible{display:block;}
+.invite-link-box{background:var(--cream);border:1.5px solid var(--border);border-radius:8px;padding:clamp(10px,2.5vw,14px);font-size:var(--fs-xs);color:var(--ink);word-break:break-all;line-height:1.55;font-family:'Outfit',sans-serif;margin-bottom:10px;}
+.invite-copy-btn{width:100%;padding:clamp(10px,2.5vw,13px);background:var(--lgreen);border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:var(--fs-sm);font-weight:700;color:var(--green);cursor:pointer;transition:opacity .15s;}
+.invite-copy-btn:active{opacity:.75;}
+.invite-expiry{font-size:var(--fs-xs);color:var(--muted);margin-top:10px;text-align:center;line-height:1.5;}
+.invite-divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
+.invite-list-title{font-size:var(--fs-xs);font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;}
+.invite-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;}
+.invite-row{display:flex;align-items:center;gap:8px;background:var(--cream);border-radius:8px;padding:8px 10px;}
+.invite-row-token{flex:1;font-size:var(--fs-xs);color:var(--ink);font-family:'Outfit',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.invite-row-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:20px;flex-shrink:0;}
+.invite-row-badge.pending{background:var(--lgold);color:var(--gold);}
+.invite-row-badge.used{background:var(--lgreen);color:var(--green);}
+.invite-row-badge.expired{background:var(--lred);color:var(--red);}
+.invite-row-revoke{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:2px;border-radius:4px;flex-shrink:0;line-height:1;}
+.invite-row-revoke:hover{color:var(--red);}
+.invite-empty{text-align:center;color:var(--muted);font-size:var(--fs-xs);padding:16px 0;}
+.ap-invite-btn{width:100%;margin-top:clamp(8px,2vw,12px);padding:clamp(10px,2.5vw,14px);background:var(--lgold);border:none;border-radius:var(--radius);font-family:'Outfit',sans-serif;font-size:var(--fs-sm);font-weight:700;color:var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .15s;}
+.ap-invite-btn:active{opacity:.8;}
+
 /* INSTALL BANNER */
 .install-banner{background:var(--gold);color:#fff;padding:clamp(7px,1.8vw,11px) clamp(10px,2.5vw,14px);display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:var(--fs-xs);font-weight:600;}
 .install-banner button{background:#fff;color:var(--gold);border:none;border-radius:7px;padding:clamp(4px,1vw,6px) clamp(10px,2.5vw,14px);font-family:'Outfit',sans-serif;font-size:var(--fs-xs);font-weight:700;cursor:pointer;}
@@ -713,8 +748,9 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
           </select>
         </div>
         <div class="auth-field" id="adminCodeField" style="display:none;">
-          <label>Admin access code</label>
-          <input type="password" id="adminCode" placeholder="••••••••" autocomplete="off"/>
+          <label>Admin invite token</label>
+          <input type="text" id="adminCode" placeholder="Paste invite token here" autocomplete="off" style="font-size:12px;"/>
+          <span style="font-size:10px;color:#7a8fa8;margin-top:4px;display:block;">You need an invite link from the super-admin to register as an admin.</span>
         </div>
         <button class="auth-btn" onclick="doSignup()" id="signupBtn">Create Account</button>
         <div class="auth-err" id="signupErr"></div>
@@ -735,6 +771,27 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
     <p style="font-size:13.5px;color:#7a8fa8;line-height:1.7;font-weight:300;margin-bottom:8px;">Your account has been successfully created.</p>
     <p style="font-size:13.5px;color:#7a8fa8;line-height:1.7;font-weight:300;margin-bottom:28px;">Please tap <strong style="color:#152d58;font-weight:500;">Go to Sign In</strong> below and log in with your email and password.</p>
     <button onclick="closeSignupSuccess()" style="width:100%;padding:14px;background:#1c3a6e;border:none;font-family:'Outfit',sans-serif;font-size:11.5px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:#eef3fa;cursor:pointer;position:relative;">Go to Sign In →</button>
+  </div>
+</div>
+
+<!-- ADMIN INVITE MODAL -->
+<div id="inviteModal">
+  <div class="invite-card">
+    <div class="invite-header">
+      <h3>🔑 Admin Invitations</h3>
+      <button class="invite-close" onclick="closeInviteModal()" title="Close">✕</button>
+    </div>
+    <div class="invite-body">
+      <button class="invite-generate-btn" id="inviteGenBtn" onclick="generateInvite()">Generate Invite Link</button>
+      <div class="invite-link-wrap" id="inviteLinkWrap">
+        <div class="invite-link-box" id="inviteLinkBox"></div>
+        <button class="invite-copy-btn" id="inviteCopyBtn" onclick="copyInviteLink()">📋 Copy Link</button>
+        <p class="invite-expiry" id="inviteExpiry"></p>
+      </div>
+      <hr class="invite-divider"/>
+      <div class="invite-list-title">Previous Invites</div>
+      <div class="invite-list" id="inviteList"><div class="invite-empty">Loading...</div></div>
+    </div>
   </div>
 </div>
 
@@ -940,6 +997,7 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
       <h2>Admin Portal</h2>
       <p>Select a teacher to view their register</p>
     </div>
+    <button class="ap-invite-btn" id="apInviteBtn" onclick="openInviteModal()" style="display:none;">🔑 Invite New Admin</button>
     <div id="teacherList"></div>
   </div>
 </div>
@@ -1101,6 +1159,113 @@ function closeSignupSuccess(){
   const email=document.getElementById('signupEmail').value;
   if(email)document.getElementById('loginEmail').value=email;
 }
+// ── INVITE TOKEN — auto-fill from URL ────────────────────────────────────
+(function(){
+  const params=new URLSearchParams(window.location.search);
+  const tok=params.get('invite');
+  if(tok){
+    // Pre-fill and reveal the signup form with admin role + token
+    window.addEventListener('DOMContentLoaded',()=>{
+      showSignup();
+      const roleEl=document.getElementById('signupRole');
+      if(roleEl){roleEl.value='admin';toggleAdminCode();}
+      const codeEl=document.getElementById('adminCode');
+      if(codeEl)codeEl.value=tok;
+    });
+  }
+})();
+
+// ── INVITE MODAL ──────────────────────────────────────────────────────────
+let _inviteLink='';
+
+function openInviteModal(){
+  document.getElementById('inviteModal').classList.add('open');
+  document.getElementById('inviteLinkWrap').classList.remove('visible');
+  _inviteLink='';
+  loadInviteList();
+}
+function closeInviteModal(){document.getElementById('inviteModal').classList.remove('open');}
+
+async function generateInvite(){
+  const btn=document.getElementById('inviteGenBtn');
+  btn.disabled=true;btn.textContent='Generating...';
+  try{
+    const res=await fetch(`${SUPA_URL}/functions/v1/create-invite`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${SUPA_KEY}`},
+      body:JSON.stringify({admin_id:currentUser.id})
+    });
+    const result=await res.json();
+    if(!res.ok||!result.token){throw new Error(result.error||'Failed');}
+    _inviteLink=`${window.location.origin}${window.location.pathname}?invite=${result.token}`;
+    document.getElementById('inviteLinkBox').textContent=_inviteLink;
+    const exp=new Date(result.expires_at);
+    document.getElementById('inviteExpiry').textContent=`Expires ${exp.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})} · Single use`;
+    document.getElementById('inviteLinkWrap').classList.add('visible');
+    loadInviteList();
+  }catch(e){
+    toast('Could not generate invite: '+e.message);
+  }finally{
+    btn.disabled=false;btn.textContent='Generate Invite Link';
+  }
+}
+
+async function copyInviteLink(){
+  if(!_inviteLink)return;
+  try{
+    await navigator.clipboard.writeText(_inviteLink);
+    const btn=document.getElementById('inviteCopyBtn');
+    btn.textContent='✅ Copied!';
+    setTimeout(()=>{btn.textContent='📋 Copy Link';},2000);
+  }catch(e){
+    // Fallback for mobile browsers
+    const ta=document.createElement('textarea');
+    ta.value=_inviteLink;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('Link copied!');
+  }
+}
+
+async function loadInviteList(){
+  const list=document.getElementById('inviteList');
+  list.innerHTML='<div class="invite-empty">Loading...</div>';
+  try{
+    const {data,error}=await sb.from('admin_invites')
+      .select('*').eq('created_by',currentUser.id)
+      .order('created_at',{ascending:false}).limit(20);
+    if(error)throw error;
+    if(!data||!data.length){list.innerHTML='<div class="invite-empty">No invites yet.</div>';return;}
+    list.innerHTML='';
+    data.forEach(inv=>{
+      const now=new Date();
+      const exp=new Date(inv.expires_at);
+      const status=inv.used_at?'used':exp<now?'expired':'pending';
+      const labels={used:'Used',expired:'Expired',pending:'Pending'};
+      const shortToken=inv.token.slice(0,8)+'…';
+      const row=document.createElement('div');
+      row.className='invite-row';
+      row.innerHTML=`
+        <span class="invite-row-token" title="${inv.token}">Token: ${shortToken}</span>
+        <span class="invite-row-badge ${status}">${labels[status]}</span>
+        ${status==='pending'?`<button class="invite-row-revoke" title="Revoke" onclick="revokeInvite('${inv.id}', this)">✕</button>`:''}
+      `;
+      list.appendChild(row);
+    });
+  }catch(e){
+    list.innerHTML='<div class="invite-empty">Could not load invites.</div>';
+  }
+}
+
+async function revokeInvite(id, btn){
+  if(!confirm('Revoke this invite? It will no longer work.'))return;
+  btn.disabled=true;
+  const {error}=await sb.from('admin_invites').update({expires_at:new Date().toISOString()}).eq('id',id);
+  if(error){toast('Could not revoke invite.');btn.disabled=false;return;}
+  toast('Invite revoked.');
+  loadInviteList();
+}
+
 function toggleAdminCode(){const r=document.getElementById('signupRole').value;document.getElementById('adminCodeField').style.display=r==='admin'?'block':'none';if(r!=='admin')document.getElementById('adminCode').value='';}
 
 async function doLogin(){
@@ -1136,22 +1301,23 @@ async function doSignup(){
   if(!email||!pass){showErr(err,'Please fill in all fields.');return;}
   if(pass.length<6){showErr(err,'Password must be at least 6 characters.');return;}
   if(role==='admin'){
-    const code=document.getElementById('adminCode').value;
-    btn.disabled=true;btn.textContent='Verifying...';
+    const token=document.getElementById('adminCode').value.trim();
+    if(!token){showErr(err,'Please paste your admin invite token.');return;}
+    btn.disabled=true;btn.textContent='Verifying invite...';
     try{
-      const res=await fetch(`${SUPA_URL}/functions/v1/verify-admin-code`,{
+      const res=await fetch(`${SUPA_URL}/functions/v1/verify-invite`,{
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':`Bearer ${SUPA_KEY}`},
-        body:JSON.stringify({code})
+        body:JSON.stringify({token,email})
       });
       const result=await res.json();
       if(!res.ok||!result.valid){
         btn.disabled=false;btn.textContent='Create Account';
-        showErr(err,'Incorrect admin access code.');return;
+        showErr(err,result.error||'Invalid or expired invite token.');return;
       }
     }catch(e){
       btn.disabled=false;btn.textContent='Create Account';
-      showErr(err,'Could not verify admin code. Check your connection.');return;
+      showErr(err,'Could not verify invite. Check your connection.');return;
     }
   }
   btn.disabled=true;btn.textContent='Checking...';
@@ -1768,6 +1934,9 @@ async function showAdminPortal(){
   adminViewingTeacher=null;
   // Hide bottom nav for admin portal
   document.querySelector('.bnav').style.display='none';
+  // Show invite button only for super-admin
+  const invBtn=document.getElementById('apInviteBtn');
+  if(invBtn)invBtn.style.display=currentRole==='admin'?'flex':'none';
   // Load teacher list
   await loadTeacherList();
 }
