@@ -1319,6 +1319,7 @@ function CK(uid){
     subj:   `jb3_${u}_subjects`,
     ts:     `jb3_${u}_cache_ts`,
     wkmgr:  `jb3_${u}_wkmgr`,
+    stars:  `jb3_${u}_stars`,
   };
 }
 
@@ -1338,6 +1339,7 @@ function saveCache(){
     localStorage.setItem(k.beh,   JSON.stringify(behCache));
     localStorage.setItem(k.mgr,   JSON.stringify(mgrCache));
     localStorage.setItem(k.wkmgr, JSON.stringify(wkMgrCache));
+    localStorage.setItem(k.stars, JSON.stringify(starsCache));
     localStorage.setItem(k.ts,    Date.now().toString());
     // Save grades students separately
     try{localStorage.setItem('jb3_'+(currentUser?.id||'anon')+'_gstu', JSON.stringify(gradesStudents));}catch(e){}
@@ -1354,6 +1356,7 @@ function loadFromCache(){
     gradesCache = JSON.parse(localStorage.getItem(k.grades)||'{}');
     behCache    = JSON.parse(localStorage.getItem(k.beh)   ||'{}');
     mgrCache    = JSON.parse(localStorage.getItem(k.mgr)   ||'{}');
+    starsCache  = JSON.parse(localStorage.getItem(k.stars) ||'{}');
     return localStorage.getItem(k.ts)!==null;
   }catch(e){return false;}
 }
@@ -2500,6 +2503,7 @@ function awardStar(sid){
   if(!isTeacher())return;
   starsCache[sid]=(starsCache[sid]||0)+1;
   updateStarCard(sid);
+  saveCache();
   toast('⭐ Star awarded!');
   sb.from('stars').upsert({user_id:currentUser?.id,student_id:sid,count:starsCache[sid]},{onConflict:'user_id,student_id'}).catch(()=>{});
 }
@@ -2509,6 +2513,7 @@ function removeStar(sid){
   if((starsCache[sid]||0)<=0){toast('No stars to remove');return;}
   starsCache[sid]=(starsCache[sid]||0)-1;
   updateStarCard(sid);
+  saveCache();
   toast('⭐ Star removed');
   sb.from('stars').upsert({user_id:currentUser?.id,student_id:sid,count:starsCache[sid]},{onConflict:'user_id,student_id'}).catch(()=>{});
 }
@@ -2552,6 +2557,7 @@ async function loadStars(){
   const {data}=await sb.from('stars').select('student_id,count').eq('user_id',uid).catch(()=>({data:[]}));
   starsCache={};
   (data||[]).forEach(r=>{starsCache[r.student_id]=r.count;});
+  saveCache();
 }
 
 // ── SETTINGS ──────────────────────────────────────────────────────────────
