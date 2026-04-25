@@ -1459,14 +1459,15 @@ async function loadUserRole(){
   // Always clear any localStorage-cached role to avoid stale data
   const keys=Object.keys(localStorage).filter(k=>k.includes('role'));
   keys.forEach(k=>localStorage.removeItem(k));
-  const {data}=await sb.from('profiles').select('role').eq('id',currentUser.id).single();
+  const {data,error}=await sb.from('profiles').select('role').eq('id',currentUser.id).single();
   if(data?.role){
     currentRole=data.role;
-  } else {
-    // Profile row missing — create it as teacher
+  } else if(error?.code==='PGRST116'){
+    // No row found — brand new user, create as teacher
     currentRole='teacher';
-    await sb.from('profiles').upsert({id:currentUser.id,email:currentUser.email,role:'teacher'});
+    await sb.from('profiles').insert({id:currentUser.id,email:currentUser.email,role:'teacher'});
   }
+  // If any other error, leave currentRole as-is — don't overwrite
 }
 
 // ── DATA LOADING ──────────────────────────────────────────────────────────
