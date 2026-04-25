@@ -1295,7 +1295,7 @@ async function loadAllData(){
   const hasCachedCfg = localStorage.getItem(k.cfg);
   if(hasCachedCfg){
     try{
-      cfg      = Object.assign({...DEFAULT_CONFIG}, JSON.parse(hasCachedCfg));
+      cfg      = normalizeCfg(JSON.parse(hasCachedCfg));
       const savedStu  = localStorage.getItem(k.stu);
       const savedSubj = localStorage.getItem(k.subj);
       const savedGStu = localStorage.getItem('jb3_'+(currentUser?.id||'anon')+'_gstu');
@@ -1332,15 +1332,32 @@ async function saveUserSettings(){
 }
 
 // Load cfg/students/subjects from Supabase
+function normalizeCfg(raw){
+  // Defensive: handle any key naming variant that may have been stored
+  if(!raw||typeof raw!=='object') return {...DEFAULT_CONFIG};
+  return {
+    school:  raw.school  || raw.schoolName  || raw.school_name  || DEFAULT_CONFIG.school,
+    class:   raw.class   || raw.className   || raw.class_name   || raw.cls || '',
+    teacher: raw.teacher || raw.teacherName || raw.teacher_name || '',
+    term:    raw.term    || '',
+    session: raw.session || raw.academicSession || '',
+    weeks:   parseInt(raw.weeks || raw.numWeeks || raw.num_weeks || 13) || 13,
+  };
+}
+
 async function loadUserSettings(){
   if(!currentUser)return false;
   try{
     const {data,error}=await sb.from('user_settings').select('*').eq('user_id',currentUser.id).single();
     if(error||!data)return false;
-    if(data.cfg)      cfg      = Object.assign({...DEFAULT_CONFIG}, data.cfg);
-    if(data.students) students = data.students;
-    if(data.subjects) SUBJECTS = data.subjects;
-    if(data.grades_students) gradesStudents = data.grades_students;
+    // DEBUG: show raw cfg keys on screen so we can see what Supabase returns
+    const rawKeys = data.cfg ? Object.keys(data.cfg).join(', ') : 'cfg is empty/null';
+    const stuCount = data.students ? data.students.length : 'null';
+    setTimeout(()=>toast(`DB: cfg keys=[${rawKeys}] students=${stuCount}`), 2000);
+    if(data.cfg)      cfg      = normalizeCfg(data.cfg);
+    if(data.students) students = data.students.filter(s=>s&&(s.name||s.id));
+    if(data.subjects) SUBJECTS = data.subjects.filter(Boolean);
+    if(data.grades_students) gradesStudents = data.grades_students.filter(s=>s&&s.name);
     // Also save to local cache
     saveCache();
     return true;
@@ -1613,10 +1630,10 @@ async function adminViewTeacher(teacher){
     const {data:settings}=await sb.from('user_settings')
       .select('*').eq('user_id',teacher.id).single();
     if(settings){
-      cfg      = Object.assign({...DEFAULT_CONFIG}, settings.cfg||{});
-      students = settings.students||[];
-      SUBJECTS = settings.subjects||[];
-      gradesStudents = settings.grades_students||[];
+      cfg      = normalizeCfg(settings.cfg||{});
+      students = (settings.students||[]).filter(s=>s&&(s.name||s.id));
+      SUBJECTS = (settings.subjects||[]).filter(Boolean);
+      gradesStudents = (settings.grades_students||[]).filter(s=>s&&s.name);
     } else {
       cfg={...DEFAULT_CONFIG}; students=[]; SUBJECTS=[]; gradesStudents=[];
     }
