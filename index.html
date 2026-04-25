@@ -1019,9 +1019,17 @@ sb.auth.getSession().then(({data:{session}})=>{
 });
 
 async function loadUserRole(){
+  // Always clear any localStorage-cached role to avoid stale data
+  const keys=Object.keys(localStorage).filter(k=>k.includes('role'));
+  keys.forEach(k=>localStorage.removeItem(k));
   const {data}=await sb.from('profiles').select('role').eq('id',currentUser.id).single();
-  currentRole=data?.role||currentUser.user_metadata?.role||'teacher';
-  if(!data?.role)await sb.from('profiles').upsert({id:currentUser.id,email:currentUser.email,role:currentRole});
+  if(data?.role){
+    currentRole=data.role;
+  } else {
+    // Profile row missing — create it as teacher
+    currentRole='teacher';
+    await sb.from('profiles').upsert({id:currentUser.id,email:currentUser.email,role:'teacher'});
+  }
 }
 
 // ── DATA LOADING ──────────────────────────────────────────────────────────
@@ -1484,11 +1492,10 @@ async function loadTeacherList(){
     // Try fetching all profiles where role is teacher
     const {data,error}=await sb.from('profiles').select('*').eq('role','teacher').order('email');
     if(error){
-      // RLS may be blocking — show helpful message
       console.warn('Profiles query error:',error.message);
       list.innerHTML=`<div class="ap-empty">
         <p style="margin-bottom:8px">Could not load teachers.</p>
-        <p style="font-size:11px;color:#bbb">Run the admin RLS SQL in Supabase to fix this.</p>
+        <p style="font-size:11px;color:#bbb">${error.message}</p>
       </div>`;
       return;
     }
