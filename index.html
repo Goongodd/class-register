@@ -1235,11 +1235,15 @@ function closeSignupSuccess(){
   const email=document.getElementById('signupEmail').value;
   if(email)document.getElementById('loginEmail').value=email;
 }
-// ── INVITE TOKEN — auto-fill from URL ────────────────────────────────────
+// ── INVITE TOKEN & PASSWORD RESET — auto-fill from URL ───────────────────
 (function(){
   const params=new URLSearchParams(window.location.search);
   const tok=params.get('invite');
   const reset=params.get('reset');
+  // Handle Supabase password reset via hash token
+  const hash=new URLSearchParams(window.location.hash.replace('#',''));
+  const accessToken=hash.get('access_token');
+  const tokenType=hash.get('type');
   if(tok){
     window.addEventListener('DOMContentLoaded',()=>{
       showSignup();
@@ -1249,7 +1253,24 @@ function closeSignupSuccess(){
       if(codeEl)codeEl.value=tok;
     });
   }
-  if(reset){
+  if(accessToken&&tokenType==='recovery'){
+    window.addEventListener('DOMContentLoaded',async()=>{
+      // Set the session using the token from the URL
+      const {error}=await sb.auth.setSession({
+        access_token:accessToken,
+        refresh_token:hash.get('refresh_token')||''
+      });
+      // Show auth screen, hide app
+      hideLoading();showAuthScreen();
+      document.getElementById('loginForm').style.display='none';
+      document.getElementById('signupForm').style.display='none';
+      document.getElementById('forgotForm').style.display='none';
+      document.getElementById('resetForm').style.display='block';
+      if(error){
+        document.getElementById('resetErr').textContent='Session error: '+error.message;
+      }
+    });
+  } else if(reset){
     window.addEventListener('DOMContentLoaded',()=>{
       document.getElementById('loginForm').style.display='none';
       document.getElementById('resetForm').style.display='block';
