@@ -719,8 +719,43 @@ header p{font-size:clamp(9px,2.2vw,11px);opacity:.6;margin-top:1px;white-space:n
         </div>
         <button class="auth-btn" onclick="doLogin()" id="loginBtn">Sign In</button>
         <div class="auth-err" id="loginErr"></div>
+        <div style="text-align:center;margin-top:10px;">
+          <span onclick="showForgotPassword()" style="font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;">Forgot password?</span>
+        </div>
         <div class="auth-or">or</div>
         <div class="auth-toggle">No account? <span onclick="showSignup()">Create one</span></div>
+      </div>
+
+      <!-- FORGOT PASSWORD -->
+      <div id="forgotForm" style="display:none;">
+        <h2 class="auth-form-heading">Reset<br><em>password.</em></h2>
+        <p class="auth-form-sub">Enter your email and we'll send you a reset link.</p>
+        <div class="auth-field">
+          <label>Email address</label>
+          <input type="email" id="forgotEmail" placeholder="you@school.edu" autocomplete="email"/>
+        </div>
+        <button class="auth-btn" onclick="doForgotPassword()" id="forgotBtn">Send Reset Link</button>
+        <div class="auth-err" id="forgotErr"></div>
+        <div class="auth-info" id="forgotInfo"></div>
+        <div class="auth-or">or</div>
+        <div class="auth-toggle">Remember it? <span onclick="showLogin()">Sign in</span></div>
+      </div>
+
+      <!-- RESET PASSWORD (after clicking email link) -->
+      <div id="resetForm" style="display:none;">
+        <h2 class="auth-form-heading">New<br><em>password.</em></h2>
+        <p class="auth-form-sub">Enter your new password below.</p>
+        <div class="auth-field">
+          <label>New password <span style="font-weight:300;text-transform:none;letter-spacing:0;font-size:10px;">(min. 6 characters)</span></label>
+          <div class="auth-pwd-wrap">
+            <input type="password" id="resetPassword" placeholder="••••••••" autocomplete="new-password"/>
+            <button type="button" class="auth-eye" onclick="togglePwd('resetPassword','resetEye')" id="resetEye" title="Show password">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="auth-btn" onclick="doResetPassword()" id="resetBtn">Update Password</button>
+        <div class="auth-err" id="resetErr"></div>
       </div>
 
       <!-- SIGNUP -->
@@ -1142,6 +1177,47 @@ let adminViewingTeacher=null; // when admin is viewing a specific teacher
 const isTeacher=()=>currentRole==='teacher'&&!adminViewingTeacher;
 
 // ── AUTH ──────────────────────────────────────────────────────────────────
+function showForgotPassword(){
+  document.getElementById('loginForm').style.display='none';
+  document.getElementById('signupForm').style.display='none';
+  document.getElementById('forgotForm').style.display='block';
+  document.getElementById('resetForm').style.display='none';
+  document.getElementById('forgotEmail').value='';
+  document.getElementById('forgotErr').textContent='';
+  document.getElementById('forgotInfo').textContent='';
+}
+
+async function doForgotPassword(){
+  const email=document.getElementById('forgotEmail').value.trim();
+  const err=document.getElementById('forgotErr');
+  const info=document.getElementById('forgotInfo');
+  const btn=document.getElementById('forgotBtn');
+  err.textContent='';info.textContent='';
+  if(!email){showErr(err,'Please enter your email address.');return;}
+  btn.disabled=true;btn.textContent='Sending...';
+  const {error}=await sb.auth.resetPasswordForEmail(email,{
+    redirectTo:window.location.href.split('?')[0]+'?reset=true'
+  });
+  btn.disabled=false;btn.textContent='Send Reset Link';
+  if(error){showErr(err,error.message);return;}
+  info.textContent='✅ Reset link sent! Check your email.';
+  info.style.color='var(--green)';
+}
+
+async function doResetPassword(){
+  const password=document.getElementById('resetPassword').value;
+  const err=document.getElementById('resetErr');
+  const btn=document.getElementById('resetBtn');
+  err.textContent='';
+  if(!password||password.length<6){showErr(err,'Password must be at least 6 characters.');return;}
+  btn.disabled=true;btn.textContent='Updating...';
+  const {error}=await sb.auth.updateUser({password});
+  btn.disabled=false;btn.textContent='Update Password';
+  if(error){showErr(err,error.message);return;}
+  toast('Password updated successfully!');
+  showLogin();
+}
+
 function showLogin(){document.getElementById('loginForm').style.display='block';document.getElementById('signupForm').style.display='none';}
 function togglePwd(inputId,btnId){
   const inp=document.getElementById(inputId);
@@ -1163,14 +1239,20 @@ function closeSignupSuccess(){
 (function(){
   const params=new URLSearchParams(window.location.search);
   const tok=params.get('invite');
+  const reset=params.get('reset');
   if(tok){
-    // Pre-fill and reveal the signup form with admin role + token
     window.addEventListener('DOMContentLoaded',()=>{
       showSignup();
       const roleEl=document.getElementById('signupRole');
       if(roleEl){roleEl.value='admin';toggleAdminCode();}
       const codeEl=document.getElementById('adminCode');
       if(codeEl)codeEl.value=tok;
+    });
+  }
+  if(reset){
+    window.addEventListener('DOMContentLoaded',()=>{
+      document.getElementById('loginForm').style.display='none';
+      document.getElementById('resetForm').style.display='block';
     });
   }
 })();
